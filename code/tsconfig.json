@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "module": "system",
+    "target": "es5",
+    "lib": [
+      "es2015",
+      "es2015.promise",
+      "dom",
+      "es5",
+      "es2015.iterable",
+      "es2015.core"
+    ],
+    "experimentalDecorators": true,
+    "noImplicitUseStrict": true,
+    "declaration": false,
+    "sourceMap": false,
+    "removeComments": false,
+    "emitDecoratorMetadata": false,
+    "outFile": "../example.js",
+    "types": [
+      "../../../lib/m4m"
+    ]
+  }
+}
