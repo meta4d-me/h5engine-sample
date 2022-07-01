@@ -5420,7 +5420,7 @@ var HDR_sample = /** @class */ (function () {
                         hoverc.scaleSpeed = 0.1;
                         hoverc.lookAtPoint = new m4m.math.vector3(0, 0, 0);
                         par = new URL(window.location.href).searchParams;
-                        if (par.has('folder'))
+                        if (par.has('file'))
                             this.isEnableGUI = false;
                         if (!this.isEnableGUI) return [3 /*break*/, 2];
                         return [4 /*yield*/, this.enableGUI()];
@@ -5428,7 +5428,9 @@ var HDR_sample = /** @class */ (function () {
                         _a.sent();
                         return [3 /*break*/, 3];
                     case 2:
-                        this._Model = "";
+                        this._Model = par.get('file');
+                        if (this._Model)
+                            this._Model.replace(".gltf", "");
                         this.toLoad();
                         _a.label = 3;
                     case 3: return [2 /*return*/];
@@ -5587,8 +5589,18 @@ var HDR_sample = /** @class */ (function () {
     });
     HDR_sample.prototype.toLoad = function () {
         this.clearGLTF();
+        if (!this._Model) {
+            console.warn("\u6CA1\u6709\u6307\u5B9A model !");
+            return;
+        }
+        var par = new URL(window.location.href).searchParams;
         var model;
-        if (this._Model)
+        var needCKModels = true;
+        if (!this.isEnableGUI && !par.get('folder')) {
+            needCKModels = false;
+        } //没配置路径，走固定路径关掉查指定配置
+        if (needCKModels) {
+            //在默认配置指向中找
             for (var i = 0, len = this.gltfModels.length; i < len; i++) {
                 var obj = this.gltfModels[i];
                 if (obj && obj.file.indexOf(this._Model) != -1) {
@@ -5596,12 +5608,23 @@ var HDR_sample = /** @class */ (function () {
                     break;
                 }
             }
+        }
+        //没有默认配置指向 ，走固定结构
         if (!model) {
+            var _scale = 1;
+            var _cb = function (root) { };
+            var _file = "".concat(this._Model, ".gltf");
+            var _gltfFolder = "".concat(resRootPath, "pbrRes/").concat(this._Model, "/");
+            if (!this.isEnableGUI) {
+                //没有GUI的选择输入，看是否有有效 url 参数。
+                _gltfFolder = par.get('folder') || _gltfFolder;
+                _scale = par.get('scale') ? parseFloat(par.get('scale')) : 1;
+            }
             model = {
-                gltfFolder: "".concat(resRootPath, "pbrRes/").concat(this._Model, "/"),
-                file: "".concat(this._Model, ".gltf"),
-                scale: 1,
-                cb: function (root) { }
+                gltfFolder: _gltfFolder,
+                file: _file,
+                scale: _scale,
+                cb: _cb
             };
         }
         this.toLoadGLTF([model]);

@@ -1,7 +1,6 @@
 
 /** HDR + glTF 样例 */
-class HDR_sample implements IState
-{
+class HDR_sample implements IState {
     dec: string = "GLTF HDR";
     isEnableGUI: boolean = true;
     app: m4m.framework.application;
@@ -60,12 +59,9 @@ class HDR_sample implements IState
     lightRoot: m4m.framework.transform;
     modelRoot: m4m.framework.transform;
 
-    _load(path: string, type = m4m.framework.AssetTypeEnum.Auto)
-    {
-        return new Promise((resolve) =>
-        {
-            this.assetMgr?.load(path, type, (res) =>
-            {
+    _load(path: string, type = m4m.framework.AssetTypeEnum.Auto) {
+        return new Promise((resolve) => {
+            this.assetMgr?.load(path, type, (res) => {
                 if (res.isfinish)
                     resolve(res);
                 else
@@ -73,8 +69,7 @@ class HDR_sample implements IState
             });
         });
     }
-    async load<T extends m4m.framework.IAsset>(path: string, name: string, type?: m4m.framework.AssetTypeEnum)
-    {
+    async load<T extends m4m.framework.IAsset>(path: string, name: string, type?: m4m.framework.AssetTypeEnum) {
         await this._load(path + name, type);
         return this.assetMgr.getAssetByName<T>(name);
     }
@@ -88,8 +83,7 @@ class HDR_sample implements IState
             'posy.hdr',
             'posz.hdr',
         ]
-    )
-    {
+    ) {
         const tex: m4m.framework.texture[] = await Promise.all(images.map(n => this.load<m4m.framework.texture>(folder, n)));
         const cubeTex = new m4m.framework.texture(folder.split('/').pop());
         cubeTex.glTexture = new m4m.render.glTextureCube(this.app.webgl, m4m.render.TextureFormatEnum.RGBA, true, true);
@@ -106,8 +100,7 @@ class HDR_sample implements IState
         return cubeTex;
     }
 
-    async start(app: m4m.framework.application)
-    {
+    async start(app: m4m.framework.application) {
         this.app = app;
         this.scene = this.app.getScene();
         this.assetMgr = this.app.getAssetMgr();
@@ -143,21 +136,19 @@ class HDR_sample implements IState
         hoverc.lookAtPoint = new m4m.math.vector3(0, 0, 0);
         //
         let par = new URL(window.location.href).searchParams;
-        if (par.has('folder')) this.isEnableGUI = false;
+        if (par.has('file')) this.isEnableGUI = false;
 
         //开启GUI
-        if (this.isEnableGUI)
-        {
+        if (this.isEnableGUI) {
             await this.enableGUI();
-        } else
-        {
-            this._Model = "";
+        } else {
+            this._Model = par.get('file');
+            if (this._Model) this._Model.replace(".gltf", "");
             this.toLoad();
         }
     }
 
-    async toLoadGLTF(gltfModels: any[])
-    {
+    async toLoadGLTF(gltfModels: any[]) {
         const config = JSON.parse(this.sceneConfig);
         console.log(config);
         const { ambientCubemapLight, mainLight, secondaryLight, tertiaryLight } = config;
@@ -187,8 +178,7 @@ class HDR_sample implements IState
 
         // const brdf = await this.load<m4m.framework.texture>('res/pbrRes/', 'lut_ggx.png');
 
-        const loadGLTF = async ({ gltfFolder, file, scale }) =>
-        {
+        const loadGLTF = async ({ gltfFolder, file, scale }) => {
             const gltf = await this.load<m4m.framework.gltf>(gltfFolder, file);
             const root = await gltf.load(this.assetMgr, this.app.webgl, gltfFolder, null, env, irradianceSH, exp, ambientCubemapLight.specularIntensity, ambientCubemapLight.diffuseIntensity);
             m4m.math.vec3SetAll(root.localScale, scale ?? 1);
@@ -201,8 +191,7 @@ class HDR_sample implements IState
         exp = par.has('exp') ? parseFloat(par.get('exp')) : exp;
         if (!gltfModels) gltfModels = [];
 
-        if (par.has('folder'))
-        {
+        if (par.has('folder')) {
             gltfModels.push({
                 gltfFolder: par.get('folder'),
                 file: par.get('file'),
@@ -212,8 +201,7 @@ class HDR_sample implements IState
         }
 
 
-        gltfModels.map(async (cfg) =>
-        {
+        gltfModels.map(async (cfg) => {
             const root = await loadGLTF(cfg);
             if (cfg.cb) cfg.cb(root);
         });
@@ -224,8 +212,7 @@ class HDR_sample implements IState
                 .substring(1).match(/.{2}/g)
                 .map(x => parseInt(x, 16));
 
-        [mainLight, secondaryLight, tertiaryLight].map(light =>
-        {
+        [mainLight, secondaryLight, tertiaryLight].map(light => {
             // return;
             const lightObj = new m4m.framework.transform();
             lightObj.name = "Light" + light.name;
@@ -243,8 +230,7 @@ class HDR_sample implements IState
         });
     }
 
-    async enableGUI()
-    {
+    async enableGUI() {
         this.ModelList = this.gltfModels.map((val) => { return val.file.split(".")[0] });
         await datGui.init();
         let gui = new dat.GUI();;
@@ -261,46 +247,64 @@ class HDR_sample implements IState
     set Model(val) { this._Model = val; }
 
     get enableLight() { return this._enableLight; }
-    set enableLight(val)
-    {
+    set enableLight(val) {
         this._enableLight = val;
         this.lightRoot.children.forEach((l) => { l.gameObject.visible = val; });
     }
 
-    toLoad()
-    {
+    toLoad() {
         this.clearGLTF();
 
+        if (!this._Model) {
+            console.warn(`没有指定 model !`);
+            return;
+        }
+
+        let par = new URL(window.location.href).searchParams;
         let model: any;
-        if (this._Model)
-            for (let i = 0, len = this.gltfModels.length; i < len; i++)
-            {
+        let needCKModels = true;
+        if (!this.isEnableGUI && !par.get('folder')) { needCKModels = false; }   //没配置路径，走固定路径关掉查指定配置
+
+        if (needCKModels) {
+            //在默认配置指向中找
+            for (let i = 0, len = this.gltfModels.length; i < len; i++) {
                 let obj = this.gltfModels[i];
-                if (obj && obj.file.indexOf(this._Model) != -1)
-                {
+                if (obj && obj.file.indexOf(this._Model) != -1) {
                     model = obj;
                     break;
                 }
             }
-        if(!model){
+        }
+
+        //没有默认配置指向 ，走固定结构
+        if (!model) {
+            let _scale = 1;
+            let _cb = root => { };
+            let _file = `${this._Model}.gltf`;
+            let _gltfFolder = `${resRootPath}pbrRes/${this._Model}/`;
+
+            if (!this.isEnableGUI) {
+                //没有GUI的选择输入，看是否有有效 url 参数。
+                _gltfFolder = par.get('folder') || _gltfFolder;
+                _scale = par.get('scale') ? parseFloat(par.get('scale')) : 1;
+            }
+
             model = {
-                gltfFolder: `${resRootPath}pbrRes/${this._Model}/`,
-                file: `${this._Model}.gltf`,
-                scale: 1,
-                cb: root => { }
+                gltfFolder: _gltfFolder,
+                file: _file,
+                scale: _scale,
+                cb: _cb
             }
         }
         this.toLoadGLTF([model]);
     }
 
-    clearGLTF()
-    {
+    clearGLTF() {
         this.lightRoot.removeAllChild();
         this.modelRoot.removeAllChild();
     }
 
-    update(delta: number)
-    {
+    update(delta: number) {
 
 
     }
