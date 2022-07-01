@@ -16,6 +16,7 @@
     "sourceMap": false,
     "removeComments": false,
     "emitDecoratorMetadata": false,
+    "skipLibCheck": true,
     "outFile": "../example.js",
     "types": [
       "../../../lib/m4m"

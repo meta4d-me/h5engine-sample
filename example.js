@@ -48,6 +48,8 @@ var __extends = (this && this.__extends) || (function () {
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -493,12 +495,12 @@ var demo_navigaionRVO = /** @class */ (function () {
                 // _scene.useFog(this.app.getScene());
                 _this.scene.addChild(_root);
             }
-            _this.navmeshMgr.loadNavMesh("res/navmesh/" + assetName + ".nav.json", _this.app, function (s) {
+            _this.navmeshMgr.loadNavMesh("res/navmesh/".concat(assetName, ".nav.json"), _this.app, function (s) {
                 if (s.iserror) {
-                    console.error(" " + s.errs + " ");
+                    console.error(" ".concat(s.errs, " "));
                     return;
                 }
-                console.error("scene navmesh : " + assetName + "  is loaded");
+                console.error("scene navmesh : ".concat(assetName, "  is loaded"));
                 var mtr = new m4m.framework.material("navmesh_mtr");
                 var ass = _this.app.getAssetMgr();
                 var sdr = ass.getShader("diffuse.shader.json");
@@ -511,7 +513,7 @@ var demo_navigaionRVO = /** @class */ (function () {
             });
         };
         if (isCompress) {
-            this.app.getAssetMgr().loadCompressBundle("res/scenes/" + assetName + "/" + assetName + ".packs.txt", function (s) {
+            this.app.getAssetMgr().loadCompressBundle("res/scenes/".concat(assetName, "/").concat(assetName, ".packs.txt"), function (s) {
                 if (s.isfinish) {
                     //if (s.bundleLoadState & m4m.framework.AssetBundleLoadState.Scene && !isloaded)
                     {
@@ -521,7 +523,7 @@ var demo_navigaionRVO = /** @class */ (function () {
             });
         }
         else {
-            this.app.getAssetMgr().load("res/scenes/" + assetName + "/" + assetName + ".assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s1) {
+            this.app.getAssetMgr().load("res/scenes/".concat(assetName, "/").concat(assetName, ".assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s1) {
                 if (s1.isfinish) {
                     addScene();
                 }
@@ -793,10 +795,10 @@ var dome_loadaniplayer = /** @class */ (function () {
         var _this = this;
         var name = this.roleName;
         //加载人物资源
-        this.app.getAssetMgr().load("res/prefabs/roles/" + name + "/" + name + ".assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
+        this.app.getAssetMgr().load("res/prefabs/roles/".concat(name, "/").concat(name, ".assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
             if (s.isfinish) {
                 //通过prefab拿到任务的transform
-                var p = _this.assetmgr.getAssetByName(name + ".prefab.json");
+                var p = _this.assetmgr.getAssetByName("".concat(name, ".prefab.json"));
                 _this.role = p.getCloneTrans();
                 _this.ani = _this.role.gameObject.getComponent("aniplayer");
                 _this.ani.autoplay = false;
@@ -815,7 +817,7 @@ var dome_loadaniplayer = /** @class */ (function () {
         });
     };
     dome_loadaniplayer.prototype.loadSkill = function (name) {
-        this.assetmgr.load("res/prefabs/roles/" + this.roleName + "/Resources/" + name, m4m.framework.AssetTypeEnum.Auto, function (s) {
+        this.assetmgr.load("res/prefabs/roles/".concat(this.roleName, "/Resources/").concat(name), m4m.framework.AssetTypeEnum.Auto, function (s) {
             // if (s.isfinish) {
             //     let skill = this.assetmgr.getAssetByName(name) as m4m.framework.animationClip;
             //     //在aniplayer控件的 clipnames 中找到动作名为name动作的id
@@ -829,9 +831,9 @@ var dome_loadaniplayer = /** @class */ (function () {
     };
     dome_loadaniplayer.prototype.loadWeapon = function (name) {
         var _this = this;
-        this.assetmgr.load("res/prefabs/weapons/" + name + "/" + name + ".assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
+        this.assetmgr.load("res/prefabs/weapons/".concat(name, "/").concat(name, ".assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
             if (s.isfinish) {
-                var p = _this.assetmgr.getAssetByName(name + ".prefab.json");
+                var p = _this.assetmgr.getAssetByName("".concat(name, ".prefab.json"));
                 var rhand = _this.role.find("Bip01 Prop1");
                 var lhand = _this.role.find("Bip01 Prop2");
                 if (rhand) {
@@ -909,7 +911,7 @@ var dome_loadaniplayer = /** @class */ (function () {
             var list = ap.awaitLoadClipNames();
             if (!list.indexOf(_this.skillName))
                 return;
-            var resPath = "res/prefabs/roles/" + _this.roleName + "/resources/";
+            var resPath = "res/prefabs/roles/".concat(_this.roleName, "/resources/");
             var cname = _this.skillName;
             ap.addClipByNameLoad(_this.app.getAssetMgr(), resPath, cname, function (sta, clipName) {
                 if (sta.isfinish) {
@@ -1047,9 +1049,9 @@ var t;
             btn.style.top = "124px";
             btn.style.position = "absolute";
             this.app.container.appendChild(btn);
-            var texPath = resRootPath + "texture/";
+            var texPath = "".concat(resRootPath, "texture/");
             util.loadShader(this.app.getAssetMgr())
-                .then(function () { return Promise.all([texPath + "zg256.png", texPath + "rock256.png", texPath + "rock_n256.png"].map(function (item) { return util.loadTex(item, _this.app.getAssetMgr()); })); })
+                .then(function () { return Promise.all(["".concat(texPath, "zg256.png"), "".concat(texPath, "rock256.png"), "".concat(texPath, "rock_n256.png")].map(function (item) { return util.loadTex(item, _this.app.getAssetMgr()); })); })
                 .then(function () { return _this.addcube(); })
                 .then(function () { return _this.addCameraAndLight(); });
         };
@@ -1671,7 +1673,7 @@ var test_01 = /** @class */ (function () {
                                 cube.addChild(shark);
                             }
                             var useTime = Date.now() - time;
-                            console.log("old clone trans:" + useTime + "/ms count:" + cloneCount);
+                            console.log("old clone trans:".concat(useTime, "/ms count:").concat(cloneCount));
                             // this.scene.addChild(shark);
                         }
                     });
@@ -1686,7 +1688,7 @@ var test_01 = /** @class */ (function () {
                                 cube.addChild(shark);
                             }
                             var useTime = Date.now() - time;
-                            console.log("new clone trans:" + useTime + "/ms count:" + cloneCount);
+                            console.log("new clone trans:".concat(useTime, "/ms count:").concat(cloneCount));
                             // this.scene.addChild(shark);
                         }
                     });
@@ -1701,7 +1703,7 @@ var test_01 = /** @class */ (function () {
                                 cube.addChild(shark);
                             }
                             var useTime = Date.now() - time;
-                            console.log("new clone trans:" + useTime + "/ms count:" + cloneCount);
+                            console.log("new clone trans:".concat(useTime, "/ms count:").concat(cloneCount));
                             // this.scene.addChild(shark);
                         }
                     });
@@ -1745,13 +1747,13 @@ var test_01 = /** @class */ (function () {
         var _this = this;
         var cndroot = "http://192.168.88.68:8088/public/1/hungryshark/Resources_new/";
         var assetMgr = this.app.getAssetMgr();
-        assetMgr.load(cndroot + "shader/customShader/customShader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (state) { return __awaiter(_this, void 0, void 0, function () {
+        assetMgr.load("".concat(cndroot, "shader/customShader/customShader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (state) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 if (state.isfinish) {
                     assetMgr.mapShader = this.app.getAssetMgr().mapShader;
                     // assetMgr.cdnRoot = cndroot;
                     // await assetMgr.initGuidList(`${assetMgr.cdnRoot}guidlist.json`);
-                    assetMgr.load(cndroot + "props/PC/role/PF_PlayerSharkReef/PF_PlayerSharkReef.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (state) {
+                    assetMgr.load("".concat(cndroot, "props/PC/role/PF_PlayerSharkReef/PF_PlayerSharkReef.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (state) {
                         if (state.isfinish) {
                             console.log("资源加载结束");
                             var prefab = assetMgr.getAssetByName("PF_PlayerSharkReef.prefab.json");
@@ -1810,9 +1812,9 @@ var test_loadScene = /** @class */ (function () {
         util.loadShader(assetMgr)
             .then(function () {
             var sceneName = "MainCity_";
-            assetMgr.load(resRootPath + "prefab/" + sceneName + "/" + sceneName + ".assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s1) {
+            assetMgr.load("".concat(resRootPath, "prefab/").concat(sceneName, "/").concat(sceneName, ".assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s1) {
                 if (s1.isfinish) {
-                    var _scene = assetMgr.getAssetByName(sceneName + ".scene.json", sceneName + ".assetbundle.json");
+                    var _scene = assetMgr.getAssetByName(sceneName + ".scene.json", "".concat(sceneName, ".assetbundle.json"));
                     var _root = _scene.getSceneRoot();
                     _this.scene.addChild(_root);
                     _this.app.getScene().lightmaps = [];
@@ -2439,7 +2441,7 @@ var test_loadprefab = /** @class */ (function () {
 var testReload = /** @class */ (function () {
     function testReload() {
         //资源放置位置
-        this.resRoot = resRootPath + "pfb/model/";
+        this.resRoot = "".concat(resRootPath, "pfb/model/");
         //关心的 部位
         this.careSubList = ["body", "face", "handL", "handR", "head", "leg"];
         //模型名字
@@ -2474,7 +2476,7 @@ var testReload = /** @class */ (function () {
                         o2d = new m4m.framework.overlay2D();
                         this.camera.addOverLay(o2d);
                         // await demoTool.loadbySync(`${resRootPath}shader/MainShader.assetbundle.json`, this.app.getAssetMgr());
-                        return [4 /*yield*/, demoTool.loadbySync(resRootPath + "customShader/customShader.assetbundle.json", this.app.getAssetMgr())];
+                        return [4 /*yield*/, demoTool.loadbySync("".concat(resRootPath, "customShader/customShader.assetbundle.json"), this.app.getAssetMgr())];
                     case 1:
                         // await demoTool.loadbySync(`${resRootPath}shader/MainShader.assetbundle.json`, this.app.getAssetMgr());
                         _a.sent();
@@ -2484,18 +2486,18 @@ var testReload = /** @class */ (function () {
                         return [4 /*yield*/, demoTool.loadbySync("res/resources/STXINGKA.font.json", this.app.getAssetMgr())];
                     case 3:
                         _a.sent();
-                        return [4 /*yield*/, demoTool.loadbySync("" + this.resRoot + this.r_a_Name + "/" + this.r_a_Name + ".assetbundle.json", this.app.getAssetMgr())];
+                        return [4 /*yield*/, demoTool.loadbySync("".concat(this.resRoot).concat(this.r_a_Name, "/").concat(this.r_a_Name, ".assetbundle.json"), this.app.getAssetMgr())];
                     case 4:
                         _a.sent();
-                        return [4 /*yield*/, demoTool.loadbySync("" + this.resRoot + this.r_b_Name + "/" + this.r_b_Name + ".assetbundle.json", this.app.getAssetMgr())];
+                        return [4 /*yield*/, demoTool.loadbySync("".concat(this.resRoot).concat(this.r_b_Name, "/").concat(this.r_b_Name, ".assetbundle.json"), this.app.getAssetMgr())];
                     case 5:
                         _a.sent();
-                        _prefab = this.app.getAssetMgr().getAssetByName(this.r_a_Name + ".prefab.json", this.r_a_Name + ".assetbundle.json");
+                        _prefab = this.app.getAssetMgr().getAssetByName("".concat(this.r_a_Name, ".prefab.json"), "".concat(this.r_a_Name, ".assetbundle.json"));
                         r_a = _prefab.getCloneTrans();
                         r_a.localScale = new m4m.math.vector3(1, 1, 1);
                         r_a.localTranslate = new m4m.math.vector3(0, 0, 0);
                         this.scene.addChild(r_a);
-                        _prefab = this.app.getAssetMgr().getAssetByName(this.r_b_Name + ".prefab.json", this.r_b_Name + ".assetbundle.json");
+                        _prefab = this.app.getAssetMgr().getAssetByName("".concat(this.r_b_Name, ".prefab.json"), "".concat(this.r_b_Name, ".assetbundle.json"));
                         r_b = _prefab.getCloneTrans();
                         _aniplayer = r_a.gameObject.getComponent("aniplayer");
                         _aniplayer.autoplay = true;
@@ -2565,7 +2567,7 @@ var testReload = /** @class */ (function () {
                 }
             }
             if (!r_a_part || !r_b_part) {
-                console.warn("\u66F4\u6362\u8282\u70B9 " + part.toLowerCase() + " \u66F4\u6362\u5931\u8D25 \uFF01 \u68C0\u67E5\u4E00\u4E0B this.careSubList \u4E2D \u662F\u5426\u5305\u542B  ");
+                console.warn("\u66F4\u6362\u8282\u70B9 ".concat(part.toLowerCase(), " \u66F4\u6362\u5931\u8D25 \uFF01 \u68C0\u67E5\u4E00\u4E0B this.careSubList \u4E2D \u662F\u5426\u5305\u542B  "));
                 return;
             }
             _this.excangeSub(r_a_part, r_b_part);
@@ -2824,7 +2826,7 @@ var test_f4skin = /** @class */ (function () {
                     case 2:
                         // let loadNameRes = "DragonHigh_prefab_boss";
                         _c.sent();
-                        pf = this.app.getAssetMgr().getAssetByName(loadNameRes + ".prefab.json", loadNameRes + ".assetbundle.json").getCloneTrans();
+                        pf = this.app.getAssetMgr().getAssetByName("".concat(loadNameRes, ".prefab.json"), "".concat(loadNameRes, ".assetbundle.json")).getCloneTrans();
                         orig = pf.clone();
                         this.scene.addChild(orig);
                         anip11 = orig.gameObject.getComponentsInChildren("keyFrameAniPlayer")[0];
@@ -2992,7 +2994,7 @@ var test_3DPhysics_compound = /** @class */ (function () {
                         this.astMgr = physics3dDemoTool.astMgr;
                         this.iptMgr = physics3dDemoTool.iptMgr;
                         this.camera = physics3dDemoTool.camera;
-                        return [4 /*yield*/, demoTool.loadbySync("./" + resRootPath + "prefab/Capsule/Capsule.assetbundle.json", this.astMgr)];
+                        return [4 /*yield*/, demoTool.loadbySync("./".concat(resRootPath, "prefab/Capsule/Capsule.assetbundle.json"), this.astMgr)];
                     case 2:
                         _a.sent();
                         this.init();
@@ -3007,7 +3009,7 @@ var test_3DPhysics_compound = /** @class */ (function () {
         m4m.math.vec3Set(chairTran.localPosition, 0, 3, 5);
         m4m.math.vec3SetAll(chairTran.localScale, 3);
         this.scene.addChild(chairTran);
-        chairTran.name = "chair_" + this.chairId;
+        chairTran.name = "chair_".concat(this.chairId);
         this.chairId++;
         var len = this.types.length;
         var mat = physics3dDemoTool.mats["activated"];
@@ -3019,7 +3021,7 @@ var test_3DPhysics_compound = /** @class */ (function () {
         var scale = 3;
         for (var i = 0; i < len; i++) {
             var sunTran = new m4m.framework.transform();
-            sunTran.name = "sub_" + len;
+            sunTran.name = "sub_".concat(len);
             n = i * 3;
             // m = new THREE.Matrix4().makeTranslation( positions[n+0], positions[n+1], positions[n+2] );
             m4m.math.vec3Set(sunTran.localPosition, positions[n + 0] / 100 * scale, positions[n + 1] / 100 * scale, positions[n + 2] / 100 * scale);
@@ -3175,14 +3177,14 @@ var test_3DPhysics_compound = /** @class */ (function () {
         var viewPos = m4m.poolv2();
         viewPos.x = x;
         viewPos.y = y;
-        console.log("x: " + x + " ,y :" + y);
+        console.log("x: ".concat(x, " ,y :").concat(y));
         var ray = this.camera.creatRayByScreen(viewPos, this.app);
         var mf = this.floor.gameObject.getComponent("meshFilter");
         var isinsrt = mf.mesh.intersects(ray, this.floor.getWorldMatrix(), this.cachePickInfo);
         if (!isinsrt || !this.cachePickInfo || !this.cachePickInfo.hitposition)
             return;
         var pos = this.cachePickInfo.hitposition;
-        console.log("pos  x: " + pos.x + " ,y :" + pos.y + " , z: " + pos.z);
+        console.log("pos  x: ".concat(pos.x, " ,y :").concat(pos.y, " , z: ").concat(pos.z));
         //同步ctr box 位置
         pos.y += 0.55;
         this.boxTran.physicsImpostor.kinematicSetPosition(pos); //更新动力学 位置
@@ -3273,7 +3275,7 @@ var test_3DPhysics_explode = /** @class */ (function () {
             for (var j = 0; j < d; j++) {
                 for (var k = 0; k < h; k++) {
                     var boxtran = new m4m.framework.transform();
-                    boxtran.name = "box_" + i + "_" + j + "_" + k;
+                    boxtran.name = "box_".concat(i, "_").concat(j, "_").concat(k);
                     boxtran.localPosition.x = posOffset.x + i * size + gap;
                     boxtran.localPosition.z = posOffset.z + j * size + gap;
                     boxtran.localPosition.y = posOffset.y + k * size + gap;
@@ -3550,14 +3552,14 @@ var test_3DPhysics_freeze = /** @class */ (function () {
         var viewPos = m4m.poolv2();
         viewPos.x = x;
         viewPos.y = y;
-        console.log("x: " + x + " ,y :" + y);
+        console.log("x: ".concat(x, " ,y :").concat(y));
         var ray = this.camera.creatRayByScreen(viewPos, this.app);
         var mf = this.floor.gameObject.getComponent("meshFilter");
         var isinsrt = mf.mesh.intersects(ray, this.floor.getWorldMatrix(), this.cachePickInfo);
         if (!isinsrt || !this.cachePickInfo || !this.cachePickInfo.hitposition)
             return;
         var pos = this.cachePickInfo.hitposition;
-        console.log("pos  x: " + pos.x + " ,y :" + pos.y + " , z: " + pos.z);
+        console.log("pos  x: ".concat(pos.x, " ,y :").concat(pos.y, " , z: ").concat(pos.z));
         //同步ctr box 位置
         pos.y += 0.55;
         this.boxTran.physicsImpostor.kinematicSetPosition(pos); //更新动力学 位置
@@ -4462,14 +4464,14 @@ var test_3DPhysics_kinematic = /** @class */ (function () {
         var viewPos = m4m.poolv2();
         viewPos.x = x;
         viewPos.y = y;
-        console.log("x: " + x + " ,y :" + y);
+        console.log("x: ".concat(x, " ,y :").concat(y));
         var ray = this.camera.creatRayByScreen(viewPos, this.app);
         var mf = this.floor.gameObject.getComponent("meshFilter");
         var isinsrt = mf.mesh.intersects(ray, this.floor.getWorldMatrix(), this.cachePickInfo);
         if (!isinsrt || !this.cachePickInfo || !this.cachePickInfo.hitposition)
             return;
         var pos = this.cachePickInfo.hitposition;
-        console.log("pos  x: " + pos.x + " ,y :" + pos.y + " , z: " + pos.z);
+        console.log("pos  x: ".concat(pos.x, " ,y :").concat(pos.y, " , z: ").concat(pos.z));
         //同步ctr box 位置
         pos.y += 0.55;
         this.ctrBox.physicsImpostor.kinematicSetPosition(pos); //更新动力学 位置
@@ -4928,13 +4930,13 @@ var test_Decal = /** @class */ (function () {
                         this.app = app;
                         this.scene = this.app.getScene();
                         this.assetMgr = this.app.getAssetMgr();
-                        return [4 /*yield*/, demoTool.loadbySync(resRootPath + "shader/shader.assetbundle.json", this.assetMgr)];
+                        return [4 /*yield*/, demoTool.loadbySync("".concat(resRootPath, "shader/shader.assetbundle.json"), this.assetMgr)];
                     case 1:
                         _a.sent();
-                        return [4 /*yield*/, demoTool.loadbySync(resRootPath + "texture/" + this.texName, this.assetMgr)];
+                        return [4 /*yield*/, demoTool.loadbySync("".concat(resRootPath, "texture/").concat(this.texName), this.assetMgr)];
                     case 2:
                         _a.sent();
-                        return [4 /*yield*/, demoTool.loadbySync(resRootPath + "prefab/" + this.buildingPname + "/" + this.buildingPname + ".assetbundle.json", this.assetMgr)];
+                        return [4 /*yield*/, demoTool.loadbySync("".concat(resRootPath, "prefab/").concat(this.buildingPname, "/").concat(this.buildingPname, ".assetbundle.json"), this.assetMgr)];
                     case 3:
                         _a.sent();
                         return [4 /*yield*/, datGui.init()];
@@ -4950,7 +4952,7 @@ var test_Decal = /** @class */ (function () {
     test_Decal.prototype.init = function () {
         this.initCamera();
         //建筑
-        var bPrefb = this.assetMgr.getAssetByName(this.buildingPname + ".prefab.json", this.buildingPname + ".assetbundle.json");
+        var bPrefb = this.assetMgr.getAssetByName("".concat(this.buildingPname, ".prefab.json"), "".concat(this.buildingPname, ".assetbundle.json"));
         var bTrans = bPrefb.getCloneTrans();
         this.building = bTrans;
         var mf = bTrans.gameObject.getComponent("meshFilter");
@@ -5024,7 +5026,7 @@ var test_GPU_instancing = /** @class */ (function () {
             var scene, objCam, cam, hoverc, _dat;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, demoTool.loadbySync(resRootPath + "shader/MainShader.assetbundle.json", app.getAssetMgr())];
+                    case 0: return [4 /*yield*/, demoTool.loadbySync("".concat(resRootPath, "shader/MainShader.assetbundle.json"), app.getAssetMgr())];
                     case 1:
                         _a.sent();
                         // await demoTool.loadbySync(`${resRootPath}shader/customShader/customShader.assetbundle.json`, app.getAssetMgr());  //项目shader
@@ -5145,7 +5147,7 @@ var test_GPU_instancing = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        url = resRootPath + "prefab/" + modelName + "/" + modelName + ".assetbundle.json";
+                        url = "".concat(resRootPath, "prefab/").concat(modelName, "/").concat(modelName, ".assetbundle.json");
                         if (!!this.loadedTest) return [3 /*break*/, 2];
                         return [4 /*yield*/, demoTool.loadbySync(url, this._app.getAssetMgr())];
                     case 1:
@@ -5153,7 +5155,7 @@ var test_GPU_instancing = /** @class */ (function () {
                         _a.label = 2;
                     case 2:
                         this.loadedTest = true;
-                        m = this._app.getAssetMgr().getAssetByName(modelName + ".prefab.json", modelName + ".assetbundle.json");
+                        m = this._app.getAssetMgr().getAssetByName("".concat(modelName, ".prefab.json"), "".concat(modelName, ".assetbundle.json"));
                         count = this.createCount;
                         range = this.subRange;
                         for (i = 0; i < count; i++) {
@@ -5199,7 +5201,7 @@ var test_GPU_instancing = /** @class */ (function () {
     test_GPU_instancing.prototype.createOne = function (app, needInstance) {
         var obj = m4m.framework.TransformUtil.CreatePrimitive(m4m.framework.PrimitiveType.Cube, app);
         obj.gameObject.transform.enableCulling = false;
-        obj.name = "cube_" + ++this.count;
+        obj.name = "cube_".concat(++this.count);
         this.cubeRoot.addChild(obj);
         var range = this.subRange;
         m4m.math.vec3Set(obj.localPosition, this.getRandom(range), this.getRandom(range), this.getRandom(range));
@@ -5280,7 +5282,7 @@ var gpuInstanceMgr = /** @class */ (function () {
         if (!sh)
             return false;
         if (!sh.passes["instance"] && !sh.passes["instance_fog"]) {
-            console.warn("shader " + sh.getName() + " , \u6CA1\u6709 instance \u901A\u9053, \u65E0\u6CD5\u4F7F\u7528 gupInstance \u529F\u80FD.");
+            console.warn("shader ".concat(sh.getName(), " , \u6CA1\u6709 instance \u901A\u9053, \u65E0\u6CD5\u4F7F\u7528 gupInstance \u529F\u80FD."));
             return false;
         }
         return true;
@@ -5296,32 +5298,44 @@ var HDR_sample = /** @class */ (function () {
         this.sceneConfig = "\n    {\"preZ\":true,\"materials\":[{\"name\":\"floor_wood\",\"transparent\":false,\"color\":\"#8f4117\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0.23,\"emissionIntensity\":1,\"uvRepeat\":[20,20],\"parallaxOcclusionScale\":0,\"diffuseMap\":\"floor_wood.png\",\"normalMap\":\"floor_wood_nm.png\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0.33,\"roughness\":0.64,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"RongGallery\"]},{\"name\":\"Tiles_Color\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":[10,10],\"parallaxOcclusionScale\":0.08,\"diffuseMap\":\"Tiles_Color.png\",\"normalMap\":\"Tiles_Normal.png\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0.8,\"roughness\":0.88,\"metalnessMap\":\"Marble01_Roughness.png\",\"roughnessMap\":\"Marble01_Roughness.png\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"RongGallery$1\"]},{\"name\":\"LiRirong\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"LiRirong.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"RongGallery$2\"]},{\"name\":\"Bottom\",\"transparent\":false,\"color\":\"#262626\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"black.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"RongGallery$3\",\"RongGallery$5\",\"RongGallery$7\",\"RongGallery$9\",\"Wall$1\"]},{\"name\":\"Glass1\",\"transparent\":true,\"color\":\"#006e9f\",\"emission\":\"#000000\",\"alpha\":0.503501952,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"RongGallery$4\"]},{\"name\":\"Spontaneouslight\",\"transparent\":false,\"color\":\"#ececec\",\"emission\":\"#0e0e0d\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":[1,1],\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Spontaneouslight.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"Spontaneouslight.png\",\"metalness\":0.72,\"roughness\":0.4,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"RongGallery$6\",\"RongGallery$8\",\"RongGallery$10\",\"Top2\"]},{\"name\":\"Wall2\",\"transparent\":false,\"color\":\"#919191\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0.65,\"emissionIntensity\":23.8,\"uvRepeat\":[3,3],\"parallaxOcclusionScale\":0.04,\"diffuseMap\":\"Wall_White1.png\",\"normalMap\":\"Wall_White_nm.png\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0.32,\"roughness\":0.24,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"RongGallery$11\",\"Top\",\"Wall\"]},{\"name\":\"wall_blue\",\"transparent\":false,\"color\":\"#bad2f5\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":[8,8],\"parallaxOcclusionScale\":0.01,\"diffuseMap\":\"wall_blue.png\",\"normalMap\":\"wall_nm.png\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":1,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"outWall1\",\"Wall$2\"]},{\"name\":\"Gallery_text\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Gallery_text.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0.21699999272823334,\"roughness\":0.7650000005960464,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Gallery_text\"]},{\"name\":\"threshold\",\"transparent\":false,\"color\":\"#6a6a6a\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"black.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0.07500000298023224,\"roughness\":0.17799997329711914,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"threshold (1)\",\"threshold\"]},{\"name\":\"wood_d\",\"transparent\":false,\"color\":\"#733232\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":200,\"uvRepeat\":[2,2],\"parallaxOcclusionScale\":0.05,\"diffuseMap\":\"wood_d.png\",\"normalMap\":\"wood_Normal.png\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0.4,\"roughness\":0.45,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Chair (3)\",\"Chair (4)\",\"Chair (5)\",\"Chair (6)\",\"Chair (7)\",\"Chair (8)\",\"Chair (9)\",\"Chair (10)\",\"Chair (11)\",\"Chair (12)\",\"Chair (13)\",\"Chair (14)\",\"Chair (15)\",\"Chair (16)\",\"Chair (17)\",\"Chair (18)\",\"Chair (1)\",\"Chair (2)\",\"Chair\",\"Doorframe\",\"Doorframe (1)\"]},{\"name\":\"label\",\"transparent\":false,\"color\":\"#ececec\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"label.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0.19200000166893005,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Label\",\"Label (1)\",\"Label (2)\",\"Label (3)\",\"Label (4)\",\"Label (5)\",\"Label (6)\",\"Label (7)\",\"Label (8)\",\"Label (9)\",\"Label (10)\",\"Label (11)\",\"Label (12)\",\"Label (13)\",\"Label (14)\",\"Label (15)\",\"Label (16)\",\"Label (17)\",\"Label (18)\",\"Label (19)\",\"Label (20)\",\"Label (21)\",\"Label (22)\",\"Label (23)\",\"Label (24)\",\"Label (25)\",\"Label (26)\",\"Label (27)\",\"Label (28)\",\"Label (29)\",\"Label (30)\",\"Label (31)\",\"Label (32)\",\"Label (33)\",\"Label (34)\",\"Label (35)\",\"Label (36)\",\"Label (37)\",\"Label (38)\",\"Label (39)\",\"Label (40)\",\"Label (41)\",\"Label (42)\",\"Label (43)\",\"Label (44)\",\"Label (45)\",\"Label (46)\",\"Label (47)\"]},{\"name\":\"Frame_25\",\"transparent\":false,\"color\":\"#b9b9b9\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame21.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_nq\"]},{\"name\":\"Frame_8\",\"transparent\":false,\"color\":\"#e0e0e0\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame15.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_nh\",\"Frame_nh (2)\"]},{\"name\":\"Frame_b\",\"transparent\":false,\"color\":\"#cacaca\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame_b.png\",\"normalMap\":\"Frame_bnm.png\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0.675000011920929,\"roughness\":0.7100000083446503,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_bv\",\"Frame_bv\",\"Frame_bv\",\"Frame_bv\",\"Frame_bv\"]},{\"name\":\"Frame_22\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame21.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_bv$1\",\"Frame_bv$1\",\"Frame_bv$1\",\"Frame_bv$1\",\"Frame_bv$1\"]},{\"name\":\"Frame_a\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame_a.png\",\"normalMap\":\"Frame_anm.png\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0.11900000274181366,\"roughness\":0.8680000007152557,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_av\",\"Frame_aq\",\"Frame_ah (2)\",\"Frame_aq\",\"Frame_aq\",\"Frame_ah (2)\",\"Frame_aq\",\"Frame_ah (2)\",\"Frame_aq\",\"Frame_ah (2)\",\"Frame_aq\",\"Frame_aq\",\"Frame_aq\",\"Frame_ah (2)\",\"Frame_ah (2)\",\"Frame_aq\",\"Frame_ah (2)\",\"Frame_aq\",\"Frame_aq\"]},{\"name\":\"Frame_19\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame21.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_av$1\",\"Frame_nq (7)\"]},{\"name\":\"Frame_5\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"art_h_4.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_aq$1\",\"Frame_aq$1\",\"Frame_aq$1\",\"Frame_aq$1\",\"Frame_aq$1\",\"Frame_aq$1\",\"Frame_aq$1\",\"Frame_aq$1\",\"Frame_aq$1\",\"Frame_aq$1\",\"Frame_aq$1\"]},{\"name\":\"Frame_1\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"art_h_4.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_1\"]},{\"name\":\"Frame_2\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame2.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0.03999999910593033,\"roughness\":0.7759999930858612,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_2\"]},{\"name\":\"Frame_9\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame15.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0.15600000321865082,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_3\",\"Frame_ah (2)$1\",\"Frame_ah (2)$1\",\"Frame_ah (2)$1\",\"Frame_ah (2)$1\",\"Frame_ah (2)$1\",\"Frame_ah (2)$1\",\"Frame_ah (2)$1\"]},{\"name\":\"Frame_4\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame2.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_4\",\"Frame_nh (1)\"]},{\"name\":\"Frame_15\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame18.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_5\"]},{\"name\":\"Frame_16\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame18.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_nq (10)\"]},{\"name\":\"Frame_20\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame21.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_nq (5)\"]},{\"name\":\"Frame_21\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame21.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_nq (6)\"]},{\"name\":\"Frame_18\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame18.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_nq (9)\"]},{\"name\":\"Frame_17\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame18.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_nq (8)\"]},{\"name\":\"art_h_1\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"art_h_1.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_nq (2)\"]},{\"name\":\"art_v_3\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"art_v_3.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_nq (4)\"]},{\"name\":\"Frame_11\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame22.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_nh (6)\"]},{\"name\":\"art_v_2\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"art_v_2.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_nq (12)\"]},{\"name\":\"Frame_14\",\"transparent\":false,\"color\":\"#d4d4d4\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame22.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_nh (5)\",\"Frame_nh\"]},{\"name\":\"Frame_3\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"art_h_4.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_nh (4)\"]},{\"name\":\"Frame_13\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame22.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_nh (7)\"]},{\"name\":\"art_h_7\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"art_h_7.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0.7430000007152557,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_nq (3)\"]},{\"name\":\"Exit\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Exit.png\",\"normalMap\":\"Exitnm.png\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0.5519999861717224,\"roughness\":0.4570000171661377,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"exit\",\"exit (2)\",\"exit (1)\"]},{\"name\":\"door01\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"door01.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0.6639999747276306,\"roughness\":0.5290000140666962,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Door01\"]},{\"name\":\"Glass01\",\"transparent\":true,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":0.05490196,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Glass01.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0.47099998593330383,\"roughness\":0.15200001001358032,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Door01$1\"]},{\"name\":\"point_lighter_ao\",\"transparent\":false,\"color\":\"#000000\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0.699999988079071,\"roughness\":0.17000001668930054,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\"]},{\"name\":\"light\",\"transparent\":false,\"color\":\"#c9c9c9\",\"emission\":\"#fffffe\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"light.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\"]},{\"name\":\"spotlight\",\"transparent\":false,\"color\":\"#000000\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"spotlight.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0.6579999923706055,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Joint\",\"spotlight 1\",\"stick\",\"spotlight 1\",\"spotlight 1\",\"Joint (1)\",\"Joint (2)\",\"Joint (3)\",\"stick1\",\"stick1 (1)\",\"stick1 (2)\",\"stick1 (3)\",\"Joint\",\"spotlight 1\",\"stick\",\"spotlight 1\",\"spotlight 1\",\"Joint (1)\",\"Joint (2)\",\"Joint (3)\",\"stick1\",\"stick1 (1)\",\"stick1 (2)\",\"stick1 (3)\",\"Joint\",\"spotlight 1\",\"stick\",\"spotlight 1\",\"spotlight 1\",\"spotlight 1\",\"spotlight 1\",\"spotlight 1\",\"Joint (1)\",\"Joint (2)\",\"Joint (3)\",\"Joint (4)\",\"Joint (6)\",\"Joint (7)\",\"Joint (8)\",\"stick1\",\"stick1 (1)\",\"stick1 (2)\",\"stick1 (3)\",\"stick1 (4)\",\"stick1 (6)\",\"stick1 (7)\",\"stick1 (8)\",\"spotlight 1\",\"Joint\",\"spotlight 1\",\"stick\",\"Joint (1)\",\"stick1\",\"stick1 (1)\",\"Joint\",\"spotlight 1\",\"stick\",\"Joint (1)\",\"stick1\",\"stick1 (1)\",\"Joint\",\"spotlight 1\",\"stick\",\"Joint (1)\",\"stick1\",\"stick1 (1)\",\"Joint\",\"spotlight 1\",\"stick\",\"spotlight 1\",\"spotlight 1\",\"Joint (1)\",\"Joint (2)\",\"stick1\",\"stick1 (1)\",\"stick1 (2)\",\"Joint (3)\",\"stick1 (3)\",\"Joint\",\"spotlight 1\",\"stick\",\"spotlight 1\",\"Joint (1)\",\"Joint (2)\",\"stick1\",\"stick1 (1)\",\"stick1 (2)\",\"Joint\",\"spotlight 1\",\"stick\",\"spotlight 1\",\"spotlight 1\",\"Joint (3)\",\"Joint (4)\",\"stick1\",\"stick1 (1)\",\"Joint (5)\",\"stick1 (2)\",\"stick1 (3)\",\"Joint\",\"spotlight 1\",\"stick\",\"spotlight 1\",\"spotlight 1\",\"Joint (3)\",\"Joint (4)\",\"stick1 (1)\",\"stick1\",\"Joint (5)\",\"stick1 (2)\",\"stick1 (3)\",\"Joint\",\"spotlight 1\",\"stick\",\"spotlight 1\",\"Joint (3)\",\"Joint (4)\",\"stick1 (1)\",\"stick1\",\"Joint (5)\",\"stick1 (2)\",\"stick1 (3)\",\"Joint\",\"spotlight 1\",\"stick\",\"spotlight 1\",\"spotlight 1\",\"spotlight 1\",\"spotlight 1\",\"spotlight 1\",\"Joint (1)\",\"Joint (2)\",\"Joint (3)\",\"Joint (4)\",\"Joint (5)\",\"Joint (6)\",\"Joint (7)\",\"Joint (8)\",\"stick1\",\"stick1 (1)\",\"stick1 (2)\",\"stick1 (3)\",\"stick1 (4)\",\"stick1 (5)\",\"stick1 (6)\",\"stick1 (7)\",\"stick1 (8)\",\"Joint\",\"spotlight 1\",\"stick\",\"spotlight 1\",\"spotlight 1\",\"Joint (1)\",\"Joint (2)\",\"Joint (3)\",\"stick1\",\"stick1 (1)\",\"stick1 (2)\",\"stick1 (3)\",\"Joint\",\"spotlight 1\",\"stick\",\"spotlight 1\",\"spotlight 1\",\"Joint (1)\",\"Joint (2)\",\"Joint (3)\",\"stick1\",\"stick1 (1)\",\"stick1 (2)\",\"stick1 (3)\",\"Joint\",\"spotlight 1\",\"stick\",\"spotlight 1\",\"spotlight 1\",\"Joint (1)\",\"Joint (2)\",\"stick1\",\"stick1 (1)\",\"stick1 (2)\",\"Joint (3)\",\"stick1 (3)\",\"Joint\",\"spotlight 1\",\"stick\",\"spotlight 1\",\"Joint (1)\",\"Joint (2)\",\"stick1\",\"stick1 (1)\",\"stick1 (2)\",\"Joint\",\"spotlight 1\",\"stick\",\"Joint (1)\",\"stick1\",\"stick1 (1)\",\"Joint\",\"spotlight 1\",\"stick\",\"spotlight 1\",\"spotlight 1\",\"Joint (3)\",\"stick1\",\"Joint (4)\",\"stick1 (1)\",\"Joint (5)\",\"stick1 (2)\",\"stick1 (3)\"]}],\"takes\":[],\"textureFlipY\":false,\"zUpToYUp\":false,\"shadow\":true,\"environment\":\"auto\",\"viewControl\":{\"center\":[-1.5810825948372709,-0.32943921837648704,-0.9510663665344571],\"alpha\":4.391482546857949,\"beta\":-73.35563343334012,\"distance\":2.432148623182876},\"ground\":{\"show\":true,\"grid\":false},\"mainLight\":{\"shadow\":false,\"shadowQuality\":\"medium\",\"intensity\":0.0000184,\"color\":\"#fff\",\"alpha\":0.7964601769911517,\"beta\":14.33628318584069,\"$padAngle\":[0.07964601769911495,0.008849557522123908]},\"secondaryLight\":{\"shadow\":true,\"shadowQuality\":\"medium\",\"intensity\":1.08,\"color\":\"#fff\",\"alpha\":60,\"beta\":-125,\"$padAngle\":[0.23893805309734506,0.34513274336283184]},\"tertiaryLight\":{\"shadow\":true,\"shadowQuality\":\"medium\",\"intensity\":0.88,\"color\":\"#fff\",\"alpha\":43.80530973451327,\"beta\":43.00884955752211,\"$padAngle\":[0.23893805309734506,0.48672566371681414]},\"ambientLight\":{\"intensity\":0.88,\"color\":\"#fff\"},\"ambientCubemapLight\":{\"texture\":\"./asset/texture/pisa.hdr\",\"$texture\":\"pisa\",\"$textureOptions\":[\"pisa\",\"Barce_Rooftop_C\",\"Factory_Catwalk\",\"Grand_Canyon_C\",\"Ice_Lake\",\"Hall\",\"Old_Industrial_Hall\"],\"exposure\":3,\"diffuseIntensity\":0.18,\"specularIntensity\":0.68},\"postEffect\":{\"enable\":true,\"bloom\":{\"enable\":true,\"intensity\":0.6},\"depthOfField\":{\"enable\":false,\"focalDistance\":3.64,\"focalRange\":0.98,\"blurRadius\":5,\"fstop\":9.96,\"quality\":\"medium\",\"$qualityOptions\":[\"low\",\"medium\",\"high\",\"ultra\"]},\"screenSpaceAmbientOcclusion\":{\"enable\":true,\"radius\":1.74,\"quality\":\"medium\",\"intensity\":1,\"$qualityOptions\":[\"low\",\"medium\",\"high\",\"ultra\"]},\"screenSpaceReflection\":{\"enable\":false,\"physical\":false,\"quality\":\"medium\",\"maxRoughness\":0.8,\"$qualityOptions\":[\"low\",\"medium\",\"high\",\"ultra\"]},\"colorCorrection\":{\"enable\":true,\"exposure\":0.26,\"brightness\":0.06,\"contrast\":0.98,\"saturation\":1.2,\"lookupTexture\":\"\"},\"FXAA\":{\"enable\":false}}}\n    ";
         this.gltfModels = [
             {
-                gltfFolder: resRootPath + "pbrRes/artRoom/",
+                gltfFolder: "".concat(resRootPath, "pbrRes/artRoom/"),
                 file: 'artRoom.gltf',
                 scale: 1,
                 cb: function (root) { }
             },
             {
-                gltfFolder: resRootPath + "pbrRes/pbrLightMap/",
+                gltfFolder: "".concat(resRootPath, "pbrRes/pbrLightMap/"),
                 file: 'pbrLightMap.gltf',
                 scale: 1,
                 cb: function (root) { }
             },
             {
-                gltfFolder: resRootPath + "pbrRes/002LightMap/",
+                gltfFolder: "".concat(resRootPath, "pbrRes/002LightMap/"),
                 file: '002LightMap.gltf',
                 scale: 1,
                 cb: function (root) { }
             },
             {
-                gltfFolder: resRootPath + "pbrRes/FlightHelmet/glTF/",
+                gltfFolder: "".concat(resRootPath, "pbrRes/FlightHelmet/glTF/"),
                 file: 'FlightHelmet.gltf',
                 scale: 20,
                 cb: function (root) { }
             },
+            // {
+            //     gltfFolder: 'res/pbrRes/model/',
+            //     file: 'demo.gltf',
+            //     scale: 2,
+            //     cb: (root) => root.localTranslate.x += 0,
+            // },
+            // {
+            //     gltfFolder: 'res/pbrRes/BoomBoxWithAxes/glTF/',
+            //     file: 'BoomBoxWithAxes.gltf',
+            //     scale: 300,
+            //     cb: (root) => root.localTranslate.x += 8,
+            // },
         ];
         this.HDRList = ["helipad"];
-        this.HDRpath = resRootPath + "pbrRes/HDR/";
+        this.HDRpath = "".concat(resRootPath, "pbrRes/HDR/");
         this._HDR = "helipad";
         this._Model = "FlightHelmet";
         this.ModelList = [];
@@ -5435,16 +5449,16 @@ var HDR_sample = /** @class */ (function () {
                         ambientCubemapLight = config.ambientCubemapLight, mainLight = config.mainLight, secondaryLight = config.secondaryLight, tertiaryLight = config.tertiaryLight;
                         // const tex = await this.load<m4m.framework.texture>(HDRpath, 'flower_road_2k.hdr');
                         // mr.materials[0].setTexture("_MainTex", tex);
-                        return [4 /*yield*/, demoTool.loadbySync(resRootPath + "shader/MainShader.assetbundle.json", this.app.getAssetMgr())];
+                        return [4 /*yield*/, demoTool.loadbySync("".concat(resRootPath, "shader/MainShader.assetbundle.json"), this.app.getAssetMgr())];
                     case 1:
                         // const tex = await this.load<m4m.framework.texture>(HDRpath, 'flower_road_2k.hdr');
                         // mr.materials[0].setTexture("_MainTex", tex);
                         _b.sent();
                         exp = (_a = ambientCubemapLight.exposure) !== null && _a !== void 0 ? _a : 4;
-                        return [4 /*yield*/, this.loadCubeTexture("" + this.HDRpath + this._HDR + "/")];
+                        return [4 /*yield*/, this.loadCubeTexture("".concat(this.HDRpath).concat(this._HDR, "/"))];
                     case 2:
                         env = _b.sent();
-                        return [4 /*yield*/, this.loadCubeTexture("" + this.HDRpath + this._HDR + "_diff/")];
+                        return [4 /*yield*/, this.loadCubeTexture("".concat(this.HDRpath).concat(this._HDR, "_diff/"))];
                     case 3:
                         irradianceSH = _b.sent();
                         skybox = new m4m.framework.transform();
@@ -5584,8 +5598,8 @@ var HDR_sample = /** @class */ (function () {
             }
         if (!model) {
             model = {
-                gltfFolder: resRootPath + "pbrRes/" + this._Model + "/",
-                file: this._Model + ".gltf",
+                gltfFolder: "".concat(resRootPath, "pbrRes/").concat(this._Model, "/"),
+                file: "".concat(this._Model, ".gltf"),
                 scale: 1,
                 cb: function (root) { }
             };
@@ -5718,7 +5732,7 @@ var test_ParticleSystem = /** @class */ (function () {
                         // // scene.fog._Color = new m4m.math.vector4(52 / 255, 137 / 255, 155 / 255, 0.75);// new m4m.math.vector4(0 / 255, 152 / 255, 160 / 255, 1);
                         // scene.fog._Color = new m4m.math.vector4(5 / 255, 166 / 255, 182 / 255, 1);
                         m4m.framework.assetMgr.openGuid = false;
-                        return [4 /*yield*/, demoTool.loadbySync(resRootPath + "shader/MainShader.assetbundle.json", this.astMgr)];
+                        return [4 /*yield*/, demoTool.loadbySync("".concat(resRootPath, "shader/MainShader.assetbundle.json"), this.astMgr)];
                     case 1:
                         _a.sent();
                         return [4 /*yield*/, datGui.init()];
@@ -5803,10 +5817,10 @@ var test_ParticleSystem = /** @class */ (function () {
                             this.scene.removeChild(this._particle);
                             this._particle = null;
                         }
-                        return [4 /*yield*/, demoTool.loadbySync(resRootPath + "particleSystem/" + res + "/" + res + ".assetbundle.json", this.astMgr)];
+                        return [4 /*yield*/, demoTool.loadbySync("".concat(resRootPath, "particleSystem/").concat(res, "/").concat(res, ".assetbundle.json"), this.astMgr)];
                     case 1:
                         _a.sent();
-                        cubeP = this.astMgr.getAssetByName(res + ".prefab.json", res + ".assetbundle.json");
+                        cubeP = this.astMgr.getAssetByName("".concat(res, ".prefab.json"), "".concat(res, ".assetbundle.json"));
                         cubeTran = cubeP.getCloneTrans();
                         this._particle = new m4m.framework.transform();
                         this._particle.addChild(cubeTran);
@@ -6124,7 +6138,7 @@ var test_TrailRenderer = /** @class */ (function () {
                         this.scene = this.app.getScene();
                         this.astMgr = this.app.getAssetMgr();
                         m4m.framework.assetMgr.openGuid = false;
-                        return [4 /*yield*/, demoTool.loadbySync(resRootPath + "shader/MainShader.assetbundle.json", this.astMgr)];
+                        return [4 /*yield*/, demoTool.loadbySync("".concat(resRootPath, "shader/MainShader.assetbundle.json"), this.astMgr)];
                     case 1:
                         _a.sent();
                         return [4 /*yield*/, datGui.init()];
@@ -6189,10 +6203,10 @@ var test_TrailRenderer = /** @class */ (function () {
                             this.scene.removeChild(this.lr.transform);
                             this.lr = null;
                         }
-                        return [4 /*yield*/, demoTool.loadbySync(resRootPath + "prefab/" + res + "/" + res + ".assetbundle.json", this.astMgr)];
+                        return [4 /*yield*/, demoTool.loadbySync("".concat(resRootPath, "prefab/").concat(res, "/").concat(res, ".assetbundle.json"), this.astMgr)];
                     case 1:
                         _a.sent();
-                        cubeP = this.astMgr.getAssetByName(res + ".prefab.json", res + ".assetbundle.json");
+                        cubeP = this.astMgr.getAssetByName("".concat(res, ".prefab.json"), "".concat(res, ".assetbundle.json"));
                         cubeTran = cubeP.getCloneTrans();
                         this.lr = cubeTran.gameObject.getComponent("TrailRenderer");
                         this.scene.addChild(cubeTran);
@@ -6667,7 +6681,7 @@ var test_UI_Component = /** @class */ (function () {
         lab_l0.font = _font;
         lab_l0.fontsize = 12;
         // lab_l.text = "我是段文本\n换行测试";
-        lab_l0.text = lab_l0.fontsize + "\u53F7\u5B57\u4F53 Innovation in China \u4E2D\u56FD\u5236\u9020\uFF0C\u6167\u53CA\u5168\u7403 0123456789";
+        lab_l0.text = "".concat(lab_l0.fontsize, "\u53F7\u5B57\u4F53 Innovation in China \u4E2D\u56FD\u5236\u9020\uFF0C\u6167\u53CA\u5168\u7403 0123456789");
         lab_l0.color = new m4m.math.color(0.0, 0.0, 0.0, 1);
         lab_l0.color2 = new m4m.math.color(1.0, 0.0, 0.0, 1);
         test_UI_Component["obj"] = this;
@@ -6683,7 +6697,7 @@ var test_UI_Component = /** @class */ (function () {
         lab_l.font = _font;
         lab_l.fontsize = 20;
         // lab_l.text = "我是段文本\n换行测试";
-        lab_l.text = lab_l.fontsize + "\u53F7\u5B57\u4F53 Innovation in China \u4E2D\u56FD\u5236\u9020\uFF0C\u6167\u53CA\u5168\u7403 0123456789";
+        lab_l.text = "".concat(lab_l.fontsize, "\u53F7\u5B57\u4F53 Innovation in China \u4E2D\u56FD\u5236\u9020\uFF0C\u6167\u53CA\u5168\u7403 0123456789");
         lab_l.color = new m4m.math.color(0.0, 0.0, 0.0, 1);
         lab_l.color2 = new m4m.math.color(1.0, 0.0, 0.0, 1);
         test_UI_Component["obj"] = this;
@@ -6699,7 +6713,7 @@ var test_UI_Component = /** @class */ (function () {
         lab_l1.font = _font;
         lab_l1.fontsize = 30;
         // lab_l1.text = "我是段文本\n换行测试";
-        lab_l1.text = lab_l1.fontsize + "\u53F7\u5B57\u4F53 Innovation in China \u4E2D\u56FD\u5236\u9020\uFF0C\u6167\u53CA\u5168\u7403 0123456789";
+        lab_l1.text = "".concat(lab_l1.fontsize, "\u53F7\u5B57\u4F53 Innovation in China \u4E2D\u56FD\u5236\u9020\uFF0C\u6167\u53CA\u5168\u7403 0123456789");
         lab_l1.color = new m4m.math.color(0.0, 0.0, 0.0, 1);
         lab_l1.color2 = new m4m.math.color(1.0, 0.0, 0.0, 1);
         test_UI_Component["obj"] = this;
@@ -6715,7 +6729,7 @@ var test_UI_Component = /** @class */ (function () {
         lab_l2.font = _font;
         lab_l2.fontsize = 40;
         // lab_l2.text = "我是段文本\n换行测试";
-        lab_l2.text = lab_l2.fontsize + "\u53F7\u5B57\u4F53 Innovation in China \u4E2D\u56FD\u5236\u9020\uFF0C\u6167\u53CA\u5168\u7403 0123456789";
+        lab_l2.text = "".concat(lab_l2.fontsize, "\u53F7\u5B57\u4F53 Innovation in China \u4E2D\u56FD\u5236\u9020\uFF0C\u6167\u53CA\u5168\u7403 0123456789");
         lab_l2.color = new m4m.math.color(0.0, 0.0, 0.0, 1);
         lab_l2.color2 = new m4m.math.color(1.0, 0.0, 0.0, 1);
         test_UI_Component["obj"] = this;
@@ -6811,7 +6825,7 @@ var test_UI_Component = /** @class */ (function () {
         var ipt = iptFrame_t.addComponent("inputField");
         ipt.LineType = m4m.framework.lineType.SingleLine; //单行输入
         ipt.onTextSubmit = function (t) {
-            console.log("\u63D0\u4EA4\u6587\u672C:" + t);
+            console.log("\u63D0\u4EA4\u6587\u672C:".concat(t));
         };
         var img_t = new m4m.framework.transform2D;
         img_t.width = iptFrame_t.width;
@@ -6859,7 +6873,7 @@ var test_UI_Component = /** @class */ (function () {
         ipt_mul.text = "\u591A\u884C\u6587\u672C\u8F93\u5165\u6846\n<color=#ff00aa>\u652F\u6301</color><color=#00ffaa><i>\u5BCC\u6587\u672C</i></color>: [happy][cool][like]";
         //监听 文本提交回调
         ipt_mul.onTextSubmit = function (t) {
-            console.log("\u63D0\u4EA4\u6587\u672C:" + t);
+            console.log("\u63D0\u4EA4\u6587\u672C:".concat(t));
         };
         m4m.math.colorSet(ipt_mul.frameImage.color, 0.9, 0.9, 0.9, 1);
         //lable set font 
@@ -6915,15 +6929,15 @@ var test_UI_Component = /** @class */ (function () {
     test_UI_Component.prototype.loadTexture = function (lastState, state) {
         var _this = this;
         //加载图片资源
-        this.assetMgr.load(resRootPath + "atlas/comp/comp.json.png", m4m.framework.AssetTypeEnum.Auto, function (s) {
+        this.assetMgr.load("".concat(resRootPath, "atlas/comp/comp.json.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
             if (s.isfinish) {
-                _this.assetMgr.load(resRootPath + "atlas/comp/comp.atlas.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
+                _this.assetMgr.load("".concat(resRootPath, "atlas/comp/comp.atlas.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                     if (s.isfinish) {
                         //加载字体资源
-                        _this.assetMgr.load(resRootPath + "font/" + _this.fontpng, m4m.framework.AssetTypeEnum.Auto, function (s) {
+                        _this.assetMgr.load("".concat(resRootPath, "font/") + _this.fontpng, m4m.framework.AssetTypeEnum.Auto, function (s) {
                             if (s.isfinish) {
-                                _this.assetMgr.load(resRootPath + "font/" + _this.fontjson, m4m.framework.AssetTypeEnum.Auto, function (s) {
-                                    _this.assetMgr.load(resRootPath + "texture/zg03_256.png", m4m.framework.AssetTypeEnum.Auto, function (s) {
+                                _this.assetMgr.load("".concat(resRootPath, "font/") + _this.fontjson, m4m.framework.AssetTypeEnum.Auto, function (s) {
+                                    _this.assetMgr.load("".concat(resRootPath, "texture/zg03_256.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                                         if (s.isfinish) {
                                             state.finish = true;
                                         }
@@ -6937,8 +6951,8 @@ var test_UI_Component = /** @class */ (function () {
         });
     };
     test_UI_Component.prototype.loadAtlas = function (lastState, state) {
-        var abName = this.emoji + ".assetbundle.json";
-        var abPath = resRootPath + "atlas/" + this.emoji + "/" + abName;
+        var abName = "".concat(this.emoji, ".assetbundle.json");
+        var abPath = "".concat(resRootPath, "atlas/").concat(this.emoji, "/").concat(abName);
         this.assetMgr.load(abPath, m4m.framework.AssetTypeEnum.Bundle, function (_sta) {
             if (_sta.isfinish) {
                 // let ab = this.assetMgr.getAssetBundle(abName);
@@ -6960,9 +6974,9 @@ var test_UI_Component = /** @class */ (function () {
         var canvas = lab.transform.canvas;
         var temp = new m4m.math.vector2();
         canvas.ModelPosToCanvasPos(frist, temp);
-        console.error("frist:" + temp.toString());
+        console.error("frist:".concat(temp.toString()));
         canvas.ModelPosToCanvasPos(end, temp);
-        console.error("end:" + temp.toString());
+        console.error("end:".concat(temp.toString()));
     };
     return test_UI_Component;
 }());
@@ -6978,7 +6992,7 @@ var t;
             this.eulerAngle = m4m.math.pool.new_vector3();
         }
         test_blend.prototype.loadShader = function (laststate, state) {
-            this.app.getAssetMgr().load(resRootPath + "shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (_state) {
+            this.app.getAssetMgr().load("".concat(resRootPath, "shader/Mainshader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (_state) {
                 if (_state.isfinish) {
                     state.finish = true;
                 }
@@ -6986,7 +7000,7 @@ var t;
         };
         test_blend.prototype.loadText = function (laststate, state) {
             var t = 2;
-            this.app.getAssetMgr().load(resRootPath + "texture/zg256.png", m4m.framework.AssetTypeEnum.Auto, function (s) {
+            this.app.getAssetMgr().load("".concat(resRootPath, "texture/zg256.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                 if (s.isfinish) {
                     t--;
                     if (t == 0) {
@@ -6997,7 +7011,7 @@ var t;
                     state.error = true;
                 }
             });
-            this.app.getAssetMgr().load(resRootPath + "texture/trailtest2.png", m4m.framework.AssetTypeEnum.Auto, function (s) {
+            this.app.getAssetMgr().load("".concat(resRootPath, "texture/trailtest2.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                 if (s.isfinish) {
                     t--;
                     if (t == 0) {
@@ -7076,7 +7090,7 @@ var t;
             this.scene = this.app.getScene();
             var assetMgr = app.getAssetMgr();
             util.loadShader(assetMgr)
-                .then(function () { return util.loadTextures([resRootPath + "texture/zg256.png", resRootPath + "texture/trailtest2.png"], assetMgr); })
+                .then(function () { return util.loadTextures(["".concat(resRootPath, "texture/zg256.png"), "".concat(resRootPath, "texture/trailtest2.png")], assetMgr); })
                 .then(function () { return _this.addplane(); })
                 .then(function () { return util.addCamera(_this.scene); });
         };
@@ -7154,10 +7168,10 @@ var test_ETC1_KTX = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         res = "test_ktx";
-                        return [4 /*yield*/, demoTool.loadbySync("res/prefabs/" + res + "/" + res + ".assetbundle.json", this.astMgr)];
+                        return [4 /*yield*/, demoTool.loadbySync("res/prefabs/".concat(res, "/").concat(res, ".assetbundle.json"), this.astMgr)];
                     case 1:
                         _a.sent();
-                        cubeP = this.astMgr.getAssetByName(res + ".prefab.json", res + ".assetbundle.json");
+                        cubeP = this.astMgr.getAssetByName("".concat(res, ".prefab.json"), "".concat(res, ".assetbundle.json"));
                         cubeTran = this.transform = cubeP.getCloneTrans();
                         cubeTran.localPosition.x = 0;
                         cubeTran.localPosition.y = 0;
@@ -7665,7 +7679,7 @@ var demo;
             this.taskmgr = new m4m.framework.taskMgr();
         }
         DragonTest.prototype.loadShader = function (laststate, state) {
-            this.app.getAssetMgr().load(resRootPath + "shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
+            this.app.getAssetMgr().load("".concat(resRootPath, "shader/Mainshader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                 if (s.isfinish) {
                     state.finish = true;
                 }
@@ -7674,16 +7688,16 @@ var demo;
         DragonTest.prototype.loadLongPrefab = function (laststate, state) {
             var _this = this;
             var resName = "long";
-            this.app.getAssetMgr().load(resRootPath + "prefab/" + resName + "/" + resName + ".assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
+            this.app.getAssetMgr().load("".concat(resRootPath, "prefab/").concat(resName, "/").concat(resName, ".assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                 if (s.isfinish) {
-                    var _prefab = _this.app.getAssetMgr().getAssetByName(resName + ".prefab.json", resName + ".assetbundle.json");
+                    var _prefab = _this.app.getAssetMgr().getAssetByName("".concat(resName, ".prefab.json"), "".concat(resName, ".assetbundle.json"));
                     _this.dragon = _prefab.getCloneTrans();
                     _this.scene.addChild(_this.dragon);
                     _this.dragon.markDirty();
                     _this.camTran = _this.dragon.find("Dummy001");
                     var ap_1 = _this.dragon.gameObject.getComponent("aniplayer");
                     var list = ap_1.awaitLoadClipNames();
-                    var resPath = resRootPath + "prefab/" + resName + "/resources/";
+                    var resPath = "".concat(resRootPath, "prefab/").concat(resName, "/resources/");
                     if (list.length > 0) {
                         var cname_1 = list[0];
                         ap_1.addClipByNameLoad(_this.app.getAssetMgr(), resPath, cname_1, function (sta, clipName) {
@@ -7752,7 +7766,7 @@ var test_navMesh = /** @class */ (function () {
         this.assetMgr = app.getAssetMgr();
         var names = ["MainCity_", "city"];
         var name = names[0];
-        this.app.getAssetMgr().load(resRootPath + "shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (state) {
+        this.app.getAssetMgr().load("".concat(resRootPath, "shader/Mainshader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (state) {
             if (state.isfinish) {
                 _this.loadScene(name);
             }
@@ -7780,7 +7794,7 @@ var test_navMesh = /** @class */ (function () {
     test_navMesh.prototype.loadScene = function (assetName, isCompress) {
         var _this = this;
         if (isCompress === void 0) { isCompress = false; }
-        var abName = assetName + ".assetbundle.json";
+        var abName = "".concat(assetName, ".assetbundle.json");
         var addScene = function () {
             var _scene = _this.app.getAssetMgr().getAssetByName(assetName + ".scene.json", abName);
             var _root = _scene.getSceneRoot();
@@ -7791,17 +7805,17 @@ var test_navMesh = /** @class */ (function () {
             _this.app.getScene().lightmaps = [];
             _scene.useLightMap(_this.app.getScene());
             _scene.useFog(_this.app.getScene());
-            _this.navmeshMgr.loadNavMesh(resRootPath + "navmesh/" + assetName + ".nav.json", _this.app, function (s) {
+            _this.navmeshMgr.loadNavMesh("".concat(resRootPath, "navmesh/").concat(assetName, ".nav.json"), _this.app, function (s) {
                 if (s.iserror) {
-                    console.error(" " + s.errs + " ");
+                    console.error(" ".concat(s.errs, " "));
                     return;
                 }
-                console.error("scene navmesh : " + assetName + "  is loaded");
+                console.error("scene navmesh : ".concat(assetName, "  is loaded"));
                 //this.navmeshMgr.showNavmesh(true);
             });
         };
         if (isCompress) {
-            this.app.getAssetMgr().loadCompressBundle(resRootPath + "prefab/" + assetName + "/" + assetName + ".packs.txt", function (s) {
+            this.app.getAssetMgr().loadCompressBundle("".concat(resRootPath, "prefab/").concat(assetName, "/").concat(assetName, ".packs.txt"), function (s) {
                 if (s.isfinish) {
                     //if (s.bundleLoadState & m4m.framework.AssetBundleLoadState.Scene && !isloaded)
                     {
@@ -7811,7 +7825,7 @@ var test_navMesh = /** @class */ (function () {
             });
         }
         else {
-            this.app.getAssetMgr().load(resRootPath + "prefab/" + assetName + "/" + abName, m4m.framework.AssetTypeEnum.Auto, function (s1) {
+            this.app.getAssetMgr().load("".concat(resRootPath, "prefab/").concat(assetName, "/").concat(abName), m4m.framework.AssetTypeEnum.Auto, function (s1) {
                 if (s1.isfinish) {
                     addScene();
                 }
@@ -7984,15 +7998,15 @@ var test_optimize_size_animationClip = /** @class */ (function () {
         this.app = app;
         this.scene = this.app.getScene();
         m4m.framework.assetMgr.openGuid = true;
-        this.app.getAssetMgr().load("./" + resRootPath + "shader/MainShader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (state) {
+        this.app.getAssetMgr().load("./".concat(resRootPath, "shader/MainShader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (state) {
             if (state.isfinish) {
-                _this.app.getAssetMgr().load("./" + resRootPath + "prefab/elong_prefab/elong_prefab.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
+                _this.app.getAssetMgr().load("./".concat(resRootPath, "prefab/elong_prefab/elong_prefab.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                     if (s.isfinish) {
                         var _prefab = _this.app.getAssetMgr().getAssetByName("elong_prefab.prefab.json", "elong_prefab.assetbundle.json");
                         var prefabObj_1 = _prefab.getCloneTrans();
                         _this.scene.addChild(prefabObj_1);
                         _this.prefab = prefabObj_1;
-                        _this.app.getAssetMgr().load("./" + resRootPath + "prefab/elong_prefab/resources/Ready.FBAni.min.aniclip.bin", m4m.framework.AssetTypeEnum.Aniclip, function (s) {
+                        _this.app.getAssetMgr().load("./".concat(resRootPath, "prefab/elong_prefab/resources/Ready.FBAni.min.aniclip.bin"), m4m.framework.AssetTypeEnum.Aniclip, function (s) {
                             if (s.isfinish) {
                                 var aps = prefabObj_1.gameObject.getComponentsInChildren("aniplayer");
                                 var ap = aps[0];
@@ -8043,7 +8057,7 @@ var test_pbr = /** @class */ (function () {
         this.PBRPath = "res/pbrRes/";
         this.material = this.PBRPath + "meta3/";
         this.skyName = "map";
-        this.iblPath = this.PBRPath + ("IBL/" + this.skyName + "/");
+        this.iblPath = this.PBRPath + "IBL/".concat(this.skyName, "/");
     }
     test_pbr.prototype.start = function (app) {
         this.app = app;
@@ -8363,7 +8377,7 @@ var test_pbr_scene = /** @class */ (function () {
         this.PBRPath = "res/pbrRes/";
         this.material = this.PBRPath + "meta3/";
         this.skyName = "map";
-        this.iblPath = this.PBRPath + ("IBL/" + this.skyName + "/");
+        this.iblPath = this.PBRPath + "IBL/".concat(this.skyName, "/");
         this.timer = 0;
     }
     test_pbr_scene.prototype.start = function (app) {
@@ -8807,7 +8821,7 @@ var test_pick_boxcollider = /** @class */ (function () {
         this.app.container.appendChild(descr);
         var names = ["MainCity_", "testnav", "city", "1042_pata_shenyuan_01", "1030_huodongchuangguan", "xinshoucun_fuben_day", "chuangjue-01"];
         var name = names[1];
-        demoTool.loadbySync(resRootPath + "shader/MainShader.assetbundle.json", this.astMgr).then(function () {
+        demoTool.loadbySync("".concat(resRootPath, "shader/MainShader.assetbundle.json"), this.astMgr).then(function () {
             _this.loadScene(name);
         });
         // this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (state) =>
@@ -8854,7 +8868,7 @@ var test_pick_boxcollider = /** @class */ (function () {
             if (meshC) {
                 meshC.colliderVisible = true;
             }
-            console.error(" layer : " + trans.gameObject.layer + " ");
+            console.error(" layer : ".concat(trans.gameObject.layer, " "));
             if (!trans.children)
                 return;
             trans.children.forEach(function (sub) {
@@ -8865,7 +8879,7 @@ var test_pick_boxcollider = /** @class */ (function () {
         var addScene = function () {
             var beAddScene = true;
             if (beAddScene) {
-                var _scene = _this.app.getAssetMgr().getAssetByName(assetName + ".scene.json", assetName + ".assetbundle.json");
+                var _scene = _this.app.getAssetMgr().getAssetByName(assetName + ".scene.json", "".concat(assetName, ".assetbundle.json"));
                 var _root = _scene.getSceneRoot();
                 _root.localEulerAngles = new m4m.math.vector3(0, 0, 0);
                 _root.markDirty();
@@ -8876,14 +8890,14 @@ var test_pick_boxcollider = /** @class */ (function () {
                 ShowBoxcollder(_root);
             }
         };
-        this.app.getAssetMgr().load(resRootPath + "prefab/" + assetName + "/" + assetName + ".assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s1) {
+        this.app.getAssetMgr().load("".concat(resRootPath, "prefab/").concat(assetName, "/").concat(assetName, ".assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s1) {
             if (s1.isfinish) {
                 addScene();
             }
         });
     };
     test_pick_boxcollider.prototype.getColor = function (r, g, b) {
-        var key = r + "_" + g + "_" + b;
+        var key = "".concat(r, "_").concat(g, "_").concat(b);
         if (!this.colorMap[key])
             this.colorMap[key] = new m4m.math.vector4(r, g, b, 1);
         return this.colorMap[key];
@@ -9304,7 +9318,7 @@ var test_spine_additiveBlending = /** @class */ (function () {
         //2dUI root
         var root2d = new m4m.framework.overlay2D();
         camera.addOverLay(root2d);
-        var assetManager = new spine_m4m.SpineAssetMgr(app.getAssetMgr(), resRootPath + "spine/");
+        var assetManager = new spine_m4m.SpineAssetMgr(app.getAssetMgr(), "".concat(resRootPath, "spine/"));
         var skeletonFile = "demos.json";
         var atlasFile = "atlas2.atlas";
         Promise.all([
@@ -9409,7 +9423,7 @@ var test_spine_changeSkin = /** @class */ (function () {
         //2dUI root
         var root2d = new m4m.framework.overlay2D();
         camera.addOverLay(root2d);
-        var assetManager = new spine_m4m.SpineAssetMgr(app.getAssetMgr(), resRootPath + "spine/");
+        var assetManager = new spine_m4m.SpineAssetMgr(app.getAssetMgr(), "".concat(resRootPath, "spine/"));
         var skeletonFile = "demos.json";
         var atlasFile = "heroes.atlas";
         Promise.all([
@@ -9483,7 +9497,7 @@ var test_spine_change_slot_mesh_tex = /** @class */ (function () {
         //2dUI root
         var root2d = new m4m.framework.overlay2D();
         camera.addOverLay(root2d);
-        var assetManager = new spine_m4m.SpineAssetMgr(app.getAssetMgr(), resRootPath + "spine/");
+        var assetManager = new spine_m4m.SpineAssetMgr(app.getAssetMgr(), "".concat(resRootPath, "spine/"));
         this.assetManager = assetManager;
         var skeletonFile = "robot/skeleton.json";
         var atlasFile = "robot/skeleton.atlas";
@@ -9554,7 +9568,7 @@ var test_spine_change_slot_region_tex = /** @class */ (function () {
         //2dUI root
         var root2d = new m4m.framework.overlay2D();
         camera.addOverLay(root2d);
-        var assetManager = new spine_m4m.SpineAssetMgr(app.getAssetMgr(), resRootPath + "spine/");
+        var assetManager = new spine_m4m.SpineAssetMgr(app.getAssetMgr(), "".concat(resRootPath, "spine/"));
         this.assetManager = assetManager;
         var skeletonFile = "demos.json";
         var atlasFile = "atlas1.atlas";
@@ -9614,7 +9628,7 @@ var test_spine_clip = /** @class */ (function () {
         //2dUI root
         var root2d = new m4m.framework.overlay2D();
         camera.addOverLay(root2d);
-        var assetManager = new spine_m4m.SpineAssetMgr(app.getAssetMgr(), resRootPath + "spine/");
+        var assetManager = new spine_m4m.SpineAssetMgr(app.getAssetMgr(), "".concat(resRootPath, "spine/"));
         var skeletonFile = "demos.json";
         var atlasFile = "atlas1.atlas";
         Promise.all([
@@ -9686,7 +9700,7 @@ var test_spine_IK = /** @class */ (function () {
         //2dUI root
         var root2d = new m4m.framework.overlay2D();
         camera.addOverLay(root2d);
-        var assetManager = new spine_m4m.SpineAssetMgr(app.getAssetMgr(), resRootPath + "spine/");
+        var assetManager = new spine_m4m.SpineAssetMgr(app.getAssetMgr(), "".concat(resRootPath, "spine/"));
         var skeletonFile = "demos.json";
         var atlasFile = "atlas1.atlas";
         Promise.all([
@@ -9850,7 +9864,7 @@ var test_spine_imageChange = /** @class */ (function () {
         //2dUI root
         var root2d = new m4m.framework.overlay2D();
         camera.addOverLay(root2d);
-        var assetManager = new spine_m4m.SpineAssetMgr(app.getAssetMgr(), resRootPath + "spine/");
+        var assetManager = new spine_m4m.SpineAssetMgr(app.getAssetMgr(), "".concat(resRootPath, "spine/"));
         var skeletonFile = "demos.json";
         var atlasFile = "atlas1.atlas";
         var animation = "death";
@@ -9894,7 +9908,7 @@ var test_spine_mesh = /** @class */ (function () {
         //2dUI root
         var root2d = new m4m.framework.overlay2D();
         camera.addOverLay(root2d);
-        var assetManager = new spine_m4m.SpineAssetMgr(app.getAssetMgr(), resRootPath + "spine/");
+        var assetManager = new spine_m4m.SpineAssetMgr(app.getAssetMgr(), "".concat(resRootPath, "spine/"));
         var skeletonFile = "demos.json";
         var atlasFile = "atlas2.atlas";
         Promise.all([
@@ -9948,7 +9962,7 @@ var test_spine_spriteSheet = /** @class */ (function () {
         //2dUI root
         var root2d = new m4m.framework.overlay2D();
         camera.addOverLay(root2d);
-        var assetManager = new spine_m4m.SpineAssetMgr(app.getAssetMgr(), resRootPath + "spine/");
+        var assetManager = new spine_m4m.SpineAssetMgr(app.getAssetMgr(), "".concat(resRootPath, "spine/"));
         var skeletonFile = "demos.json";
         var atlasFile = "atlas1.atlas";
         var animation = "walk";
@@ -10010,7 +10024,7 @@ var test_spine_stretchyMan = /** @class */ (function () {
         //2dUI root
         var root2d = new m4m.framework.overlay2D();
         camera.addOverLay(root2d);
-        var assetManager = new spine_m4m.SpineAssetMgr(app.getAssetMgr(), resRootPath + "spine/");
+        var assetManager = new spine_m4m.SpineAssetMgr(app.getAssetMgr(), "".concat(resRootPath, "spine/"));
         var skeletonFile = "demos.json";
         var atlasFile = "atlas2.atlas";
         Promise.all([
@@ -10138,7 +10152,7 @@ var test_spine_tank = /** @class */ (function () {
         //2dUI root
         var root2d = new m4m.framework.overlay2D();
         camera.addOverLay(root2d);
-        var assetManager = new spine_m4m.SpineAssetMgr(app.getAssetMgr(), resRootPath + "spine/");
+        var assetManager = new spine_m4m.SpineAssetMgr(app.getAssetMgr(), "".concat(resRootPath, "spine/"));
         var skeletonFile = "demos.json";
         var atlasFile = "atlas2.atlas";
         Promise.all([
@@ -10199,7 +10213,7 @@ var test_spine_transition = /** @class */ (function () {
         //2dUI root
         var root2d = new m4m.framework.overlay2D();
         camera.addOverLay(root2d);
-        var assetManager = new spine_m4m.SpineAssetMgr(app.getAssetMgr(), resRootPath + "spine/");
+        var assetManager = new spine_m4m.SpineAssetMgr(app.getAssetMgr(), "".concat(resRootPath, "spine/"));
         var skeletonFile = "demos.json";
         var atlasFile = "atlas1.atlas";
         var animation = "walk";
@@ -10276,7 +10290,7 @@ var test_spine_vin = /** @class */ (function () {
         //2dUI root
         var root2d = new m4m.framework.overlay2D();
         camera.addOverLay(root2d);
-        var assetManager = new spine_m4m.SpineAssetMgr(app.getAssetMgr(), resRootPath + "spine/");
+        var assetManager = new spine_m4m.SpineAssetMgr(app.getAssetMgr(), "".concat(resRootPath, "spine/"));
         var skeletonFile = "demos.json";
         var atlasFile = "atlas2.atlas";
         Promise.all([
@@ -10385,7 +10399,7 @@ var test_spine_wheelTransform = /** @class */ (function () {
         //2dUI root
         var root2d = new m4m.framework.overlay2D();
         camera.addOverLay(root2d);
-        var assetManager = new spine_m4m.SpineAssetMgr(app.getAssetMgr(), resRootPath + "spine/");
+        var assetManager = new spine_m4m.SpineAssetMgr(app.getAssetMgr(), "".concat(resRootPath, "spine/"));
         var skeletonFile = "demos.json";
         var atlasFile = "atlas2.atlas";
         Promise.all([
@@ -10598,10 +10612,10 @@ var test_sssss = /** @class */ (function () {
         var name = names[0];
         var shaderPackName = "MainShader";
         // let shaderPackName = "shader";
-        this.app.getAssetMgr().load(resRootPath + "shader/" + shaderPackName + ".assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (state) {
+        this.app.getAssetMgr().load("".concat(resRootPath, "shader/").concat(shaderPackName, ".assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (state) {
             if (state.isfinish) {
-                var adName_1 = name + ".assetbundle.json";
-                _this.app.getAssetMgr().load(resRootPath + "prefab/" + name + "/" + adName_1, m4m.framework.AssetTypeEnum.Auto, function (s) {
+                var adName_1 = "".concat(name, ".assetbundle.json");
+                _this.app.getAssetMgr().load("".concat(resRootPath, "prefab/").concat(name, "/").concat(adName_1), m4m.framework.AssetTypeEnum.Auto, function (s) {
                     if (s.isfinish) {
                         var _prefab = _this.app.getAssetMgr().getAssetByName(name + ".prefab.json", adName_1);
                         _this.baihu = _prefab.getCloneTrans();
@@ -10837,13 +10851,13 @@ var test_sssss = /** @class */ (function () {
     };
     test_sssss.prototype.loadpbrRes = function (lastState, state) {
         var _this = this;
-        this.app.getAssetMgr().load(resRootPath + "pbrRes/SSSSS/" + "albedo.jpg", m4m.framework.AssetTypeEnum.Auto, function (s0) {
+        this.app.getAssetMgr().load("".concat(resRootPath, "pbrRes/SSSSS/") + "albedo.jpg", m4m.framework.AssetTypeEnum.Auto, function (s0) {
             if (s0.isfinish) {
-                _this.app.getAssetMgr().load(resRootPath + "pbrRes/SSSSS/" + "normals.png", m4m.framework.AssetTypeEnum.Auto, function (s1) {
+                _this.app.getAssetMgr().load("".concat(resRootPath, "pbrRes/SSSSS/") + "normals.png", m4m.framework.AssetTypeEnum.Auto, function (s1) {
                     if (s1.isfinish) {
-                        _this.app.getAssetMgr().load(resRootPath + "pbrRes/" + "brdf.png", m4m.framework.AssetTypeEnum.Auto, function (s2) {
+                        _this.app.getAssetMgr().load("".concat(resRootPath, "pbrRes/") + "brdf.png", m4m.framework.AssetTypeEnum.Auto, function (s2) {
                             if (s2.isfinish) {
-                                _this.app.getAssetMgr().load(resRootPath + "pbrRes/SSSSS/" + "thickness.png", m4m.framework.AssetTypeEnum.Auto, function (s3) {
+                                _this.app.getAssetMgr().load("".concat(resRootPath, "pbrRes/SSSSS/") + "thickness.png", m4m.framework.AssetTypeEnum.Auto, function (s3) {
                                     if (s3.isfinish) {
                                         state.finish = true;
                                     }
@@ -10857,17 +10871,17 @@ var test_sssss = /** @class */ (function () {
     };
     test_sssss.prototype.loadIBL = function (lastState, state) {
         var _this = this;
-        this.app.getAssetMgr().load(resRootPath + "pbrRes/IBL/map/" + "negx_1.jpg", m4m.framework.AssetTypeEnum.Auto, function (s0) {
+        this.app.getAssetMgr().load("".concat(resRootPath, "pbrRes/IBL/map/") + "negx_1.jpg", m4m.framework.AssetTypeEnum.Auto, function (s0) {
             if (s0.isfinish) {
-                _this.app.getAssetMgr().load(resRootPath + "pbrRes/IBL/map/" + "negy_1.jpg", m4m.framework.AssetTypeEnum.Auto, function (s1) {
+                _this.app.getAssetMgr().load("".concat(resRootPath, "pbrRes/IBL/map/") + "negy_1.jpg", m4m.framework.AssetTypeEnum.Auto, function (s1) {
                     if (s1.isfinish) {
-                        _this.app.getAssetMgr().load(resRootPath + "pbrRes/IBL/map/" + "negz_1.jpg", m4m.framework.AssetTypeEnum.Auto, function (s2) {
+                        _this.app.getAssetMgr().load("".concat(resRootPath, "pbrRes/IBL/map/") + "negz_1.jpg", m4m.framework.AssetTypeEnum.Auto, function (s2) {
                             if (s2.isfinish) {
-                                _this.app.getAssetMgr().load(resRootPath + "pbrRes/IBL/map/" + "posx_1.jpg", m4m.framework.AssetTypeEnum.Auto, function (s3) {
+                                _this.app.getAssetMgr().load("".concat(resRootPath, "pbrRes/IBL/map/") + "posx_1.jpg", m4m.framework.AssetTypeEnum.Auto, function (s3) {
                                     if (s3.isfinish) {
-                                        _this.app.getAssetMgr().load(resRootPath + "pbrRes/IBL/map/" + "posy_1.jpg", m4m.framework.AssetTypeEnum.Auto, function (s4) {
+                                        _this.app.getAssetMgr().load("".concat(resRootPath, "pbrRes/IBL/map/") + "posy_1.jpg", m4m.framework.AssetTypeEnum.Auto, function (s4) {
                                             if (s4.isfinish) {
-                                                _this.app.getAssetMgr().load(resRootPath + "pbrRes/IBL/map/" + "posz_1.jpg", m4m.framework.AssetTypeEnum.Auto, function (s5) {
+                                                _this.app.getAssetMgr().load("".concat(resRootPath, "pbrRes/IBL/map/") + "posz_1.jpg", m4m.framework.AssetTypeEnum.Auto, function (s5) {
                                                     if (s5.isfinish) {
                                                         state.finish = true;
                                                     }
@@ -10977,9 +10991,9 @@ var Joystick = /** @class */ (function () {
     };
     Joystick.prototype.loadTexture = function (laststate, state) {
         var _this = this;
-        this.app.getAssetMgr().load(resRootPath + "texture/joystick0.png", m4m.framework.AssetTypeEnum.Auto, function (s0) {
+        this.app.getAssetMgr().load("".concat(resRootPath, "texture/joystick0.png"), m4m.framework.AssetTypeEnum.Auto, function (s0) {
             if (s0.isfinish) {
-                _this.app.getAssetMgr().load(resRootPath + "texture/joystick1.png", m4m.framework.AssetTypeEnum.Auto, function (s1) {
+                _this.app.getAssetMgr().load("".concat(resRootPath, "texture/joystick1.png"), m4m.framework.AssetTypeEnum.Auto, function (s1) {
                     if (s1.isfinish) {
                         state.finish = true;
                     }
@@ -11323,14 +11337,14 @@ var demo;
             this.fireTick = 0;
         }
         TankGame.prototype.loadShader = function (laststate, state) {
-            this.app.getAssetMgr().load(resRootPath + "shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
+            this.app.getAssetMgr().load("".concat(resRootPath, "shader/Mainshader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                 if (s.isfinish) {
                     state.finish = true;
                 }
             });
         };
         TankGame.prototype.loadTexture = function (laststate, state) {
-            this.app.getAssetMgr().load(resRootPath + "texture/zg256.png", m4m.framework.AssetTypeEnum.Auto, function (s) {
+            this.app.getAssetMgr().load("".concat(resRootPath, "texture/zg256.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                 if (s.isfinish) {
                     state.finish = true;
                 }
@@ -11339,9 +11353,9 @@ var demo;
         TankGame.prototype.loadHeroPrefab = function (laststate, state) {
             var _this = this;
             var resName = "tank01";
-            this.app.getAssetMgr().load(resRootPath + "prefab/" + resName + "/" + resName + ".assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
+            this.app.getAssetMgr().load("".concat(resRootPath, "prefab/").concat(resName, "/").concat(resName, ".assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                 if (s.isfinish) {
-                    var _prefab = _this.app.getAssetMgr().getAssetByName(resName + ".prefab.json", resName + ".assetbundle.json");
+                    var _prefab = _this.app.getAssetMgr().getAssetByName("".concat(resName, ".prefab.json"), "".concat(resName, ".assetbundle.json"));
                     _this.heroTank = _prefab.getCloneTrans();
                     _this.scene.addChild(_this.heroTank);
                     _this.heroTank.localScale = new m4m.math.vector3(4, 4, 4);
@@ -11359,9 +11373,9 @@ var demo;
         TankGame.prototype.loadEnemyPrefab = function (laststate, state) {
             var _this = this;
             var resName = "tank02";
-            this.app.getAssetMgr().load(resRootPath + "prefab/" + resName + "/" + resName + ".assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
+            this.app.getAssetMgr().load("".concat(resRootPath, "prefab/").concat(resName, "/").concat(resName, ".assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                 if (s.isfinish) {
-                    var _prefab = _this.app.getAssetMgr().getAssetByName(resName + ".prefab.json", resName + ".assetbundle.json");
+                    var _prefab = _this.app.getAssetMgr().getAssetByName("".concat(resName, ".prefab.json"), "".concat(resName, ".assetbundle.json"));
                     _this.enemyTank = _prefab.getCloneTrans();
                     _this.scene.addChild(_this.enemyTank);
                     _this.enemyTank.localScale = new m4m.math.vector3(4, 4, 4);
@@ -11379,9 +11393,9 @@ var demo;
         TankGame.prototype.loadScene = function (laststate, state) {
             var _this = this;
             var resName = "test_scene";
-            this.app.getAssetMgr().load(resRootPath + "prefab/" + resName + "/" + resName + ".assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
+            this.app.getAssetMgr().load("".concat(resRootPath, "prefab/").concat(resName, "/").concat(resName, ".assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                 if (s.isfinish) {
-                    var _scene = _this.app.getAssetMgr().getAssetByName(resName + ".scene.json", resName + ".assetbundle.json");
+                    var _scene = _this.app.getAssetMgr().getAssetByName("".concat(resName, ".scene.json"), "".concat(resName, ".assetbundle.json"));
                     var _root = _scene.getSceneRoot();
                     _this.scene.addChild(_root);
                     _root.localTranslate.y = -0.1;
@@ -12175,10 +12189,10 @@ var test_uiPerfabLoad = /** @class */ (function () {
         }
         var prefabName = name;
         // 加载 ui  预制体
-        this.assetMgr.load(resRootPath + "prefab/" + prefabName + "/" + prefabName + ".assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s1) {
+        this.assetMgr.load("".concat(resRootPath, "prefab/").concat(prefabName, "/").concat(prefabName, ".assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s1) {
             if (s1.isfinish) {
                 var ass = _this.assetMgr;
-                var temp = _this.assetMgr.getAssetByName(prefabName + ".prefab.json", prefabName + ".assetbundle.json");
+                var temp = _this.assetMgr.getAssetByName("".concat(prefabName, ".prefab.json"), "".concat(prefabName, ".assetbundle.json"));
                 var t2d = temp.getCloneTrans2D();
                 _this.bgui.addChild(t2d);
                 t2d.layoutState = 0 | m4m.framework.layoutOption.H_CENTER | m4m.framework.layoutOption.V_CENTER;
@@ -12188,7 +12202,7 @@ var test_uiPerfabLoad = /** @class */ (function () {
         });
     };
     test_uiPerfabLoad.prototype.loadShaders = function (lastState, state) {
-        this.assetMgr.load(resRootPath + "shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
+        this.assetMgr.load("".concat(resRootPath, "shader/shader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
             if (s.isfinish) {
                 state.finish = true;
             }
@@ -12197,15 +12211,15 @@ var test_uiPerfabLoad = /** @class */ (function () {
     test_uiPerfabLoad.prototype.loadTexture = function (lastState, state) {
         var _this = this;
         //加载图片资源
-        this.assetMgr.load(resRootPath + "atlas/comp/comp.json.png", m4m.framework.AssetTypeEnum.Auto, function (s) {
+        this.assetMgr.load("".concat(resRootPath, "atlas/comp/comp.json.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
             if (s.isfinish) {
-                _this.assetMgr.load(resRootPath + "atlas/comp/comp.atlas.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
+                _this.assetMgr.load("".concat(resRootPath, "atlas/comp/comp.atlas.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                     if (s.isfinish) {
                         //加载字体资源
-                        _this.assetMgr.load(resRootPath + "font/STXINGKA.TTF.png", m4m.framework.AssetTypeEnum.Auto, function (s) {
+                        _this.assetMgr.load("".concat(resRootPath, "font/STXINGKA.TTF.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                             if (s.isfinish) {
-                                _this.assetMgr.load(resRootPath + "font/STXINGKA.font.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
-                                    _this.assetMgr.load(resRootPath + "texture/zg03_256.png", m4m.framework.AssetTypeEnum.Auto, function (s) {
+                                _this.assetMgr.load("".concat(resRootPath, "font/STXINGKA.font.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
+                                    _this.assetMgr.load("".concat(resRootPath, "texture/zg03_256.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                                         if (s.isfinish) {
                                             state.finish = true;
                                         }
@@ -12375,16 +12389,16 @@ var test_anim = /** @class */ (function () {
         util.loadShader(assetMgr)
             .then(function () {
             var prefabName = "PF_PlayerSharkReef";
-            assetMgr.load(resRootPath + "prefab/" + prefabName + "/" + prefabName + ".assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
+            assetMgr.load("".concat(resRootPath, "prefab/").concat(prefabName, "/").concat(prefabName, ".assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                 if (s.isfinish) {
-                    var prefab = assetMgr.getAssetByName(prefabName + ".prefab.json", prefabName + ".assetbundle.json");
+                    var prefab = assetMgr.getAssetByName(prefabName + ".prefab.json", "".concat(prefabName, ".assetbundle.json"));
                     var ins = prefab.getCloneTrans();
                     _this.scene.addChild(ins);
                     camNode.lookat(ins);
                     camNode.markDirty();
                     var aps = ins.gameObject.getComponentsInChildren("aniplayer");
                     var ap = aps[0];
-                    var resPath_1 = resRootPath + "prefab/" + prefabName + "/resources";
+                    var resPath_1 = "".concat(resRootPath, "prefab/").concat(prefabName, "/resources");
                     var list_1 = ap.awaitLoadClipNames();
                     Promise.all(list_1.map(function (item) { return new Promise(function (resolve, reject) {
                         ap.addClipByNameLoad(assetMgr, resPath_1, item, function () { return resolve(); });
@@ -12510,10 +12524,10 @@ var test_assestmgr = /** @class */ (function () {
                 //             });
                 //         }
                 //     });
-                _this.app.getAssetMgr().load("res/prefabs/" + assetName + "/" + assetName + ".assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
+                _this.app.getAssetMgr().load("res/prefabs/".concat(assetName, "/").concat(assetName, ".assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                     if (s.isfinish) {
                         _this.baihu = [];
-                        _this._prefab = _this.app.getAssetMgr().getAssetByName(assetName + ".prefab.json");
+                        _this._prefab = _this.app.getAssetMgr().getAssetByName("".concat(assetName, ".prefab.json"));
                         for (var i = 0; i < _this.count; i++) {
                             _this.baihu[i] = _this._prefab.getCloneTrans();
                             _this.scene.addChild(_this.baihu[i]);
@@ -12568,7 +12582,7 @@ var test_assestmgr = /** @class */ (function () {
                 this.baihu[i].dispose();
             }
             // this._prefab.unuse();
-            this.app.getAssetMgr().getAssetBundle(this.assetName + ".assetbundle.json").unload();
+            this.app.getAssetMgr().getAssetBundle("".concat(this.assetName, ".assetbundle.json")).unload();
             this.app.getAssetMgr().releaseUnuseAsset();
         }
     };
@@ -13285,7 +13299,7 @@ var t;
             var _this = this;
             return new Promise(function (resolve, reject) {
                 var imgName = "zg256.png";
-                var imgURL = resRootPath + "texture/" + imgName;
+                var imgURL = "".concat(resRootPath, "texture/").concat(imgName);
                 m4m.framework.sceneMgr.app.getAssetMgr().load(imgURL, m4m.framework.AssetTypeEnum.Auto, function (s) {
                     if (s.isfinish) {
                         _this.tex = m4m.framework.sceneMgr.app.getAssetMgr().getAssetByName(imgName);
@@ -13782,12 +13796,12 @@ var test_load = /** @class */ (function () {
         this.app = app;
         this.scene = this.app.getScene();
         var assetMgr = this.app.getAssetMgr();
-        assetMgr.load(resRootPath + "shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (state) {
+        assetMgr.load("".concat(resRootPath, "shader/Mainshader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (state) {
             if (state.isfinish) {
                 var name_3 = "0001_shengyi_male";
-                assetMgr.load(resRootPath + "prefab/" + name_3 + "/" + name_3 + ".assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
+                assetMgr.load("".concat(resRootPath, "prefab/").concat(name_3, "/").concat(name_3, ".assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                     if (s.isfinish) {
-                        var prefab = assetMgr.getAssetByName(name_3 + ".prefab.json", name_3 + ".assetbundle.json");
+                        var prefab = assetMgr.getAssetByName(name_3 + ".prefab.json", "".concat(name_3, ".assetbundle.json"));
                         var ins = prefab.getCloneTrans();
                         _this.scene.addChild(ins);
                         _this.camNode.lookat(ins);
@@ -14070,17 +14084,17 @@ var test_multipleplayer_anim = /** @class */ (function () {
         this.aniplayers = [];
     }
     Object.defineProperty(test_multipleplayer_anim.prototype, "abName", {
-        get: function () { return "res/prefabs/" + this.resName + "/" + this.resName + ".assetbundle.json"; },
+        get: function () { return "res/prefabs/".concat(this.resName, "/").concat(this.resName, ".assetbundle.json"); },
         enumerable: false,
         configurable: true
     });
     Object.defineProperty(test_multipleplayer_anim.prototype, "prefabName", {
-        get: function () { return this.resName + ".prefab.json"; },
+        get: function () { return "".concat(this.resName, ".prefab.json"); },
         enumerable: false,
         configurable: true
     });
     Object.defineProperty(test_multipleplayer_anim.prototype, "resPath", {
-        get: function () { return "res/prefabs/" + this.resName + "/resources/"; },
+        get: function () { return "res/prefabs/".concat(this.resName, "/resources/"); },
         enumerable: false,
         configurable: true
     });
@@ -14179,7 +14193,7 @@ var t;
             this.taskmgr = new m4m.framework.taskMgr();
         }
         Test_NormalMap.prototype.loadShader = function (laststate, state) {
-            this.app.getAssetMgr().load(resRootPath + "shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (_state) {
+            this.app.getAssetMgr().load("".concat(resRootPath, "shader/Mainshader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (_state) {
                 if (_state.isfinish) {
                     state.finish = true;
                 }
@@ -14188,7 +14202,7 @@ var t;
         Test_NormalMap.prototype.loadText = function (laststate, state) {
             var c = 0;
             c++;
-            this.app.getAssetMgr().load(resRootPath + "texture/zg256.png", m4m.framework.AssetTypeEnum.Auto, function (s) {
+            this.app.getAssetMgr().load("".concat(resRootPath, "texture/zg256.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                 if (s.isfinish) {
                     c--;
                     if (c == 0)
@@ -14199,7 +14213,7 @@ var t;
                 }
             });
             c++;
-            this.app.getAssetMgr().load(resRootPath + "texture/map_diffuse.png", m4m.framework.AssetTypeEnum.Auto, function (s) {
+            this.app.getAssetMgr().load("".concat(resRootPath, "texture/map_diffuse.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                 if (s.isfinish) {
                     c--;
                     if (c == 0)
@@ -14210,7 +14224,7 @@ var t;
                 }
             });
             c++;
-            this.app.getAssetMgr().load(resRootPath + "texture/map_normal.png", m4m.framework.AssetTypeEnum.Auto, function (s) {
+            this.app.getAssetMgr().load("".concat(resRootPath, "texture/map_normal.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                 if (s.isfinish) {
                     c--;
                     if (c == 0)
@@ -14809,14 +14823,14 @@ var t;
             this.taskmgr = new m4m.framework.taskMgr();
         }
         test_posteffect.prototype.loadShader = function (laststate, state) {
-            this.app.getAssetMgr().load(resRootPath + "shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (_state) {
+            this.app.getAssetMgr().load("".concat(resRootPath, "shader/Mainshader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (_state) {
                 if (_state.isfinish) {
                     state.finish = true;
                 }
             });
         };
         test_posteffect.prototype.loadText = function (laststate, state) {
-            this.app.getAssetMgr().load(resRootPath + "texture/map_diffuse.png", m4m.framework.AssetTypeEnum.Auto, function (s) {
+            this.app.getAssetMgr().load("".concat(resRootPath, "texture/map_diffuse.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                 if (s.isfinish) {
                     state.finish = true;
                 }
@@ -15379,9 +15393,9 @@ var test_ShadowMap = /** @class */ (function () {
         this.assetmgr = this.app.getAssetMgr();
         this.scene.getRoot().localTranslate = new m4m.math.vector3(0, 0, 0);
         var name = "baihu";
-        this.app.getAssetMgr().load(resRootPath + "shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (state) {
+        this.app.getAssetMgr().load("".concat(resRootPath, "shader/Mainshader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (state) {
             if (state.isfinish) {
-                _this.app.getAssetMgr().load(resRootPath + "prefab/testshadowmap/testshadowmap.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
+                _this.app.getAssetMgr().load("".concat(resRootPath, "prefab/testshadowmap/testshadowmap.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                     if (s.isfinish) {
                         var _scene = _this.app.getAssetMgr().getAssetByName("testshadowmap.scene.json", "testshadowmap.assetbundle.json");
                         var _root = _scene.getSceneRoot();
@@ -15861,7 +15875,7 @@ var t;
                     var button = document.createElement("button");
                     button.textContent = "play once1";
                     button.onclick = function () {
-                        m4m.framework.AudioEx.instance().loadAudioBuffer(resRootPath + "audio/sound1.mp3", function (buf, err) {
+                        m4m.framework.AudioEx.instance().loadAudioBuffer("".concat(resRootPath, "audio/sound1.mp3"), function (buf, err) {
                             _this.once1 = buf;
                             // player.stop();
                             player_1.play(_this.once1, false, 10);
@@ -15875,7 +15889,7 @@ var t;
                     var button = document.createElement("button");
                     button.textContent = "play once2";
                     button.onclick = function () {
-                        m4m.framework.AudioEx.instance().loadAudioBuffer(resRootPath + "audio/sound2.mp3", function (buf, err) {
+                        m4m.framework.AudioEx.instance().loadAudioBuffer("".concat(resRootPath, "audio/sound2.mp3"), function (buf, err) {
                             _this.once2 = buf;
                             player_1.play(_this.once2, true, 1);
                         });
@@ -15889,7 +15903,7 @@ var t;
                     var button = document.createElement("button");
                     button.textContent = "play loop";
                     button.onclick = function () {
-                        m4m.framework.AudioEx.instance().loadAudioBuffer(resRootPath + "audio/music1.mp3", function (buf, err) {
+                        m4m.framework.AudioEx.instance().loadAudioBuffer("".concat(resRootPath, "audio/music1.mp3"), function (buf, err) {
                             player_1.play(buf, false, 1);
                         });
                     };
@@ -16255,7 +16269,7 @@ var test_texuv = /** @class */ (function () {
         this.scene = this.app.getScene();
         this.scene.getRoot().localTranslate = new m4m.math.vector3(0, 0, 0);
         util.loadShader(this.app.getAssetMgr())
-            .then(function () { return util.loadTex(resRootPath + "texture/trailtest_yellow.png", _this.app.getAssetMgr()); })
+            .then(function () { return util.loadTex("".concat(resRootPath, "texture/trailtest_yellow.png"), _this.app.getAssetMgr()); })
             .then(function () {
             var base = _this.createBaseCube();
             base.localTranslate.x = -1;
@@ -16360,7 +16374,7 @@ var t;
                 var comp = trailNode.gameObject.addComponent("trailRender");
                 var mat = new m4m.framework.material();
                 var shader = this.app.getAssetMgr().getShader("particles_add.shader.json");
-                var tex = this.app.getAssetMgr().getAssetByName("" + this.texResName);
+                var tex = this.app.getAssetMgr().getAssetByName("".concat(this.texResName));
                 mat.setShader(shader);
                 mat.setTexture("_Main_Tex", tex);
                 comp.setspeed(0.3);
@@ -16377,7 +16391,7 @@ var t;
             this.app = app;
             this.scene = app.getScene();
             util.loadShader(this.app.getAssetMgr())
-                .then(function () { return util.loadTextures([resRootPath + "texture/swingFX.png", resRootPath + "texture/" + _this.texResName], _this.app.getAssetMgr()); })
+                .then(function () { return util.loadTextures(["".concat(resRootPath, "texture/swingFX.png"), "".concat(resRootPath, "texture/").concat(_this.texResName)], _this.app.getAssetMgr()); })
                 .then(function () { return _this.initscene(); })
                 .then(function () { return _this.addUI(); });
         };
@@ -16447,7 +16461,7 @@ var t;
             //这个加载机制弄完之后，就可以根据name 访问资源包里的shader
             //然后用shader 构造材质，和unity相同
             // 配置代码如下
-            this.app.getAssetMgr().load(resRootPath + "texture/zg256.png", m4m.framework.AssetTypeEnum.Auto);
+            this.app.getAssetMgr().load("".concat(resRootPath, "texture/zg256.png"), m4m.framework.AssetTypeEnum.Auto);
             var sh = this.app.getAssetMgr().getShader("color");
             if (sh != null) {
                 //用了从资源里加载出来的shader
@@ -16456,7 +16470,7 @@ var t;
                 cuber.materials[0].setShader(sh);
                 //shader 修改为 不和一般资源一样加载,而是统一用getShader方法
                 //cuber.materials[0].shader = this.app.getAssetMgr().getResourceByName("color") as m4m.framework.shader;
-                this.app.getAssetMgr().load(resRootPath + "texture/zg256.png", m4m.framework.AssetTypeEnum.Auto, function (s) {
+                this.app.getAssetMgr().load("".concat(resRootPath, "texture/zg256.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                     if (s.isfinish) {
                         console.warn("Finish load img.");
                         var texture = _this.app.getAssetMgr().getAssetByName("zg256.png");
@@ -16624,9 +16638,9 @@ var t;
                 label.color = new m4m.math.color(1, 0, 0, 1);
                 t2d_9.addChild(lab);
                 //atlas资源
-                this.app.getAssetMgr().load(resRootPath + "atlas/1/1.png", m4m.framework.AssetTypeEnum.Auto, function (s) {
+                this.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/1.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                     if (s.isfinish) {
-                        _this.app.getAssetMgr().load(resRootPath + "atlas/1/1.atlas.json", m4m.framework.AssetTypeEnum.Auto, function (state) {
+                        _this.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/1.atlas.json"), m4m.framework.AssetTypeEnum.Auto, function (state) {
                             if (state.isfinish) {
                                 var atlas = _this.app.getAssetMgr().getAssetByName("1.atlas.json");
                                 img_1_1.sprite = _this.app.getAssetMgr().getDefaultSprite("grid_sprite");
@@ -16643,7 +16657,7 @@ var t;
                         });
                     }
                 });
-                this.app.getAssetMgr().load(resRootPath + "texture/uisprite.png", m4m.framework.AssetTypeEnum.Auto, function (s) {
+                this.app.getAssetMgr().load("".concat(resRootPath, "texture/uisprite.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                     if (s.isfinish) {
                         var texture = _this.app.getAssetMgr().getAssetByName("uisprite.png");
                         //img_1.setTexture(texture);
@@ -16657,9 +16671,9 @@ var t;
                         img9_1.sprite = _this.app.getAssetMgr().getDefaultSprite("grid_sprite");
                     }
                 });
-                this.app.getAssetMgr().load(resRootPath + "font/STXINGKA.TTF.png", m4m.framework.AssetTypeEnum.Auto, function (s) {
+                this.app.getAssetMgr().load("".concat(resRootPath, "font/STXINGKA.TTF.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                     if (s.isfinish) {
-                        _this.app.getAssetMgr().load(resRootPath + "font/STXINGKA.font.json", m4m.framework.AssetTypeEnum.Auto, function (s1) {
+                        _this.app.getAssetMgr().load("".concat(resRootPath, "font/STXINGKA.font.json"), m4m.framework.AssetTypeEnum.Auto, function (s1) {
                             if (s1.isfinish)
                                 label.font = _this.app.getAssetMgr().getAssetByName("STXINGKA.font.json"); //;
                         });
@@ -16941,7 +16955,7 @@ var util;
 (function (util) {
     function loadShader(assetMgr) {
         return new Promise(function (resolve, reject) {
-            assetMgr.load(resRootPath + "shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (_state) {
+            assetMgr.load("".concat(resRootPath, "shader/Mainshader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (_state) {
                 if (_state.isfinish) {
                     resolve();
                 }
@@ -16951,9 +16965,9 @@ var util;
     util.loadShader = loadShader;
     function loadModel(assetMgr, modelName) {
         return new Promise(function (resolve, reject) {
-            assetMgr.load(resRootPath + "prefab/" + modelName + "/" + modelName + ".assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
+            assetMgr.load("".concat(resRootPath, "prefab/").concat(modelName, "/").concat(modelName, ".assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                 if (s.isfinish) {
-                    var prefab = assetMgr.getAssetByName(modelName + ".prefab.json", modelName + ".assetbundle.json");
+                    var prefab = assetMgr.getAssetByName(modelName + ".prefab.json", "".concat(modelName, ".assetbundle.json"));
                     resolve(prefab);
                 }
             });
@@ -18323,7 +18337,7 @@ var dome;
             this.taskmgr.addTaskCall(this.gamerun.bind(this));
         };
         paowuxian.prototype.loadShader = function (laststate, state) {
-            this.app.getAssetMgr().load(resRootPath + "shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (_state) {
+            this.app.getAssetMgr().load("".concat(resRootPath, "shader/shader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (_state) {
                 if (_state.isfinish) {
                     state.finish = true;
                 }
@@ -18828,9 +18842,9 @@ var dome;
             var _this = this;
             var name = "box";
             // name="CJ";
-            this.app.getAssetMgr().load(resRootPath + "prefab/" + name + "/" + name + ".assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
+            this.app.getAssetMgr().load("".concat(resRootPath, "prefab/").concat(name, "/").concat(name, ".assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                 if (s.isfinish) {
-                    var _prefab = _this.app.getAssetMgr().getAssetByName(name + ".prefab.json", name + ".assetbundle.json");
+                    var _prefab = _this.app.getAssetMgr().getAssetByName(name + ".prefab.json", "".concat(name, ".assetbundle.json"));
                     var item = _prefab.getCloneTrans();
                     _this.scene.addChild(item);
                     //---------------showbox
@@ -19076,7 +19090,7 @@ var dome;
             this.gameupdate(delta);
         };
         paowuxian2.prototype.loadShader = function (laststate, state) {
-            this.app.getAssetMgr().load(resRootPath + "shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (_state) {
+            this.app.getAssetMgr().load("".concat(resRootPath, "shader/shader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (_state) {
                 if (_state.isfinish) {
                     state.finish = true;
                 }
@@ -19086,9 +19100,9 @@ var dome;
             var _this = this;
             var name = "box";
             name = "Map_Castle";
-            this.app.getAssetMgr().load(resRootPath + "prefab/" + name + "/" + name + ".assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
+            this.app.getAssetMgr().load("".concat(resRootPath, "prefab/").concat(name, "/").concat(name, ".assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                 if (s.isfinish) {
-                    var _prefab = _this.app.getAssetMgr().getAssetByName(name + ".prefab.json", name + ".assetbundle.json");
+                    var _prefab = _this.app.getAssetMgr().getAssetByName(name + ".prefab.json", "".concat(name, ".assetbundle.json"));
                     var item = _prefab.getCloneTrans();
                     _this.scene.addChild(item);
                     //---------------showbox
@@ -19520,15 +19534,15 @@ var physic2d_dome = /** @class */ (function () {
     physic2d_dome.prototype.loadTexture = function (lastState, state) {
         var _this = this;
         //加载图片资源
-        this.assetMgr.load(resRootPath + "atlas/comp/comp.json.png", m4m.framework.AssetTypeEnum.Auto, function (s) {
+        this.assetMgr.load("".concat(resRootPath, "atlas/comp/comp.json.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
             if (s.isfinish) {
-                _this.assetMgr.load(resRootPath + "atlas/comp/comp.atlas.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
+                _this.assetMgr.load("".concat(resRootPath, "atlas/comp/comp.atlas.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                     if (s.isfinish) {
                         //加载字体资源
-                        _this.assetMgr.load(resRootPath + "font/STXINGKA.TTF.png", m4m.framework.AssetTypeEnum.Auto, function (s) {
+                        _this.assetMgr.load("".concat(resRootPath, "font/STXINGKA.TTF.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                             if (s.isfinish) {
-                                _this.assetMgr.load(resRootPath + "font/STXINGKA.font.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
-                                    _this.assetMgr.load(resRootPath + "texture/zg03_256.png", m4m.framework.AssetTypeEnum.Auto, function (s) {
+                                _this.assetMgr.load("".concat(resRootPath, "font/STXINGKA.font.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
+                                    _this.assetMgr.load("".concat(resRootPath, "texture/zg03_256.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                                         if (s.isfinish) {
                                             state.finish = true;
                                         }
@@ -19613,9 +19627,9 @@ var dome;
             var _this = this;
             if (name === void 0) { name = "fx_yh"; }
             return new Promise(function (resolve, reject) {
-                _this.app.getAssetMgr().load(resRootPath + "effect/" + name + "/" + name + ".assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
+                _this.app.getAssetMgr().load("".concat(resRootPath, "effect/").concat(name, "/").concat(name, ".assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                     if (s.isfinish) {
-                        var _prefab = _this.app.getAssetMgr().getAssetByName(name + ".prefab.json", name + ".assetbundle.json");
+                        var _prefab = _this.app.getAssetMgr().getAssetByName("".concat(name, ".prefab.json"), "".concat(name, ".assetbundle.json"));
                         _this.effbaseprefab = _prefab;
                         var prefab = _prefab.getCloneTrans();
                         _this.effPrefab = prefab;
@@ -20276,7 +20290,7 @@ var decalCreater = /** @class */ (function (_super) {
         //点击屏幕
         iptMgr.addPointListener(m4m.event.PointEventEnum.PointDown, function (_a) {
             var x = _a[0], y = _a[1];
-            console.warn(" pos : " + x + "_" + y);
+            console.warn(" pos : ".concat(x, "_").concat(y));
             m4m.math.vec2Set(tv2, x, y);
             decalCreater_1.multipleViewFix(_this.camera, app, tv2, tv2);
             var ray = _this.camera.creatRayByScreen(tv2, app);
@@ -20447,7 +20461,7 @@ var decalGeometry = /** @class */ (function () {
         this.uvs = [];
         // THREE.BufferGeometry.call( this );
         decalGeometry.id++;
-        this.mesh = new m4m.framework.mesh("decalGeometry_" + decalGeometry.id);
+        this.mesh = new m4m.framework.mesh("decalGeometry_".concat(decalGeometry.id));
         // buffers
         // this matrix represents the transformation of the decal projector
         var projectorMatrix = new m4m.math.matrix();
@@ -20904,7 +20918,7 @@ var physics3dDemoTool = /** @class */ (function () {
                         this.scene = this.app.getScene();
                         this.astMgr = this.app.getAssetMgr();
                         this.iptMgr = this.app.getInputMgr();
-                        return [4 /*yield*/, demoTool.loadbySync(resRootPath + "shader/MainShader.assetbundle.json", this.astMgr)];
+                        return [4 /*yield*/, demoTool.loadbySync("".concat(resRootPath, "shader/MainShader.assetbundle.json"), this.astMgr)];
                     case 1:
                         _a.sent();
                         return [4 /*yield*/, datGui.init()];
@@ -20973,7 +20987,7 @@ var physics3dDemoTool = /** @class */ (function () {
         mat.setVector4("_MainColor", color);
         if (name == "uvTest") {
             //
-            var url = resRootPath + "texture/uvTest.jpg";
+            var url = "".concat(resRootPath, "texture/uvTest.jpg");
             this.astMgr.load(url, m4m.framework.AssetTypeEnum.Texture, function (sta) {
                 if (sta.isfinish) {
                     var t_4 = _this.astMgr.getAssetByName("uvTest.jpg");

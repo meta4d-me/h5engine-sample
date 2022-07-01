@@ -51,17 +51,17 @@ class CameraController {
 
             if (navigator.userAgent.indexOf('Firefox') >= 0)
             {
-                this.app.webgl.canvas.addEventListener("DOMMouseScroll", (ev: MouseWheelEvent) => {
+                this.app.webgl.canvas.addEventListener("DOMMouseScroll", (ev: WheelEvent) => {
                     this.doMouseWheel(ev,true);
                 }, false);
 
             } else
             {
-                this.app.webgl.canvas.addEventListener("mousewheel", (ev: MouseWheelEvent) => {
+                this.app.webgl.canvas.addEventListener("mousewheel", (ev: WheelEvent) => {
                     this.doMouseWheel(ev,false);
                 }, false);
             }
-            this.app.webgl.canvas.addEventListener("mouseout", (ev: MouseWheelEvent) => {
+            this.app.webgl.canvas.addEventListener("mouseout", (ev: WheelEvent) => {
                 this.beRightClick = false;
             }, false);
             document.oncontextmenu = (ev) => {
@@ -158,7 +158,7 @@ class CameraController {
             }
         }
 
-        private doMouseWheel(ev: MouseWheelEvent, isFirefox: boolean) {
+        private doMouseWheel(ev: WheelEvent, isFirefox: boolean) {
             if (!this.target)
                 return;
             if (this.target.opvalue == 0) {
