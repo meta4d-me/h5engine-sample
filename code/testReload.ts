@@ -1,17 +1,15 @@
-class testReload implements IState
-{
+class testReload implements IState {
     app: m4m.framework.application;
     scene: m4m.framework.scene;
     //资源放置位置
-    resRoot  = `${resRootPath}pfb/model/`;
+    resRoot = `${resRootPath}prefab/`;
     //关心的 部位
-    careSubList = ["body","face","handL","handR","head","leg"];
+    careSubList = ["body", "face", "handL", "handR", "head", "leg"];
     //模型名字
     r_a_Name = "fs";
     r_b_Name = "0001_shengyi_male";
-    
-    async start(app: m4m.framework.application)
-    {
+
+    async start(app: m4m.framework.application) {
         console.log("i am here.");
         this.app = app;
         this.scene = this.app.getScene();
@@ -34,22 +32,22 @@ class testReload implements IState
 
         let o2d = new m4m.framework.overlay2D();
         this.camera.addOverLay(o2d);
-        
+
         // await demoTool.loadbySync(`${resRootPath}shader/MainShader.assetbundle.json`, this.app.getAssetMgr());
-        await demoTool.loadbySync(`${resRootPath}customShader/customShader.assetbundle.json`, this.app.getAssetMgr());
-        await demoTool.loadbySync(`res/STXINGKA.TTF.png`, this.app.getAssetMgr());
-        await demoTool.loadbySync(`res/resources/STXINGKA.font.json`, this.app.getAssetMgr());
+        await demoTool.loadbySync(`${resRootPath}shader/MainShader.assetbundle.json`, this.app.getAssetMgr());
+        await demoTool.loadbySync(`${resRootPath}font/STXINGKA.TTF.png`, this.app.getAssetMgr());
+        await demoTool.loadbySync(`${resRootPath}font/STXINGKA.font.json`, this.app.getAssetMgr());
         await demoTool.loadbySync(`${this.resRoot}${this.r_a_Name}/${this.r_a_Name}.assetbundle.json`, this.app.getAssetMgr());
         await demoTool.loadbySync(`${this.resRoot}${this.r_b_Name}/${this.r_b_Name}.assetbundle.json`, this.app.getAssetMgr());
 
         //布置模型
-        let _prefab: m4m.framework.prefab = this.app.getAssetMgr().getAssetByName(`${this.r_a_Name}.prefab.json` , `${this.r_a_Name}.assetbundle.json`) as m4m.framework.prefab;
+        let _prefab: m4m.framework.prefab = this.app.getAssetMgr().getAssetByName(`${this.r_a_Name}.prefab.json`, `${this.r_a_Name}.assetbundle.json`) as m4m.framework.prefab;
         let r_a = _prefab.getCloneTrans();
         r_a.localScale = new m4m.math.vector3(1, 1, 1);
         r_a.localTranslate = new m4m.math.vector3(0, 0, 0);
         this.scene.addChild(r_a);
 
-        _prefab = this.app.getAssetMgr().getAssetByName(`${this.r_b_Name}.prefab.json` , `${this.r_b_Name}.assetbundle.json`) as m4m.framework.prefab;
+        _prefab = this.app.getAssetMgr().getAssetByName(`${this.r_b_Name}.prefab.json`, `${this.r_b_Name}.assetbundle.json`) as m4m.framework.prefab;
         let r_b = _prefab.getCloneTrans();
 
         //获取 动画组件
@@ -58,14 +56,13 @@ class testReload implements IState
 
         //查找 共同的 部件
         // 布置按钮
-        this.careSubList.forEach((v,i)=>{
+        this.careSubList.forEach((v, i) => {
             this.createChangeBtn(r_a, r_b, o2d, v);
         });
     }
 
     uileft: number = 0;
-    createChangeBtn(role: m4m.framework.transform, role1: m4m.framework.transform, o2d: m4m.framework.overlay2D, part: string)
-    {
+    createChangeBtn(role: m4m.framework.transform, role1: m4m.framework.transform, o2d: m4m.framework.overlay2D, part: string) {
         //设置UI
         let t2d_9 = new m4m.framework.transform2D();
         t2d_9.width = 120;
@@ -105,52 +102,46 @@ class testReload implements IState
         let role_skinMeshRenders = role.gameObject.getComponentsInChildren("skinnedMeshRenderer") as m4m.framework.skinnedMeshRenderer[];
         let role1_skinMeshRenders = role1.gameObject.getComponentsInChildren("skinnedMeshRenderer") as m4m.framework.skinnedMeshRenderer[];
 
-        btn.addListener(m4m.event.UIEventEnum.PointerClick,() =>
-        {
+        btn.addListener(m4m.event.UIEventEnum.PointerClick, () => {
             r_a_part = null;
             r_b_part = null;
-            for (var key in role_skinMeshRenders)
-            {
-                let name = role_skinMeshRenders[key].gameObject.getName() ;
-                if (name.toLowerCase().indexOf(part.toLowerCase()) != -1)
-                {
+            for (var key in role_skinMeshRenders) {
+                let name = role_skinMeshRenders[key].gameObject.getName();
+                if (name.toLowerCase().indexOf(part.toLowerCase()) != -1) {
                     r_a_part = role_skinMeshRenders[key];
                     break;
                 }
             }
-            for (var key in role1_skinMeshRenders)
-            {
-                let name = role1_skinMeshRenders[key].gameObject.getName() ;
-                if ( name.toLowerCase().indexOf(part.toLowerCase()) != -1)
-                {
+            for (var key in role1_skinMeshRenders) {
+                let name = role1_skinMeshRenders[key].gameObject.getName();
+                if (name.toLowerCase().indexOf(part.toLowerCase()) != -1) {
                     r_b_part = role1_skinMeshRenders[key];
                     break;
                 }
             }
 
-            if(!r_a_part || !r_b_part) {
+            if (!r_a_part || !r_b_part) {
                 console.warn(`更换节点 ${part.toLowerCase()} 更换失败 ！ 检查一下 this.careSubList 中 是否包含  `);
                 return;
             }
 
-            this.excangeSub(r_a_part,r_b_part);
-        },this);
+            this.excangeSub(r_a_part, r_b_part);
+        }, this);
     }
 
-    excangeSub(r_a_part : m4m.framework.skinnedMeshRenderer, r_b_part : m4m.framework.skinnedMeshRenderer){
+    excangeSub(r_a_part: m4m.framework.skinnedMeshRenderer, r_b_part: m4m.framework.skinnedMeshRenderer) {
         //交换位置
         let role_part_parent = r_a_part.gameObject.transform.parent;
         r_b_part.gameObject.transform.parent.addChild(r_a_part.gameObject.transform);
         role_part_parent.addChild(r_b_part.gameObject.transform);
-        let role_part_player =  r_a_part.player;
+        let role_part_player = r_a_part.player;
         r_a_part._player = r_b_part.player;
         r_b_part._player = role_part_player;
     }
 
     camera: m4m.framework.camera;
     timer: number = 0;
-    update(delta: number)
-    {
-     
+    update(delta: number) {
+
     }
 }

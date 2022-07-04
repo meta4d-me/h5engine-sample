@@ -1285,6 +1285,7 @@ var main = /** @class */ (function () {
             demoList.addBtn("关键帧动画", function () { return new test_keyFrameAni(); });
             demoList.addBtn("test_f4skin", function () { return new test_f4skin(); });
             demoList.addBtn("使用优化大小的动画", function () { return new test_optimize_size_animationClip(); });
+            demoList.addBtn("skinMesh角色换装", function () { return new testReload(); });
             demoList.addBtn("物理2d_dome", function () { return new physic2d_dome(); });
             demoList.addBtn("导航网格", function () { return new test_navMesh(); });
             // demoList.addBtn("Android平台ETC1压缩纹理", () => new test_ETC1_KTX());
@@ -1359,7 +1360,6 @@ var main = /** @class */ (function () {
         this.addBtn("其他==>", function () {
             demoList.addBtn("表面贴花(弹痕)", function () { return new test_Decal(); });
             demoList.addBtn("test_multipleplayer_anim", function () { return new test_multipleplayer_anim(); });
-            demoList.addBtn("test_reload(换装)", function () { return new testReload(); });
             demoList.addBtn("mixmesh", function () { return new dome.mixMesh(); });
             demoList.addBtn("test_assestmgr", function () { return new test_assestmgr(); });
             demoList.addBtn("test_streamlight", function () { return new test_streamlight(); });
@@ -2441,7 +2441,7 @@ var test_loadprefab = /** @class */ (function () {
 var testReload = /** @class */ (function () {
     function testReload() {
         //资源放置位置
-        this.resRoot = "".concat(resRootPath, "pfb/model/");
+        this.resRoot = "".concat(resRootPath, "prefab/");
         //关心的 部位
         this.careSubList = ["body", "face", "handL", "handR", "head", "leg"];
         //模型名字
@@ -2476,14 +2476,14 @@ var testReload = /** @class */ (function () {
                         o2d = new m4m.framework.overlay2D();
                         this.camera.addOverLay(o2d);
                         // await demoTool.loadbySync(`${resRootPath}shader/MainShader.assetbundle.json`, this.app.getAssetMgr());
-                        return [4 /*yield*/, demoTool.loadbySync("".concat(resRootPath, "customShader/customShader.assetbundle.json"), this.app.getAssetMgr())];
+                        return [4 /*yield*/, demoTool.loadbySync("".concat(resRootPath, "shader/MainShader.assetbundle.json"), this.app.getAssetMgr())];
                     case 1:
                         // await demoTool.loadbySync(`${resRootPath}shader/MainShader.assetbundle.json`, this.app.getAssetMgr());
                         _a.sent();
-                        return [4 /*yield*/, demoTool.loadbySync("res/STXINGKA.TTF.png", this.app.getAssetMgr())];
+                        return [4 /*yield*/, demoTool.loadbySync("".concat(resRootPath, "font/STXINGKA.TTF.png"), this.app.getAssetMgr())];
                     case 2:
                         _a.sent();
-                        return [4 /*yield*/, demoTool.loadbySync("res/resources/STXINGKA.font.json", this.app.getAssetMgr())];
+                        return [4 /*yield*/, demoTool.loadbySync("".concat(resRootPath, "font/STXINGKA.font.json"), this.app.getAssetMgr())];
                     case 3:
                         _a.sent();
                         return [4 /*yield*/, demoTool.loadbySync("".concat(this.resRoot).concat(this.r_a_Name, "/").concat(this.r_a_Name, ".assetbundle.json"), this.app.getAssetMgr())];

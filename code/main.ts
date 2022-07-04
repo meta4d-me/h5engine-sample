@@ -40,6 +40,7 @@ class main implements m4m.framework.IUserCode {
             demoList.addBtn("关键帧动画", () => new test_keyFrameAni());
             demoList.addBtn("test_f4skin", () => new test_f4skin());
             demoList.addBtn("使用优化大小的动画", () => new test_optimize_size_animationClip());
+            demoList.addBtn("skinMesh角色换装", () => new testReload());
             demoList.addBtn("物理2d_dome", () => new physic2d_dome());
             demoList.addBtn("导航网格", () => new test_navMesh());
             // demoList.addBtn("Android平台ETC1压缩纹理", () => new test_ETC1_KTX());
@@ -121,7 +122,6 @@ class main implements m4m.framework.IUserCode {
         this.addBtn("其他==>", () => {
             demoList.addBtn("表面贴花(弹痕)", () => new test_Decal());
             demoList.addBtn("test_multipleplayer_anim", () => new test_multipleplayer_anim());
-            demoList.addBtn("test_reload(换装)", () => new testReload());
             demoList.addBtn("mixmesh", () => new dome.mixMesh());
             demoList.addBtn("test_assestmgr", () => new test_assestmgr());
             demoList.addBtn("test_streamlight", () => new test_streamlight());
