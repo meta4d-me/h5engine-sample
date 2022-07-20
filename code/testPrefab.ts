@@ -83,7 +83,7 @@ class test_loadprefab implements IState
         this.scene.getRoot().localTranslate = new m4m.math.vector3(0, 0, 0);
         let names: string[] = ["elongmul", "0060_duyanshou", "Cube", "0001_fashion", "193_meirenyu"];
         let name = names[0];
-        this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (state) =>
+        this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (state) =>
         {
             if(state.isfinish)
             {

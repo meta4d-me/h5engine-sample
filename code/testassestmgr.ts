@@ -13,7 +13,7 @@
         this.cube = new m4m.framework.transform();
         this.scene.addChild(this.cube);
         let assetName = this.assetName;
-        this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (state) =>
+        this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (state) =>
         {
             if (state.isfinish)
             {

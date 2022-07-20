@@ -20,7 +20,7 @@ class test_multipleplayer_anim implements IState
 
         this.scene.addChild(baihu);
 
-        this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (state) =>
+        this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (state) =>
         {
             if (state.isfinish)
             {

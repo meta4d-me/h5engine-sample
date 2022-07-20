@@ -25,9 +25,9 @@ class test_ETC1_KTX implements IState
 
         m4m.framework.assetMgr.openGuid = false;
 
-        // await demoTool.loadbySync(`res_etc1/shader/MainShader.assetbundle.json`, this.astMgr);
-        // await demoTool.loadbySync(`${resRootPath}shader/MainShader.assetbundle.json`, this.astMgr);
-        await demoTool.loadbySync(`res_etc1/etc1_shader/MainShader.assetbundle.json`, this.astMgr);
+        // await demoTool.loadbySync(`res_etc1/shader/shader.assetbundle.json`, this.astMgr);
+        // await demoTool.loadbySync(`${resRootPath}shader/shader.assetbundle.json`, this.astMgr);
+        await demoTool.loadbySync(`res_etc1/etc1_shader/shader.assetbundle.json`, this.astMgr);
         //
         this.init();
     }

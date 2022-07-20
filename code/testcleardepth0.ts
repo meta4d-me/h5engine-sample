@@ -11,7 +11,7 @@ namespace t {
             this.taskmgr.addTaskCall(this.initscene.bind(this));
         }
         private loadShader(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
-            this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (_state) => {
+            this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (_state) => {
                 if (_state.isfinish) {
                     state.finish = true;
                 }

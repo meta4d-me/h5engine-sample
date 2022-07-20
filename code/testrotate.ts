@@ -17,7 +17,7 @@
 
         private loadShader(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
-            this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (_state) =>
+            this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (_state) =>
             {
                 //state.finish = true;
               

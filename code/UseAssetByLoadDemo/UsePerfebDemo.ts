@@ -71,7 +71,7 @@ class UsePrefebDemo2 implements IState {
         //#endregion
 
         //所以实际开发中都会把资源打包成bundle包 或 压缩的bundle包进行统一加载。如下：
-        this.assetMgr.load("res/shader/MainShader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (s) => {
+        this.assetMgr.load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (s) => {
             if (s.isfinish) {
                 this.assetMgr.load("res/prefabs/Quad11/Quad.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (s) => {
                     if (s.isfinish) {

@@ -197,7 +197,7 @@ namespace dome
             this.app.showDrawCall();
             this.scene = this.app.getScene();
             let prefabName = 'GameObject';
-            this.app.getAssetMgr().load("res/shader/MainShader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (state) => {
+            this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (state) => {
                 this.loadPrefab(prefabName, () => {
                     if (state.isfinish) {
 

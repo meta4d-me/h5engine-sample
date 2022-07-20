@@ -33,8 +33,8 @@ class testReload implements IState {
         let o2d = new m4m.framework.overlay2D();
         this.camera.addOverLay(o2d);
 
-        // await demoTool.loadbySync(`${resRootPath}shader/MainShader.assetbundle.json`, this.app.getAssetMgr());
-        await demoTool.loadbySync(`${resRootPath}shader/MainShader.assetbundle.json`, this.app.getAssetMgr());
+        // await demoTool.loadbySync(`${resRootPath}shader/shader.assetbundle.json`, this.app.getAssetMgr());
+        await demoTool.loadbySync(`${resRootPath}shader/shader.assetbundle.json`, this.app.getAssetMgr());
         await demoTool.loadbySync(`${resRootPath}font/STXINGKA.TTF.png`, this.app.getAssetMgr());
         await demoTool.loadbySync(`${resRootPath}font/STXINGKA.font.json`, this.app.getAssetMgr());
         await demoTool.loadbySync(`${this.resRoot}${this.r_a_Name}/${this.r_a_Name}.assetbundle.json`, this.app.getAssetMgr());

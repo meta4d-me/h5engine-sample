@@ -9,7 +9,7 @@ class test_fakepbr implements IState
         this.scene = this.app.getScene();
         this.scene.getRoot().localTranslate = new m4m.math.vector3(0, 0, 0);
 
-        this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (state) =>
+        this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (state) =>
         {
             if (state.isfinish)
             {

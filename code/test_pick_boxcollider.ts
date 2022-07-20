@@ -32,7 +32,7 @@ class test_pick_boxcollider implements IState
 
         let names: string[] = ["MainCity_", "testnav", "city", "1042_pata_shenyuan_01", "1030_huodongchuangguan", "xinshoucun_fuben_day", "chuangjue-01"];
         let name = names[1];
-        demoTool.loadbySync(`${resRootPath}shader/MainShader.assetbundle.json`, this.astMgr).then(() =>
+        demoTool.loadbySync(`${resRootPath}shader/shader.assetbundle.json`, this.astMgr).then(() =>
         {
             this.loadScene(name);
         });

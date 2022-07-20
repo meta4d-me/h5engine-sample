@@ -10,7 +10,7 @@ class test_optimize_size_animationClip implements IState
         this.app = app;
         this.scene = this.app.getScene();
         m4m.framework.assetMgr.openGuid = true;
-        this.app.getAssetMgr().load(`./${resRootPath}shader/MainShader.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (state) =>
+        this.app.getAssetMgr().load(`./${resRootPath}shader/shader.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (state) =>
         {
             if (state.isfinish)
             {

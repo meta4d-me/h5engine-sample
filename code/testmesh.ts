@@ -10,7 +10,7 @@ class test_load implements IState
         this.app = app;
         this.scene = this.app.getScene();
         let assetMgr = this.app.getAssetMgr();
-        assetMgr.load(`${resRootPath}shader/Mainshader.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (state) =>
+        assetMgr.load(`${resRootPath}shader/shader.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (state) =>
         {
             if (state.isfinish)
             {

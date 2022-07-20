@@ -431,7 +431,7 @@ var demo_navigaionRVO = /** @class */ (function () {
         this.app.container.appendChild(descr);
         var names = ["MainCity_", "testnav", "city", "1042_pata_shenyuan_01", "1030_huodongchuangguan", "xinshoucun_fuben_day", "chuangjue-01"];
         var name = names[0];
-        this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (state) {
+        this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (state) {
             if (state.isfinish) {
                 _this.loadScene(name);
             }
@@ -1886,7 +1886,7 @@ var test_loadMulBundle = /** @class */ (function () {
         var name = names[0];
         // name="MainCity";
         var isloaded = false;
-        this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (state) {
+        this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (state) {
             if (state.isfinish) {
                 _this.app.getAssetMgr().load("res/scenes/" + name + "/meshprefab/" + name + ".assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s1) {
                     if (s1.isfinish) {
@@ -1959,7 +1959,7 @@ var t;
             this.taskmgr.addTaskCall(this.addbtns.bind(this));
         };
         test_pathAsset.prototype.loadShader = function (laststate, state) {
-            this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (_state) {
+            this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (_state) {
                 if (_state.isfinish) {
                     state.finish = true;
                 }
@@ -2274,7 +2274,7 @@ var test_loadprefab = /** @class */ (function () {
         this.scene.getRoot().localTranslate = new m4m.math.vector3(0, 0, 0);
         var names = ["elongmul", "0060_duyanshou", "Cube", "0001_fashion", "193_meirenyu"];
         var name = names[0];
-        this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (state) {
+        this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (state) {
             if (state.isfinish) {
                 // this.app.getAssetMgr().load("res/prefabs/" + name + "/meshprefab/" + name + ".assetbundle.json", m4m.framework.AssetTypeEnum.Auto, 
                 // (s) => 
@@ -2475,10 +2475,10 @@ var testReload = /** @class */ (function () {
                         hoverc.lookAtPoint = new m4m.math.vector3(0, 0, 0);
                         o2d = new m4m.framework.overlay2D();
                         this.camera.addOverLay(o2d);
-                        // await demoTool.loadbySync(`${resRootPath}shader/MainShader.assetbundle.json`, this.app.getAssetMgr());
-                        return [4 /*yield*/, demoTool.loadbySync("".concat(resRootPath, "shader/MainShader.assetbundle.json"), this.app.getAssetMgr())];
+                        // await demoTool.loadbySync(`${resRootPath}shader/shader.assetbundle.json`, this.app.getAssetMgr());
+                        return [4 /*yield*/, demoTool.loadbySync("".concat(resRootPath, "shader/shader.assetbundle.json"), this.app.getAssetMgr())];
                     case 1:
-                        // await demoTool.loadbySync(`${resRootPath}shader/MainShader.assetbundle.json`, this.app.getAssetMgr());
+                        // await demoTool.loadbySync(`${resRootPath}shader/shader.assetbundle.json`, this.app.getAssetMgr());
                         _a.sent();
                         return [4 /*yield*/, demoTool.loadbySync("".concat(resRootPath, "font/STXINGKA.TTF.png"), this.app.getAssetMgr())];
                     case 2:
@@ -5026,7 +5026,7 @@ var test_GPU_instancing = /** @class */ (function () {
             var scene, objCam, cam, hoverc, _dat;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, demoTool.loadbySync("".concat(resRootPath, "shader/MainShader.assetbundle.json"), app.getAssetMgr())];
+                    case 0: return [4 /*yield*/, demoTool.loadbySync("".concat(resRootPath, "shader/shader.assetbundle.json"), app.getAssetMgr())];
                     case 1:
                         _a.sent();
                         // await demoTool.loadbySync(`${resRootPath}shader/customShader/customShader.assetbundle.json`, app.getAssetMgr());  //项目shader
@@ -5295,6 +5295,8 @@ var HDR_sample = /** @class */ (function () {
     function HDR_sample() {
         this.dec = "GLTF HDR";
         this.isEnableGUI = true;
+        /** 是否显示 实时灯源模型 */
+        this.isShowLightModel = false;
         this.sceneConfig = "\n    {\"preZ\":true,\"materials\":[{\"name\":\"floor_wood\",\"transparent\":false,\"color\":\"#8f4117\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0.23,\"emissionIntensity\":1,\"uvRepeat\":[20,20],\"parallaxOcclusionScale\":0,\"diffuseMap\":\"floor_wood.png\",\"normalMap\":\"floor_wood_nm.png\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0.33,\"roughness\":0.64,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"RongGallery\"]},{\"name\":\"Tiles_Color\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":[10,10],\"parallaxOcclusionScale\":0.08,\"diffuseMap\":\"Tiles_Color.png\",\"normalMap\":\"Tiles_Normal.png\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0.8,\"roughness\":0.88,\"metalnessMap\":\"Marble01_Roughness.png\",\"roughnessMap\":\"Marble01_Roughness.png\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"RongGallery$1\"]},{\"name\":\"LiRirong\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"LiRirong.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"RongGallery$2\"]},{\"name\":\"Bottom\",\"transparent\":false,\"color\":\"#262626\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"black.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"RongGallery$3\",\"RongGallery$5\",\"RongGallery$7\",\"RongGallery$9\",\"Wall$1\"]},{\"name\":\"Glass1\",\"transparent\":true,\"color\":\"#006e9f\",\"emission\":\"#000000\",\"alpha\":0.503501952,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"RongGallery$4\"]},{\"name\":\"Spontaneouslight\",\"transparent\":false,\"color\":\"#ececec\",\"emission\":\"#0e0e0d\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":[1,1],\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Spontaneouslight.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"Spontaneouslight.png\",\"metalness\":0.72,\"roughness\":0.4,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"RongGallery$6\",\"RongGallery$8\",\"RongGallery$10\",\"Top2\"]},{\"name\":\"Wall2\",\"transparent\":false,\"color\":\"#919191\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0.65,\"emissionIntensity\":23.8,\"uvRepeat\":[3,3],\"parallaxOcclusionScale\":0.04,\"diffuseMap\":\"Wall_White1.png\",\"normalMap\":\"Wall_White_nm.png\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0.32,\"roughness\":0.24,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"RongGallery$11\",\"Top\",\"Wall\"]},{\"name\":\"wall_blue\",\"transparent\":false,\"color\":\"#bad2f5\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":[8,8],\"parallaxOcclusionScale\":0.01,\"diffuseMap\":\"wall_blue.png\",\"normalMap\":\"wall_nm.png\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":1,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"outWall1\",\"Wall$2\"]},{\"name\":\"Gallery_text\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Gallery_text.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0.21699999272823334,\"roughness\":0.7650000005960464,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Gallery_text\"]},{\"name\":\"threshold\",\"transparent\":false,\"color\":\"#6a6a6a\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"black.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0.07500000298023224,\"roughness\":0.17799997329711914,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"threshold (1)\",\"threshold\"]},{\"name\":\"wood_d\",\"transparent\":false,\"color\":\"#733232\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":200,\"uvRepeat\":[2,2],\"parallaxOcclusionScale\":0.05,\"diffuseMap\":\"wood_d.png\",\"normalMap\":\"wood_Normal.png\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0.4,\"roughness\":0.45,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Chair (3)\",\"Chair (4)\",\"Chair (5)\",\"Chair (6)\",\"Chair (7)\",\"Chair (8)\",\"Chair (9)\",\"Chair (10)\",\"Chair (11)\",\"Chair (12)\",\"Chair (13)\",\"Chair (14)\",\"Chair (15)\",\"Chair (16)\",\"Chair (17)\",\"Chair (18)\",\"Chair (1)\",\"Chair (2)\",\"Chair\",\"Doorframe\",\"Doorframe (1)\"]},{\"name\":\"label\",\"transparent\":false,\"color\":\"#ececec\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"label.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0.19200000166893005,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Label\",\"Label (1)\",\"Label (2)\",\"Label (3)\",\"Label (4)\",\"Label (5)\",\"Label (6)\",\"Label (7)\",\"Label (8)\",\"Label (9)\",\"Label (10)\",\"Label (11)\",\"Label (12)\",\"Label (13)\",\"Label (14)\",\"Label (15)\",\"Label (16)\",\"Label (17)\",\"Label (18)\",\"Label (19)\",\"Label (20)\",\"Label (21)\",\"Label (22)\",\"Label (23)\",\"Label (24)\",\"Label (25)\",\"Label (26)\",\"Label (27)\",\"Label (28)\",\"Label (29)\",\"Label (30)\",\"Label (31)\",\"Label (32)\",\"Label (33)\",\"Label (34)\",\"Label (35)\",\"Label (36)\",\"Label (37)\",\"Label (38)\",\"Label (39)\",\"Label (40)\",\"Label (41)\",\"Label (42)\",\"Label (43)\",\"Label (44)\",\"Label (45)\",\"Label (46)\",\"Label (47)\"]},{\"name\":\"Frame_25\",\"transparent\":false,\"color\":\"#b9b9b9\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame21.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_nq\"]},{\"name\":\"Frame_8\",\"transparent\":false,\"color\":\"#e0e0e0\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame15.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_nh\",\"Frame_nh (2)\"]},{\"name\":\"Frame_b\",\"transparent\":false,\"color\":\"#cacaca\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame_b.png\",\"normalMap\":\"Frame_bnm.png\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0.675000011920929,\"roughness\":0.7100000083446503,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_bv\",\"Frame_bv\",\"Frame_bv\",\"Frame_bv\",\"Frame_bv\"]},{\"name\":\"Frame_22\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame21.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_bv$1\",\"Frame_bv$1\",\"Frame_bv$1\",\"Frame_bv$1\",\"Frame_bv$1\"]},{\"name\":\"Frame_a\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame_a.png\",\"normalMap\":\"Frame_anm.png\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0.11900000274181366,\"roughness\":0.8680000007152557,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_av\",\"Frame_aq\",\"Frame_ah (2)\",\"Frame_aq\",\"Frame_aq\",\"Frame_ah (2)\",\"Frame_aq\",\"Frame_ah (2)\",\"Frame_aq\",\"Frame_ah (2)\",\"Frame_aq\",\"Frame_aq\",\"Frame_aq\",\"Frame_ah (2)\",\"Frame_ah (2)\",\"Frame_aq\",\"Frame_ah (2)\",\"Frame_aq\",\"Frame_aq\"]},{\"name\":\"Frame_19\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame21.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_av$1\",\"Frame_nq (7)\"]},{\"name\":\"Frame_5\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"art_h_4.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_aq$1\",\"Frame_aq$1\",\"Frame_aq$1\",\"Frame_aq$1\",\"Frame_aq$1\",\"Frame_aq$1\",\"Frame_aq$1\",\"Frame_aq$1\",\"Frame_aq$1\",\"Frame_aq$1\",\"Frame_aq$1\"]},{\"name\":\"Frame_1\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"art_h_4.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_1\"]},{\"name\":\"Frame_2\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame2.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0.03999999910593033,\"roughness\":0.7759999930858612,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_2\"]},{\"name\":\"Frame_9\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame15.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0.15600000321865082,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_3\",\"Frame_ah (2)$1\",\"Frame_ah (2)$1\",\"Frame_ah (2)$1\",\"Frame_ah (2)$1\",\"Frame_ah (2)$1\",\"Frame_ah (2)$1\",\"Frame_ah (2)$1\"]},{\"name\":\"Frame_4\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame2.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_4\",\"Frame_nh (1)\"]},{\"name\":\"Frame_15\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame18.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_5\"]},{\"name\":\"Frame_16\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame18.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_nq (10)\"]},{\"name\":\"Frame_20\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame21.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_nq (5)\"]},{\"name\":\"Frame_21\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame21.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_nq (6)\"]},{\"name\":\"Frame_18\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame18.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_nq (9)\"]},{\"name\":\"Frame_17\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame18.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_nq (8)\"]},{\"name\":\"art_h_1\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"art_h_1.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_nq (2)\"]},{\"name\":\"art_v_3\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"art_v_3.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_nq (4)\"]},{\"name\":\"Frame_11\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame22.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_nh (6)\"]},{\"name\":\"art_v_2\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"art_v_2.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_nq (12)\"]},{\"name\":\"Frame_14\",\"transparent\":false,\"color\":\"#d4d4d4\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame22.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_nh (5)\",\"Frame_nh\"]},{\"name\":\"Frame_3\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"art_h_4.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_nh (4)\"]},{\"name\":\"Frame_13\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Frame22.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_nh (7)\"]},{\"name\":\"art_h_7\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"art_h_7.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0.7430000007152557,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Frame_nq (3)\"]},{\"name\":\"Exit\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Exit.png\",\"normalMap\":\"Exitnm.png\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0.5519999861717224,\"roughness\":0.4570000171661377,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"exit\",\"exit (2)\",\"exit (1)\"]},{\"name\":\"door01\",\"transparent\":false,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"door01.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0.6639999747276306,\"roughness\":0.5290000140666962,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Door01\"]},{\"name\":\"Glass01\",\"transparent\":true,\"color\":\"#ffffff\",\"emission\":\"#000000\",\"alpha\":0.05490196,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"Glass01.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0.47099998593330383,\"roughness\":0.15200001001358032,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Door01$1\"]},{\"name\":\"point_lighter_ao\",\"transparent\":false,\"color\":\"#000000\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0.699999988079071,\"roughness\":0.17000001668930054,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\",\"Pointlight (9)\"]},{\"name\":\"light\",\"transparent\":false,\"color\":\"#c9c9c9\",\"emission\":\"#fffffe\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"light.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"spotlight 1$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\",\"Pointlight (9)$1\"]},{\"name\":\"spotlight\",\"transparent\":false,\"color\":\"#000000\",\"emission\":\"#000000\",\"alpha\":1,\"alphaCutoff\":0,\"emissionIntensity\":1,\"uvRepeat\":{\"0\":1,\"1\":1},\"parallaxOcclusionScale\":0.02,\"diffuseMap\":\"spotlight.png\",\"normalMap\":\"\",\"parallaxOcclusionMap\":\"\",\"emissiveMap\":\"\",\"metalness\":0,\"roughness\":0.6579999923706055,\"metalnessMap\":\"\",\"roughnessMap\":\"\",\"type\":\"pbrMetallicRoughness\",\"targetMeshes\":[\"Joint\",\"spotlight 1\",\"stick\",\"spotlight 1\",\"spotlight 1\",\"Joint (1)\",\"Joint (2)\",\"Joint (3)\",\"stick1\",\"stick1 (1)\",\"stick1 (2)\",\"stick1 (3)\",\"Joint\",\"spotlight 1\",\"stick\",\"spotlight 1\",\"spotlight 1\",\"Joint (1)\",\"Joint (2)\",\"Joint (3)\",\"stick1\",\"stick1 (1)\",\"stick1 (2)\",\"stick1 (3)\",\"Joint\",\"spotlight 1\",\"stick\",\"spotlight 1\",\"spotlight 1\",\"spotlight 1\",\"spotlight 1\",\"spotlight 1\",\"Joint (1)\",\"Joint (2)\",\"Joint (3)\",\"Joint (4)\",\"Joint (6)\",\"Joint (7)\",\"Joint (8)\",\"stick1\",\"stick1 (1)\",\"stick1 (2)\",\"stick1 (3)\",\"stick1 (4)\",\"stick1 (6)\",\"stick1 (7)\",\"stick1 (8)\",\"spotlight 1\",\"Joint\",\"spotlight 1\",\"stick\",\"Joint (1)\",\"stick1\",\"stick1 (1)\",\"Joint\",\"spotlight 1\",\"stick\",\"Joint (1)\",\"stick1\",\"stick1 (1)\",\"Joint\",\"spotlight 1\",\"stick\",\"Joint (1)\",\"stick1\",\"stick1 (1)\",\"Joint\",\"spotlight 1\",\"stick\",\"spotlight 1\",\"spotlight 1\",\"Joint (1)\",\"Joint (2)\",\"stick1\",\"stick1 (1)\",\"stick1 (2)\",\"Joint (3)\",\"stick1 (3)\",\"Joint\",\"spotlight 1\",\"stick\",\"spotlight 1\",\"Joint (1)\",\"Joint (2)\",\"stick1\",\"stick1 (1)\",\"stick1 (2)\",\"Joint\",\"spotlight 1\",\"stick\",\"spotlight 1\",\"spotlight 1\",\"Joint (3)\",\"Joint (4)\",\"stick1\",\"stick1 (1)\",\"Joint (5)\",\"stick1 (2)\",\"stick1 (3)\",\"Joint\",\"spotlight 1\",\"stick\",\"spotlight 1\",\"spotlight 1\",\"Joint (3)\",\"Joint (4)\",\"stick1 (1)\",\"stick1\",\"Joint (5)\",\"stick1 (2)\",\"stick1 (3)\",\"Joint\",\"spotlight 1\",\"stick\",\"spotlight 1\",\"Joint (3)\",\"Joint (4)\",\"stick1 (1)\",\"stick1\",\"Joint (5)\",\"stick1 (2)\",\"stick1 (3)\",\"Joint\",\"spotlight 1\",\"stick\",\"spotlight 1\",\"spotlight 1\",\"spotlight 1\",\"spotlight 1\",\"spotlight 1\",\"Joint (1)\",\"Joint (2)\",\"Joint (3)\",\"Joint (4)\",\"Joint (5)\",\"Joint (6)\",\"Joint (7)\",\"Joint (8)\",\"stick1\",\"stick1 (1)\",\"stick1 (2)\",\"stick1 (3)\",\"stick1 (4)\",\"stick1 (5)\",\"stick1 (6)\",\"stick1 (7)\",\"stick1 (8)\",\"Joint\",\"spotlight 1\",\"stick\",\"spotlight 1\",\"spotlight 1\",\"Joint (1)\",\"Joint (2)\",\"Joint (3)\",\"stick1\",\"stick1 (1)\",\"stick1 (2)\",\"stick1 (3)\",\"Joint\",\"spotlight 1\",\"stick\",\"spotlight 1\",\"spotlight 1\",\"Joint (1)\",\"Joint (2)\",\"Joint (3)\",\"stick1\",\"stick1 (1)\",\"stick1 (2)\",\"stick1 (3)\",\"Joint\",\"spotlight 1\",\"stick\",\"spotlight 1\",\"spotlight 1\",\"Joint (1)\",\"Joint (2)\",\"stick1\",\"stick1 (1)\",\"stick1 (2)\",\"Joint (3)\",\"stick1 (3)\",\"Joint\",\"spotlight 1\",\"stick\",\"spotlight 1\",\"Joint (1)\",\"Joint (2)\",\"stick1\",\"stick1 (1)\",\"stick1 (2)\",\"Joint\",\"spotlight 1\",\"stick\",\"Joint (1)\",\"stick1\",\"stick1 (1)\",\"Joint\",\"spotlight 1\",\"stick\",\"spotlight 1\",\"spotlight 1\",\"Joint (3)\",\"stick1\",\"Joint (4)\",\"stick1 (1)\",\"Joint (5)\",\"stick1 (2)\",\"stick1 (3)\"]}],\"takes\":[],\"textureFlipY\":false,\"zUpToYUp\":false,\"shadow\":true,\"environment\":\"auto\",\"viewControl\":{\"center\":[-1.5810825948372709,-0.32943921837648704,-0.9510663665344571],\"alpha\":4.391482546857949,\"beta\":-73.35563343334012,\"distance\":2.432148623182876},\"ground\":{\"show\":true,\"grid\":false},\"mainLight\":{\"shadow\":false,\"shadowQuality\":\"medium\",\"intensity\":0.0000184,\"color\":\"#fff\",\"alpha\":0.7964601769911517,\"beta\":14.33628318584069,\"$padAngle\":[0.07964601769911495,0.008849557522123908]},\"secondaryLight\":{\"shadow\":true,\"shadowQuality\":\"medium\",\"intensity\":1.08,\"color\":\"#fff\",\"alpha\":60,\"beta\":-125,\"$padAngle\":[0.23893805309734506,0.34513274336283184]},\"tertiaryLight\":{\"shadow\":true,\"shadowQuality\":\"medium\",\"intensity\":0.88,\"color\":\"#fff\",\"alpha\":43.80530973451327,\"beta\":43.00884955752211,\"$padAngle\":[0.23893805309734506,0.48672566371681414]},\"ambientLight\":{\"intensity\":0.88,\"color\":\"#fff\"},\"ambientCubemapLight\":{\"texture\":\"./asset/texture/pisa.hdr\",\"$texture\":\"pisa\",\"$textureOptions\":[\"pisa\",\"Barce_Rooftop_C\",\"Factory_Catwalk\",\"Grand_Canyon_C\",\"Ice_Lake\",\"Hall\",\"Old_Industrial_Hall\"],\"exposure\":3,\"diffuseIntensity\":0.18,\"specularIntensity\":0.68},\"postEffect\":{\"enable\":true,\"bloom\":{\"enable\":true,\"intensity\":0.6},\"depthOfField\":{\"enable\":false,\"focalDistance\":3.64,\"focalRange\":0.98,\"blurRadius\":5,\"fstop\":9.96,\"quality\":\"medium\",\"$qualityOptions\":[\"low\",\"medium\",\"high\",\"ultra\"]},\"screenSpaceAmbientOcclusion\":{\"enable\":true,\"radius\":1.74,\"quality\":\"medium\",\"intensity\":1,\"$qualityOptions\":[\"low\",\"medium\",\"high\",\"ultra\"]},\"screenSpaceReflection\":{\"enable\":false,\"physical\":false,\"quality\":\"medium\",\"maxRoughness\":0.8,\"$qualityOptions\":[\"low\",\"medium\",\"high\",\"ultra\"]},\"colorCorrection\":{\"enable\":true,\"exposure\":0.26,\"brightness\":0.06,\"contrast\":0.98,\"saturation\":1.2,\"lookupTexture\":\"\"},\"FXAA\":{\"enable\":false}}}\n    ";
         this.gltfModels = [
             {
@@ -5319,6 +5321,12 @@ var HDR_sample = /** @class */ (function () {
                 gltfFolder: "".concat(resRootPath, "pbrRes/FlightHelmet/glTF/"),
                 file: 'FlightHelmet.gltf',
                 scale: 20,
+                cb: function (root) { }
+            },
+            {
+                gltfFolder: "".concat(resRootPath, "pbrRes/realtimeLight/"),
+                file: 'realtimeLight.gltf',
+                scale: 1,
                 cb: function (root) { }
             },
             // {
@@ -5441,7 +5449,7 @@ var HDR_sample = /** @class */ (function () {
     HDR_sample.prototype.toLoadGLTF = function (gltfModels) {
         var _a;
         return __awaiter(this, void 0, void 0, function () {
-            var config, ambientCubemapLight, mainLight, secondaryLight, tertiaryLight, exp, env, irradianceSH, skybox, mf_c, mr_c, loadGLTF, par, hexToRgb;
+            var config, ambientCubemapLight, mainLight, secondaryLight, tertiaryLight, exp, env, irradianceSH, skybox, mf_c, mr_c, realtimeLights, loadGLTF, par, i, len, cfg, root, hexToRgb, addLightModel, count_1, lightCount_1;
             var _this = this;
             return __generator(this, function (_b) {
                 switch (_b.label) {
@@ -5451,7 +5459,7 @@ var HDR_sample = /** @class */ (function () {
                         ambientCubemapLight = config.ambientCubemapLight, mainLight = config.mainLight, secondaryLight = config.secondaryLight, tertiaryLight = config.tertiaryLight;
                         // const tex = await this.load<m4m.framework.texture>(HDRpath, 'flower_road_2k.hdr');
                         // mr.materials[0].setTexture("_MainTex", tex);
-                        return [4 /*yield*/, demoTool.loadbySync("".concat(resRootPath, "shader/MainShader.assetbundle.json"), this.app.getAssetMgr())];
+                        return [4 /*yield*/, demoTool.loadbySync("".concat(resRootPath, "shader/shader.assetbundle.json"), this.app.getAssetMgr())];
                     case 1:
                         // const tex = await this.load<m4m.framework.texture>(HDRpath, 'flower_road_2k.hdr');
                         // mr.materials[0].setTexture("_MainTex", tex);
@@ -5476,10 +5484,11 @@ var HDR_sample = /** @class */ (function () {
                         // pass.state_showface = m4m.render.ShowFaceStateEnum.CW;
                         mr_c.materials[0].setCubeTexture("u_sky", env);
                         mr_c.materials[0].setFloat("u_Exposure", exp);
+                        realtimeLights = [];
                         loadGLTF = function (_a) {
                             var gltfFolder = _a.gltfFolder, file = _a.file, scale = _a.scale;
                             return __awaiter(_this, void 0, void 0, function () {
-                                var gltf, root;
+                                var gltf, root, rtLights;
                                 return __generator(this, function (_b) {
                                     switch (_b.label) {
                                         case 0: return [4 /*yield*/, this.load(gltfFolder, file)];
@@ -5488,6 +5497,10 @@ var HDR_sample = /** @class */ (function () {
                                             return [4 /*yield*/, gltf.load(this.assetMgr, this.app.webgl, gltfFolder, null, env, irradianceSH, exp, ambientCubemapLight.specularIntensity, ambientCubemapLight.diffuseIntensity)];
                                         case 2:
                                             root = _b.sent();
+                                            rtLights = gltf.getRealtimeLights();
+                                            if (rtLights) {
+                                                realtimeLights = rtLights;
+                                            }
                                             m4m.math.vec3SetAll(root.localScale, scale !== null && scale !== void 0 ? scale : 1);
                                             root.localScale.x *= -1;
                                             // this.app.getScene().addChild(root);
@@ -5509,40 +5522,103 @@ var HDR_sample = /** @class */ (function () {
                                 cb: function (root) { return root.localTranslate.x += par.get('x') ? parseFloat(par.get('x')) : 0; },
                             });
                         }
-                        gltfModels.map(function (cfg) { return __awaiter(_this, void 0, void 0, function () {
-                            var root;
-                            return __generator(this, function (_a) {
-                                switch (_a.label) {
-                                    case 0: return [4 /*yield*/, loadGLTF(cfg)];
-                                    case 1:
-                                        root = _a.sent();
-                                        if (cfg.cb)
-                                            cfg.cb(root);
-                                        return [2 /*return*/];
-                                }
-                            });
-                        }); });
+                        i = 0, len = gltfModels.length;
+                        _b.label = 4;
+                    case 4:
+                        if (!(i < len)) return [3 /*break*/, 7];
+                        cfg = gltfModels[i];
+                        return [4 /*yield*/, loadGLTF(cfg)];
+                    case 5:
+                        root = _b.sent();
+                        if (cfg.cb)
+                            cfg.cb(root);
+                        _b.label = 6;
+                    case 6:
+                        i++;
+                        return [3 /*break*/, 4];
+                    case 7:
                         hexToRgb = function (hex) {
                             return hex.replace(/^#?([a-f\d])([a-f\d])([a-f\d])$/i, function (m, r, g, b) { return '#' + r + r + g + g + b + b; })
                                 .substring(1).match(/.{2}/g)
                                 .map(function (x) { return parseInt(x, 16); });
                         };
-                        [mainLight, secondaryLight, tertiaryLight].map(function (light) {
-                            // return;
-                            var lightObj = new m4m.framework.transform();
-                            lightObj.name = "Light" + light.name;
-                            var mlight = lightObj.gameObject.addComponent("light");
-                            mlight.type = m4m.framework.LightTypeEnum.Direction;
-                            m4m.math.quatFromEulerAngles(-light.alpha, -light.beta, 0, lightObj.localRotate);
-                            mlight.intensity = light.intensity;
-                            var rgb = hexToRgb(light.color).map(function (x) { return x / 255; });
-                            mlight.color.r = rgb[0];
-                            mlight.color.g = rgb[1];
-                            mlight.color.b = rgb[2];
-                            lightObj.markDirty();
-                            // this.scene.addChild(lightObj);
-                            _this.lightRoot.addChild(lightObj);
-                        });
+                        addLightModel = function (rot, pos, color) {
+                            if (!_this.isShowLightModel)
+                                return;
+                            //灯源模型显示
+                            var lCube = m4m.framework.TransformUtil.CreatePrimitive(m4m.framework.PrimitiveType.Cube);
+                            var renderer = lCube.gameObject.renderer;
+                            var sh = m4m.framework.sceneMgr.app.getAssetMgr().getShader("simple.shader.json");
+                            if (sh) {
+                                renderer.materials[0].setShader(sh);
+                                renderer.materials[0].setVector4("_MainColor", new m4m.math.vector4(color[0], color[1], color[2], 1));
+                            }
+                            lCube.localScale = new m4m.math.vector3(0.2, 0.2, 0.6);
+                            lCube.localPosition = pos;
+                            lCube.localRotate = rot;
+                            _this.lightRoot.addChild(lCube);
+                        };
+                        //gltf有实时灯光 ,走gltf 实时灯光配置
+                        if (realtimeLights.length > 0) {
+                            realtimeLights.forEach(function (l, i) {
+                                //
+                                var node = new m4m.framework.transform();
+                                node.name = "Light_".concat(m4m.framework.LightTypeEnum[l.type], "_").concat(i);
+                                var comp = node.gameObject.addComponent("light");
+                                comp.type = l.type;
+                                //shadow
+                                if (l.shadowQuality != m4m.framework.ShadowQualityType.None) {
+                                    l.shadowQuality;
+                                }
+                                if (comp.type == m4m.framework.LightTypeEnum.Spot || comp.type == m4m.framework.LightTypeEnum.Point) {
+                                    //range
+                                    comp.range = l.range;
+                                    if (comp.type == m4m.framework.LightTypeEnum.Spot) {
+                                        //spotAngelCos
+                                        comp.spotAngelCos = Math.cos(l.spotAngle * 0.5 * Math.PI / 180);
+                                    }
+                                }
+                                //intensity
+                                comp.intensity = l.intensity;
+                                //color
+                                m4m.math.colorSet(comp.color, l.color[0], l.color[1], l.color[2], l.color[3]);
+                                //RTS
+                                var pos = node.localPosition;
+                                m4m.math.vec3Set(pos, l.pos[0], l.pos[1], l.pos[2]);
+                                node.localPosition = pos;
+                                var rot = node.localRotate;
+                                m4m.math.quatFromEulerAngles(l.angles[0], l.angles[1], 0, rot);
+                                node.localRotate = rot;
+                                _this.lightRoot.addChild(node);
+                                //灯源模型显示
+                                addLightModel(rot, pos, l.color);
+                            });
+                        }
+                        else {
+                            count_1 = 0;
+                            lightCount_1 = 3;
+                            [mainLight, secondaryLight, tertiaryLight].map(function (light) {
+                                // return;
+                                var lightObj = new m4m.framework.transform();
+                                lightObj.name = "Light" + light.name;
+                                var mlight = lightObj.gameObject.addComponent("light");
+                                mlight.type = m4m.framework.LightTypeEnum.Direction;
+                                m4m.math.quatFromEulerAngles(light.alpha, light.beta, 0, lightObj.localRotate);
+                                mlight.intensity = light.intensity;
+                                var rgb = hexToRgb(light.color).map(function (x) { return x / 255; });
+                                mlight.color.r = rgb[0];
+                                mlight.color.g = rgb[1];
+                                mlight.color.b = rgb[2];
+                                lightObj.markDirty();
+                                // this.scene.addChild(lightObj);
+                                _this.lightRoot.addChild(lightObj);
+                                //灯源模型显示
+                                var val = count_1 / lightCount_1 * Math.PI * 2;
+                                var s = 5;
+                                addLightModel(lightObj.localRotate, new m4m.math.vector3(Math.sin(val) * s, 0, Math.cos(val) * s), rgb);
+                                count_1++;
+                            });
+                        }
                         return [2 /*return*/];
                 }
             });
@@ -5566,6 +5642,7 @@ var HDR_sample = /** @class */ (function () {
                         gui.add(this, "Model", this.ModelList).name("快捷选择");
                         gui.add(this, "Model").listen().name("模型名");
                         gui.add(this, "enableLight").name("开启灯光");
+                        gui.add(this, "isShowLightModel").name("显示光源模型");
                         gui.add(this, "toLoad").name("加载");
                         return [2 /*return*/];
                 }
@@ -5755,7 +5832,7 @@ var test_ParticleSystem = /** @class */ (function () {
                         // // scene.fog._Color = new m4m.math.vector4(52 / 255, 137 / 255, 155 / 255, 0.75);// new m4m.math.vector4(0 / 255, 152 / 255, 160 / 255, 1);
                         // scene.fog._Color = new m4m.math.vector4(5 / 255, 166 / 255, 182 / 255, 1);
                         m4m.framework.assetMgr.openGuid = false;
-                        return [4 /*yield*/, demoTool.loadbySync("".concat(resRootPath, "shader/MainShader.assetbundle.json"), this.astMgr)];
+                        return [4 /*yield*/, demoTool.loadbySync("".concat(resRootPath, "shader/shader.assetbundle.json"), this.astMgr)];
                     case 1:
                         _a.sent();
                         return [4 /*yield*/, datGui.init()];
@@ -6161,7 +6238,7 @@ var test_TrailRenderer = /** @class */ (function () {
                         this.scene = this.app.getScene();
                         this.astMgr = this.app.getAssetMgr();
                         m4m.framework.assetMgr.openGuid = false;
-                        return [4 /*yield*/, demoTool.loadbySync("".concat(resRootPath, "shader/MainShader.assetbundle.json"), this.astMgr)];
+                        return [4 /*yield*/, demoTool.loadbySync("".concat(resRootPath, "shader/shader.assetbundle.json"), this.astMgr)];
                     case 1:
                         _a.sent();
                         return [4 /*yield*/, datGui.init()];
@@ -7015,7 +7092,7 @@ var t;
             this.eulerAngle = m4m.math.pool.new_vector3();
         }
         test_blend.prototype.loadShader = function (laststate, state) {
-            this.app.getAssetMgr().load("".concat(resRootPath, "shader/Mainshader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (_state) {
+            this.app.getAssetMgr().load("".concat(resRootPath, "shader/shader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (_state) {
                 if (_state.isfinish) {
                     state.finish = true;
                 }
@@ -7156,12 +7233,12 @@ var test_ETC1_KTX = /** @class */ (function () {
                         this.scene = this.app.getScene();
                         this.astMgr = this.app.getAssetMgr();
                         m4m.framework.assetMgr.openGuid = false;
-                        // await demoTool.loadbySync(`res_etc1/shader/MainShader.assetbundle.json`, this.astMgr);
-                        // await demoTool.loadbySync(`${resRootPath}shader/MainShader.assetbundle.json`, this.astMgr);
-                        return [4 /*yield*/, demoTool.loadbySync("res_etc1/etc1_shader/MainShader.assetbundle.json", this.astMgr)];
+                        // await demoTool.loadbySync(`res_etc1/shader/shader.assetbundle.json`, this.astMgr);
+                        // await demoTool.loadbySync(`${resRootPath}shader/shader.assetbundle.json`, this.astMgr);
+                        return [4 /*yield*/, demoTool.loadbySync("res_etc1/etc1_shader/shader.assetbundle.json", this.astMgr)];
                     case 1:
-                        // await demoTool.loadbySync(`res_etc1/shader/MainShader.assetbundle.json`, this.astMgr);
-                        // await demoTool.loadbySync(`${resRootPath}shader/MainShader.assetbundle.json`, this.astMgr);
+                        // await demoTool.loadbySync(`res_etc1/shader/shader.assetbundle.json`, this.astMgr);
+                        // await demoTool.loadbySync(`${resRootPath}shader/shader.assetbundle.json`, this.astMgr);
                         _a.sent();
                         //
                         this.init();
@@ -7227,7 +7304,7 @@ var test_fakepbr = /** @class */ (function () {
         this.app = app;
         this.scene = this.app.getScene();
         this.scene.getRoot().localTranslate = new m4m.math.vector3(0, 0, 0);
-        this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (state) {
+        this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (state) {
             if (state.isfinish) {
                 _this.app.getAssetMgr().load("res/prefabs/fakepbr/zhanshen.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
                     if (s.isfinish) {
@@ -7378,7 +7455,7 @@ var testLiChangeMesh = /** @class */ (function () {
         this.scene = this.app.getScene();
         var role;
         var role1;
-        this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (state) {
+        this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (state) {
             if (state.isfinish) {
                 _this.app.getAssetMgr().load("res/prefabs/FS_01/FS_01.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
                     if (s.isfinish) {
@@ -7519,7 +7596,7 @@ var t;
             this.taskmgr = new m4m.framework.taskMgr();
         }
         test_rendertexture.prototype.loadShader = function (laststate, state) {
-            this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (_state) {
+            this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (_state) {
                 state.finish = true;
             });
         };
@@ -7702,7 +7779,7 @@ var demo;
             this.taskmgr = new m4m.framework.taskMgr();
         }
         DragonTest.prototype.loadShader = function (laststate, state) {
-            this.app.getAssetMgr().load("".concat(resRootPath, "shader/Mainshader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
+            this.app.getAssetMgr().load("".concat(resRootPath, "shader/shader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                 if (s.isfinish) {
                     state.finish = true;
                 }
@@ -7789,7 +7866,7 @@ var test_navMesh = /** @class */ (function () {
         this.assetMgr = app.getAssetMgr();
         var names = ["MainCity_", "city"];
         var name = names[0];
-        this.app.getAssetMgr().load("".concat(resRootPath, "shader/Mainshader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (state) {
+        this.app.getAssetMgr().load("".concat(resRootPath, "shader/shader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (state) {
             if (state.isfinish) {
                 _this.loadScene(name);
             }
@@ -8021,7 +8098,7 @@ var test_optimize_size_animationClip = /** @class */ (function () {
         this.app = app;
         this.scene = this.app.getScene();
         m4m.framework.assetMgr.openGuid = true;
-        this.app.getAssetMgr().load("./".concat(resRootPath, "shader/MainShader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (state) {
+        this.app.getAssetMgr().load("./".concat(resRootPath, "shader/shader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (state) {
             if (state.isfinish) {
                 _this.app.getAssetMgr().load("./".concat(resRootPath, "prefab/elong_prefab/elong_prefab.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                     if (s.isfinish) {
@@ -8335,7 +8412,7 @@ var test_pbr = /** @class */ (function () {
     test_pbr.prototype.loadTexture = function (lastState, state) {
         var _this = this;
         //加载图片资源
-        this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s1) {
+        this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s1) {
             if (s1.isfinish) {
                 _this.assetMgr.load(_this.PBRPath + "brdf.png", m4m.framework.AssetTypeEnum.Auto, function (s2) {
                     if (s2.isfinish) {
@@ -8692,7 +8769,7 @@ var test_pbr_scene = /** @class */ (function () {
     test_pbr_scene.prototype.loadTexture = function (lastState, state) {
         var _this = this;
         //加载图片资源
-        this.app.getAssetMgr().load("res/shader/MainShader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s1) {
+        this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s1) {
             if (s1.isfinish) {
                 _this.assetMgr.load(_this.PBRPath + "brdf.png", m4m.framework.AssetTypeEnum.Auto, function (s2) {
                     if (s2.isfinish) {
@@ -8844,7 +8921,7 @@ var test_pick_boxcollider = /** @class */ (function () {
         this.app.container.appendChild(descr);
         var names = ["MainCity_", "testnav", "city", "1042_pata_shenyuan_01", "1030_huodongchuangguan", "xinshoucun_fuben_day", "chuangjue-01"];
         var name = names[1];
-        demoTool.loadbySync("".concat(resRootPath, "shader/MainShader.assetbundle.json"), this.astMgr).then(function () {
+        demoTool.loadbySync("".concat(resRootPath, "shader/shader.assetbundle.json"), this.astMgr).then(function () {
             _this.loadScene(name);
         });
         // this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (state) =>
@@ -11360,7 +11437,7 @@ var demo;
             this.fireTick = 0;
         }
         TankGame.prototype.loadShader = function (laststate, state) {
-            this.app.getAssetMgr().load("".concat(resRootPath, "shader/Mainshader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
+            this.app.getAssetMgr().load("".concat(resRootPath, "shader/shader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                 if (s.isfinish) {
                     state.finish = true;
                 }
@@ -12452,7 +12529,7 @@ var test_loadAsiprefab = /** @class */ (function () {
         this.app = app;
         this.scene = this.app.getScene();
         this.scene.getRoot().localTranslate = new m4m.math.vector3(0, 0, 0);
-        this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (state) {
+        this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (state) {
             if (state.isfinish) {
                 _this.app.getAssetMgr().load("res/prefabs/0001_archangel@idle_none/0001_archangel@idle_none.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
                     if (s.isfinish) {
@@ -12535,7 +12612,7 @@ var test_assestmgr = /** @class */ (function () {
         this.cube = new m4m.framework.transform();
         this.scene.addChild(this.cube);
         var assetName = this.assetName;
-        this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (state) {
+        this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (state) {
             if (state.isfinish) {
                 // this.app.getAssetMgr().load("res/scenes/city/city.assetbundle.json", m4m.framework.AssetTypeEnum.Auto,
                 //     (s1) =>
@@ -12772,7 +12849,7 @@ var t;
             this.taskmgr.addTaskCall(this.initscene.bind(this));
         };
         test_clearDepth0.prototype.loadShader = function (laststate, state) {
-            this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (_state) {
+            this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (_state) {
                 if (_state.isfinish) {
                     state.finish = true;
                 }
@@ -12865,7 +12942,7 @@ var test_effect = /** @class */ (function () {
         this.bereplay = false;
     }
     test_effect.prototype.loadShader = function (laststate, state) {
-        this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (_state) {
+        this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (_state) {
             if (_state.isfinish) {
                 state.finish = true;
             }
@@ -13819,7 +13896,7 @@ var test_load = /** @class */ (function () {
         this.app = app;
         this.scene = this.app.getScene();
         var assetMgr = this.app.getAssetMgr();
-        assetMgr.load("".concat(resRootPath, "shader/Mainshader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (state) {
+        assetMgr.load("".concat(resRootPath, "shader/shader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (state) {
             if (state.isfinish) {
                 var name_3 = "0001_shengyi_male";
                 assetMgr.load("".concat(resRootPath, "prefab/").concat(name_3, "/").concat(name_3, ".assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
@@ -13854,7 +13931,7 @@ var t;
             this.taskmgr = new m4m.framework.taskMgr();
         }
         test_metal.prototype.loadShader = function (laststate, state) {
-            this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (_state) {
+            this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (_state) {
                 if (_state.isfinish) {
                     state.finish = true;
                 }
@@ -14129,7 +14206,7 @@ var test_multipleplayer_anim = /** @class */ (function () {
         baihu.name = "obj";
         baihu.localScale.x = baihu.localScale.y = baihu.localScale.z = 1;
         this.scene.addChild(baihu);
-        this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (state) {
+        this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (state) {
             if (state.isfinish) {
                 _this.app.getAssetMgr().load(_this.abName, m4m.framework.AssetTypeEnum.Auto, function (s) {
                     if (s.isfinish) {
@@ -14216,7 +14293,7 @@ var t;
             this.taskmgr = new m4m.framework.taskMgr();
         }
         Test_NormalMap.prototype.loadShader = function (laststate, state) {
-            this.app.getAssetMgr().load("".concat(resRootPath, "shader/Mainshader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (_state) {
+            this.app.getAssetMgr().load("".concat(resRootPath, "shader/shader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (_state) {
                 if (_state.isfinish) {
                     state.finish = true;
                 }
@@ -14846,7 +14923,7 @@ var t;
             this.taskmgr = new m4m.framework.taskMgr();
         }
         test_posteffect.prototype.loadShader = function (laststate, state) {
-            this.app.getAssetMgr().load("".concat(resRootPath, "shader/Mainshader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (_state) {
+            this.app.getAssetMgr().load("".concat(resRootPath, "shader/shader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (_state) {
                 if (_state.isfinish) {
                     state.finish = true;
                 }
@@ -15228,7 +15305,7 @@ var t;
             this.targetdir = new m4m.math.vector3();
         }
         TestRotate.prototype.loadShader = function (laststate, state) {
-            this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (_state) {
+            this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (_state) {
                 //state.finish = true;
                 if (_state.isfinish) {
                     state.finish = true;
@@ -15416,7 +15493,7 @@ var test_ShadowMap = /** @class */ (function () {
         this.assetmgr = this.app.getAssetMgr();
         this.scene.getRoot().localTranslate = new m4m.math.vector3(0, 0, 0);
         var name = "baihu";
-        this.app.getAssetMgr().load("".concat(resRootPath, "shader/Mainshader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (state) {
+        this.app.getAssetMgr().load("".concat(resRootPath, "shader/shader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (state) {
             if (state.isfinish) {
                 _this.app.getAssetMgr().load("".concat(resRootPath, "prefab/testshadowmap/testshadowmap.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                     if (s.isfinish) {
@@ -15674,7 +15751,7 @@ var t;
             this.eulerAngle = m4m.math.pool.new_vector3();
         }
         test_skillsystem.prototype.loadShader = function (laststate, state) {
-            this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (_state) {
+            this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (_state) {
                 if (_state.isfinish) {
                     state.finish = true;
                 }
@@ -15997,7 +16074,7 @@ var test_streamlight = /** @class */ (function () {
             lighttran.localTranslate.y = 3;
             lighttran.markDirty();
         }
-        this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (state) {
+        this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (state) {
             if (state.isfinish) {
                 _this.app.getAssetMgr().load("res/prefabs/streamlight/anim/0001_shengyi_male.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
                     if (s.isfinish) {
@@ -16057,7 +16134,7 @@ var t;
             this.play = true;
         }
         test_trailrenderrecorde.prototype.loadShader = function (laststate, state) {
-            this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (_state) {
+            this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (_state) {
                 if (_state.isfinish) {
                     state.finish = true;
                 }
@@ -16828,7 +16905,7 @@ var t;
             this.fps = 2;
         }
         test_uvroll.prototype.loadShader = function (laststate, state) {
-            this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (_state) {
+            this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (_state) {
                 if (_state.isfinish)
                     state.finish = true;
             });
@@ -16978,7 +17055,7 @@ var util;
 (function (util) {
     function loadShader(assetMgr) {
         return new Promise(function (resolve, reject) {
-            assetMgr.load("".concat(resRootPath, "shader/Mainshader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (_state) {
+            assetMgr.load("".concat(resRootPath, "shader/shader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (_state) {
                 if (_state.isfinish) {
                     resolve();
                 }
@@ -17094,7 +17171,7 @@ var UseAniplayClipDemo = /** @class */ (function () {
     //#endregion
     //#region 加载shader
     UseAniplayClipDemo.prototype.loadShader = function (laststate, state) {
-        this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
+        this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
             if (s.iserror) {
                 state.error = true;
             }
@@ -17237,7 +17314,7 @@ var UseAudioDemo = /** @class */ (function () {
     };
     //#region 加载shader
     UseAudioDemo.prototype.loadShader = function (laststate, state) {
-        this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
+        this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
             if (s.iserror) {
                 state.error = true;
             }
@@ -17346,7 +17423,7 @@ var UseF14EffectDemo = /** @class */ (function () {
     //#endregion
     //#region 加载shader
     UseF14EffectDemo.prototype.loadShader = function (laststate, state) {
-        this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
+        this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
             if (s.iserror) {
                 state.error = true;
             }
@@ -17416,7 +17493,7 @@ var UseMeshAndMatDemo = /** @class */ (function () {
     };
     //#region 加载shader
     UseMeshAndMatDemo.prototype.loadShader = function (laststate, state) {
-        this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
+        this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
             if (s.iserror) {
                 state.error = true;
             }
@@ -17517,7 +17594,7 @@ var UsePrefebDemo2 = /** @class */ (function () {
         }
         //#endregion
         //所以实际开发中都会把资源打包成bundle包 或 压缩的bundle包进行统一加载。如下：
-        this.assetMgr.load("res/shader/MainShader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
+        this.assetMgr.load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
             if (s.isfinish) {
                 _this.assetMgr.load("res/prefabs/Quad11/Quad.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
                     if (s.isfinish) {
@@ -17563,7 +17640,7 @@ var UseSceneDemo = /** @class */ (function () {
     };
     //#region 加载shader
     UseSceneDemo.prototype.loadShader = function (laststate, state) {
-        this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
+        this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
             if (s.iserror) {
                 state.error = true;
             }
@@ -17646,7 +17723,7 @@ var UseTextureDemo = /** @class */ (function () {
     };
     //#region 加载shader
     UseTextureDemo.prototype.loadShader = function (laststate, state) {
-        this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
+        this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
             if (s.iserror) {
                 state.error = true;
             }
@@ -18183,7 +18260,7 @@ var dome;
             this.app.showDrawCall();
             this.scene = this.app.getScene();
             var prefabName = 'GameObject';
-            this.app.getAssetMgr().load("res/shader/MainShader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (state) {
+            this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (state) {
                 _this.loadPrefab(prefabName, function () {
                     if (state.isfinish) {
                         var _prefab = _this.app.getAssetMgr().getAssetByName(prefabName + ".prefab.json");
@@ -19725,7 +19802,7 @@ var test_ChangeMaterial = /** @class */ (function () {
         this.zeroPoint = new m4m.math.vector3(0, 0, 0);
     }
     test_ChangeMaterial.prototype.loadShader = function (laststate, state) {
-        this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
+        this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (s) {
             if (s.isfinish) {
                 state.finish = true;
             }
@@ -19978,7 +20055,7 @@ var test_Sound = /** @class */ (function () {
         this.time = 0;
     }
     test_Sound.prototype.loadShader = function (laststate, state) {
-        this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (_state) {
+        this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, function (_state) {
             if (_state.isfinish) {
                 state.finish = true;
             }
@@ -20941,7 +21018,7 @@ var physics3dDemoTool = /** @class */ (function () {
                         this.scene = this.app.getScene();
                         this.astMgr = this.app.getAssetMgr();
                         this.iptMgr = this.app.getInputMgr();
-                        return [4 /*yield*/, demoTool.loadbySync("".concat(resRootPath, "shader/MainShader.assetbundle.json"), this.astMgr)];
+                        return [4 /*yield*/, demoTool.loadbySync("".concat(resRootPath, "shader/shader.assetbundle.json"), this.astMgr)];
                     case 1:
                         _a.sent();
                         return [4 /*yield*/, datGui.init()];

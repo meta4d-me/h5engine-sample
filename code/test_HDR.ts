@@ -3,6 +3,8 @@
 class HDR_sample implements IState {
     dec: string = "GLTF HDR";
     isEnableGUI: boolean = true;
+    /** 是否显示 实时灯源模型 */
+    isShowLightModel: boolean = false;
     app: m4m.framework.application;
     scene: m4m.framework.scene;
     assetMgr: m4m.framework.assetMgr;
@@ -33,6 +35,12 @@ class HDR_sample implements IState {
             gltfFolder: `${resRootPath}pbrRes/FlightHelmet/glTF/`,
             file: 'FlightHelmet.gltf',
             scale: 20,
+            cb: root => { }
+        },
+        {
+            gltfFolder: `${resRootPath}pbrRes/realtimeLight/`,
+            file: 'realtimeLight.gltf',
+            scale: 1,
             cb: root => { }
         },
         // {
@@ -154,7 +162,7 @@ class HDR_sample implements IState {
         const { ambientCubemapLight, mainLight, secondaryLight, tertiaryLight } = config;
         // const tex = await this.load<m4m.framework.texture>(HDRpath, 'flower_road_2k.hdr');
         // mr.materials[0].setTexture("_MainTex", tex);
-        await demoTool.loadbySync(`${resRootPath}shader/MainShader.assetbundle.json`, this.app.getAssetMgr());
+        await demoTool.loadbySync(`${resRootPath}shader/shader.assetbundle.json`, this.app.getAssetMgr());
         // await demoTool.loadbySync(`${resRootPath}test/shader/customShader/customShader.assetbundle.json`, this.app.getAssetMgr());  //项目shader
         // await datGui.init();
 
@@ -178,9 +186,13 @@ class HDR_sample implements IState {
 
         // const brdf = await this.load<m4m.framework.texture>('res/pbrRes/', 'lut_ggx.png');
 
+        let realtimeLights: m4m.framework.gltfRealtimeLight[] = [];
+
         const loadGLTF = async ({ gltfFolder, file, scale }) => {
             const gltf = await this.load<m4m.framework.gltf>(gltfFolder, file);
             const root = await gltf.load(this.assetMgr, this.app.webgl, gltfFolder, null, env, irradianceSH, exp, ambientCubemapLight.specularIntensity, ambientCubemapLight.diffuseIntensity);
+            let rtLights = gltf.getRealtimeLights();
+            if (rtLights) { realtimeLights = rtLights; }
             m4m.math.vec3SetAll(root.localScale, scale ?? 1);
             root.localScale.x *= -1;
             // this.app.getScene().addChild(root);
@@ -200,11 +212,15 @@ class HDR_sample implements IState {
             })
         }
 
-
-        gltfModels.map(async (cfg) => {
+        for (let i = 0, len = gltfModels.length; i < len; i++) {
+            let cfg = gltfModels[i];
             const root = await loadGLTF(cfg);
             if (cfg.cb) cfg.cb(root);
-        });
+        }
+        // gltfModels.map(async (cfg) => {
+        //     const root = await loadGLTF(cfg);
+        //     if (cfg.cb) cfg.cb(root);
+        // });
 
         const hexToRgb = hex =>
             hex.replace(/^#?([a-f\d])([a-f\d])([a-f\d])$/i
@@ -212,22 +228,87 @@ class HDR_sample implements IState {
                 .substring(1).match(/.{2}/g)
                 .map(x => parseInt(x, 16));
 
-        [mainLight, secondaryLight, tertiaryLight].map(light => {
-            // return;
-            const lightObj = new m4m.framework.transform();
-            lightObj.name = "Light" + light.name;
-            const mlight = lightObj.gameObject.addComponent("light") as m4m.framework.light;
-            mlight.type = m4m.framework.LightTypeEnum.Direction;
-            m4m.math.quatFromEulerAngles(-light.alpha, -light.beta, 0, lightObj.localRotate);
-            mlight.intensity = light.intensity;
-            const rgb = hexToRgb(light.color).map(x => x / 255);
-            mlight.color.r = rgb[0];
-            mlight.color.g = rgb[1];
-            mlight.color.b = rgb[2];
-            lightObj.markDirty();
-            // this.scene.addChild(lightObj);
-            this.lightRoot.addChild(lightObj);
-        });
+        const addLightModel = (rot: m4m.math.quaternion, pos: m4m.math.vector3, color: number[]) => {
+            if (!this.isShowLightModel) return;
+            //灯源模型显示
+            let lCube = m4m.framework.TransformUtil.CreatePrimitive(m4m.framework.PrimitiveType.Cube);
+            let renderer = lCube.gameObject.renderer as m4m.framework.meshRenderer;
+            let sh = m4m.framework.sceneMgr.app.getAssetMgr().getShader("simple.shader.json");
+            if (sh) {
+                renderer.materials[0].setShader(sh);
+                renderer.materials[0].setVector4("_MainColor", new m4m.math.vector4(color[0], color[1], color[2], 1));
+            }
+            lCube.localScale = new m4m.math.vector3(0.2, 0.2, 0.6);
+            lCube.localPosition = pos;
+            lCube.localRotate = rot;
+            this.lightRoot.addChild(lCube);
+        }
+
+
+        //gltf有实时灯光 ,走gltf 实时灯光配置
+        if (realtimeLights.length > 0) {
+            realtimeLights.forEach((l, i) => {
+                //
+                const node = new m4m.framework.transform();
+                node.name = `Light_${m4m.framework.LightTypeEnum[l.type]}_${i}`;
+                const comp = node.gameObject.addComponent("light") as m4m.framework.light;
+                comp.type = l.type;
+                //shadow
+                if (l.shadowQuality != m4m.framework.ShadowQualityType.None) {
+                    l.shadowQuality;
+                }
+                if (comp.type == m4m.framework.LightTypeEnum.Spot || comp.type == m4m.framework.LightTypeEnum.Point) {
+                    //range
+                    comp.range = l.range;
+                    if (comp.type == m4m.framework.LightTypeEnum.Spot) {
+                        //spotAngelCos
+                        comp.spotAngelCos = Math.cos(l.spotAngle * 0.5 * Math.PI / 180);
+                    }
+                }
+                //intensity
+                comp.intensity = l.intensity;
+                //color
+                m4m.math.colorSet(comp.color, l.color[0], l.color[1], l.color[2], l.color[3]);
+                //RTS
+                let pos = node.localPosition;
+                m4m.math.vec3Set(pos, l.pos[0], l.pos[1], l.pos[2]);
+                node.localPosition = pos;
+                let rot = node.localRotate;
+                m4m.math.quatFromEulerAngles(l.angles[0], l.angles[1], 0, rot);
+                node.localRotate = rot;
+
+                this.lightRoot.addChild(node);
+
+                //灯源模型显示
+                addLightModel(rot, pos, l.color);
+            });
+        } else {
+            //Clay Viewer 配置
+            let count = 0;
+            let lightCount = 3;
+            [mainLight, secondaryLight, tertiaryLight].map(light => {
+                // return;
+                const lightObj = new m4m.framework.transform();
+                lightObj.name = "Light" + light.name;
+                const mlight = lightObj.gameObject.addComponent("light") as m4m.framework.light;
+                mlight.type = m4m.framework.LightTypeEnum.Direction;
+                m4m.math.quatFromEulerAngles(light.alpha, light.beta, 0, lightObj.localRotate);
+                mlight.intensity = light.intensity;
+                const rgb = hexToRgb(light.color).map(x => x / 255);
+                mlight.color.r = rgb[0];
+                mlight.color.g = rgb[1];
+                mlight.color.b = rgb[2];
+                lightObj.markDirty();
+                // this.scene.addChild(lightObj);
+                this.lightRoot.addChild(lightObj);
+
+                //灯源模型显示
+                let val = count / lightCount * Math.PI * 2;
+                let s = 5;
+                addLightModel(lightObj.localRotate, new m4m.math.vector3(Math.sin(val) * s, 0, Math.cos(val) * s), rgb);
+                count++;
+            });
+        }
     }
 
     async enableGUI() {
@@ -240,6 +321,7 @@ class HDR_sample implements IState {
         gui.add(this, "Model", this.ModelList).name("快捷选择");
         gui.add(this, "Model").listen().name("模型名");
         gui.add(this, "enableLight").name("开启灯光");
+        gui.add(this, "isShowLightModel").name("显示光源模型");
         gui.add(this, "toLoad").name("加载");
     }
 

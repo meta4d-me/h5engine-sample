@@ -72,7 +72,7 @@ class test_loadMulBundle implements IState
         let name = names[0];
         // name="MainCity";
         let isloaded = false;
-        this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (state) =>
+        this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (state) =>
         {
             if (state.isfinish)
             {

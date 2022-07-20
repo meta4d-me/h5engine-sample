@@ -14,7 +14,7 @@ class test_navMesh implements IState {
 
         let names: string[] = ["MainCity_", "city"];
         let name = names[0];
-        this.app.getAssetMgr().load(`${resRootPath}shader/Mainshader.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (state) => {
+        this.app.getAssetMgr().load(`${resRootPath}shader/shader.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (state) => {
             if (state.isfinish) {
                 this.loadScene(name);
 

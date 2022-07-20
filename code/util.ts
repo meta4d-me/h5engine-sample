@@ -4,7 +4,7 @@ namespace util
     {
         return new Promise<void>((resolve, reject) =>
         {
-            assetMgr.load(`${resRootPath}shader/Mainshader.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (_state) =>
+            assetMgr.load(`${resRootPath}shader/shader.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (_state) =>
             {
                 if (_state.isfinish)
                 {

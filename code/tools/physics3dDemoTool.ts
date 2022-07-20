@@ -14,7 +14,7 @@ class physics3dDemoTool {
         this.scene = this.app.getScene();
         this.astMgr = this.app.getAssetMgr();
         this.iptMgr = this.app.getInputMgr();
-        await demoTool.loadbySync(`${resRootPath}shader/MainShader.assetbundle.json`, this.astMgr);
+        await demoTool.loadbySync(`${resRootPath}shader/shader.assetbundle.json`, this.astMgr);
         await datGui.init();
         this.initMats();
         this.initCamera();

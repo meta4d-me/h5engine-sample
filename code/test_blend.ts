@@ -17,7 +17,7 @@ namespace t
 
         private loadShader(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
-            this.app.getAssetMgr().load(`${resRootPath}shader/Mainshader.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (_state) =>
+            this.app.getAssetMgr().load(`${resRootPath}shader/shader.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (_state) =>
             {
                 if (_state.isfinish)
                 {

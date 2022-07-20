@@ -11,7 +11,7 @@ class test_ShadowMap implements IState {
         this.assetmgr = this.app.getAssetMgr();
         this.scene.getRoot().localTranslate = new m4m.math.vector3(0, 0, 0);
         let name = "baihu";
-        this.app.getAssetMgr().load(`${resRootPath}shader/Mainshader.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (state) => {
+        this.app.getAssetMgr().load(`${resRootPath}shader/shader.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (state) => {
             if (state.isfinish) {
                 this.app.getAssetMgr().load(`${resRootPath}prefab/testshadowmap/testshadowmap.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto,
                     (s) => {

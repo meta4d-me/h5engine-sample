@@ -17,7 +17,7 @@ class test_GPU_instancing implements IState
     private subRange = 10;
     async start(app: m4m.framework.application)
     {
-        await demoTool.loadbySync(`${resRootPath}shader/MainShader.assetbundle.json`, app.getAssetMgr());
+        await demoTool.loadbySync(`${resRootPath}shader/shader.assetbundle.json`, app.getAssetMgr());
         // await demoTool.loadbySync(`${resRootPath}shader/customShader/customShader.assetbundle.json`, app.getAssetMgr());  //项目shader
         await datGui.init();
         m4m["hehe"] = true;

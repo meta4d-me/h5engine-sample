@@ -290,7 +290,7 @@ class test_pbr implements IState {
 
     private loadTexture(lastState: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         //加载图片资源
-        this.app.getAssetMgr().load("res/shader/Mainshader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (s1) =>
+        this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (s1) =>
         {
             if (s1.isfinish){
                 this.assetMgr.load(this.PBRPath + "brdf.png", m4m.framework.AssetTypeEnum.Auto, (s2) => {

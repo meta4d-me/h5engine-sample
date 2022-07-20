@@ -48,7 +48,7 @@ class test_ParticleSystem implements IState
 
         m4m.framework.assetMgr.openGuid = false;
 
-        await demoTool.loadbySync(`${resRootPath}shader/MainShader.assetbundle.json`, this.astMgr);
+        await demoTool.loadbySync(`${resRootPath}shader/shader.assetbundle.json`, this.astMgr);
         await datGui.init();
 
         //
