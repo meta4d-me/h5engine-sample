@@ -6,6 +6,7 @@ class HDR_sample implements IState {
     /** 是否显示 实时灯源模型 */
     isShowLightModel: boolean = false;
     app: m4m.framework.application;
+    urlParameter: URLSearchParams;
     scene: m4m.framework.scene;
     assetMgr: m4m.framework.assetMgr;
     sceneConfig = `
@@ -109,6 +110,12 @@ class HDR_sample implements IState {
     }
 
     async start(app: m4m.framework.application) {
+        // //test ---
+        // globalThis.gltfViewHREF = `http://x?file=realtimeLight`;
+        // //--------
+
+        let href: string = globalThis.gltfViewHREF || window.location.href;
+        this.urlParameter = new URL(href).searchParams;
         this.app = app;
         this.scene = this.app.getScene();
         this.assetMgr = this.app.getAssetMgr();
@@ -143,7 +150,7 @@ class HDR_sample implements IState {
         hoverc.scaleSpeed = 0.1;
         hoverc.lookAtPoint = new m4m.math.vector3(0, 0, 0);
         //
-        let par = new URL(window.location.href).searchParams;
+        let par = this.urlParameter;
         if (par.has('file')) this.isEnableGUI = false;
 
         //开启GUI
@@ -199,7 +206,7 @@ class HDR_sample implements IState {
             this.modelRoot.addChild(root);
             return root;
         }
-        const par = new URL(window.location.href).searchParams;
+        const par = this.urlParameter;
         exp = par.has('exp') ? parseFloat(par.get('exp')) : exp;
         if (!gltfModels) gltfModels = [];
 
@@ -342,7 +349,7 @@ class HDR_sample implements IState {
             return;
         }
 
-        let par = new URL(window.location.href).searchParams;
+        let par = this.urlParameter;
         let model: any;
         let needCKModels = true;
         if (!this.isEnableGUI && !par.get('folder')) { needCKModels = false; }   //没配置路径，走固定路径关掉查指定配置

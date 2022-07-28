@@ -5402,10 +5402,12 @@ var HDR_sample = /** @class */ (function () {
     };
     HDR_sample.prototype.start = function (app) {
         return __awaiter(this, void 0, void 0, function () {
-            var scene, objCam, cam, hoverc, par;
+            var href, scene, objCam, cam, hoverc, par;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        href = globalThis.gltfViewHREF || window.location.href;
+                        this.urlParameter = new URL(href).searchParams;
                         this.app = app;
                         this.scene = this.app.getScene();
                         this.assetMgr = this.app.getAssetMgr();
@@ -5427,7 +5429,7 @@ var HDR_sample = /** @class */ (function () {
                         hoverc.distance = 30;
                         hoverc.scaleSpeed = 0.1;
                         hoverc.lookAtPoint = new m4m.math.vector3(0, 0, 0);
-                        par = new URL(window.location.href).searchParams;
+                        par = this.urlParameter;
                         if (par.has('file'))
                             this.isEnableGUI = false;
                         if (!this.isEnableGUI) return [3 /*break*/, 2];
@@ -5510,7 +5512,7 @@ var HDR_sample = /** @class */ (function () {
                                 });
                             });
                         };
-                        par = new URL(window.location.href).searchParams;
+                        par = this.urlParameter;
                         exp = par.has('exp') ? parseFloat(par.get('exp')) : exp;
                         if (!gltfModels)
                             gltfModels = [];
@@ -5670,7 +5672,7 @@ var HDR_sample = /** @class */ (function () {
             console.warn("\u6CA1\u6709\u6307\u5B9A model !");
             return;
         }
-        var par = new URL(window.location.href).searchParams;
+        var par = this.urlParameter;
         var model;
         var needCKModels = true;
         if (!this.isEnableGUI && !par.get('folder')) {
