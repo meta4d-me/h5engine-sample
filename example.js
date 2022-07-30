@@ -5329,6 +5329,12 @@ var HDR_sample = /** @class */ (function () {
                 scale: 1,
                 cb: function (root) { }
             },
+            {
+                gltfFolder: "".concat(resRootPath, "pbrRes/transparentTest/"),
+                file: 'transparentTest.gltf',
+                scale: 1,
+                cb: function (root) { }
+            },
             // {
             //     gltfFolder: 'res/pbrRes/model/',
             //     file: 'demo.gltf',

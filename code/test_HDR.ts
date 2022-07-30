@@ -44,6 +44,12 @@ class HDR_sample implements IState {
             scale: 1,
             cb: root => { }
         },
+        {
+            gltfFolder: `${resRootPath}pbrRes/transparentTest/`,
+            file: 'transparentTest.gltf',
+            scale: 1,
+            cb: root => { }
+        },
         // {
         //     gltfFolder: 'res/pbrRes/model/',
         //     file: 'demo.gltf',
