@@ -5480,7 +5480,7 @@ var HDR_sample = /** @class */ (function () {
                     case 3:
                         irradianceSH = _b.sent();
                         skybox = new m4m.framework.transform();
-                        skybox.localScale.x = skybox.localScale.y = skybox.localScale.z = 600;
+                        skybox.enableCulling = false; //skybox 不会被视锥剔除
                         // this.scene.addChild(skybox);
                         this.modelRoot.addChild(skybox);
                         mf_c = skybox.gameObject.addComponent("meshFilter");

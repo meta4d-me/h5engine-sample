@@ -184,7 +184,7 @@ class HDR_sample implements IState {
         const env = await this.loadCubeTexture(`${this.HDRpath}${this._HDR}/`);
         const irradianceSH = await this.loadCubeTexture(`${this.HDRpath}${this._HDR}_diff/`);
         const skybox = new m4m.framework.transform();
-        skybox.localScale.x = skybox.localScale.y = skybox.localScale.z = 600;
+        skybox.enableCulling = false ; //skybox 不会被视锥剔除
         // this.scene.addChild(skybox);
         this.modelRoot.addChild(skybox);
         let mf_c = skybox.gameObject.addComponent("meshFilter") as m4m.framework.meshFilter;
