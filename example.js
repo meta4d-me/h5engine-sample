@@ -641,7 +641,7 @@ var demo_navigaionRVO = /** @class */ (function () {
         this.lastLine = new m4m.framework.transform();
         var mf = this.lastLine.gameObject.addComponent("meshFilter");
         mf.mesh = mesh;
-        mesh.glMesh.lineMode = WebGLRenderingContext.LINE_STRIP;
+        mesh.glMesh.lineMode = WebGL2RenderingContext.LINE_STRIP;
         this.lastLine.gameObject.addComponent("meshRenderer");
         this.lastLine.localTranslate.x = this.lastLine.localTranslate.y = this.lastLine.localTranslate.z = 0;
         this.scene.addChild(this.lastLine);
@@ -5400,7 +5400,7 @@ var HDR_sample = /** @class */ (function () {
                         cubeTex = new m4m.framework.texture(folder.split('/').pop());
                         cubeTex.glTexture = new m4m.render.glTextureCube(this.app.webgl, m4m.render.TextureFormatEnum.RGBA, true, true);
                         cubeTex.use();
-                        cubeTex.glTexture.uploadImages(tex[0], tex[1], tex[2], tex[3], tex[4], tex[5], WebGLRenderingContext.LINEAR_MIPMAP_LINEAR, WebGLRenderingContext.LINEAR, WebGLRenderingContext.TEXTURE_CUBE_MAP);
+                        cubeTex.glTexture.uploadImages(tex[0], tex[1], tex[2], tex[3], tex[4], tex[5], WebGL2RenderingContext.LINEAR_MIPMAP_LINEAR, WebGL2RenderingContext.LINEAR, WebGL2RenderingContext.TEXTURE_CUBE_MAP);
                         return [2 /*return*/, cubeTex];
                 }
             });
