@@ -32,7 +32,7 @@ class test_f4skin implements IState {
         return bones;
     }
 
-    createMesh(ctx: WebGLRenderingContext) {
+    createMesh(ctx: WebGL2RenderingContext) {
         let mesh = new m4m.framework.mesh();
 
         const NumVertsPerRow = 5;

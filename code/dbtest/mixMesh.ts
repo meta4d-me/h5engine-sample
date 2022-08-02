@@ -18,7 +18,7 @@ namespace dome
         realEboLen:number=0;
         ebodata:Uint16Array;
 
-        constructor(mat: m4m.framework.material, vCount:number,vf:number,webgl:WebGLRenderingContext)
+        constructor(mat: m4m.framework.material, vCount:number,vf:number,webgl:WebGL2RenderingContext)
         {
             this.mat = mat;
             let total = m4m.render.meshData.calcByteSize(vf) / 4;
@@ -58,7 +58,7 @@ namespace dome
         }
 
         private temptPos:m4m.math.vector3=new m4m.math.vector3();
-        uploadMeshData(mat:m4m.math.matrix,mesh:m4m.framework.mesh,webgl:WebGLRenderingContext)
+        uploadMeshData(mat:m4m.math.matrix,mesh:m4m.framework.mesh,webgl:WebGL2RenderingContext)
         {
             let data=mesh.data;
 
@@ -133,13 +133,13 @@ namespace dome
             this.mesh.submesh[0].size=this.realEboLen;
         }
 
-        mixToGLmesh(webgl:WebGLRenderingContext)
+        mixToGLmesh(webgl:WebGL2RenderingContext)
         {
             this.mesh.glMesh.uploadVertexData(webgl,this.vbodata);
             this.mesh.glMesh.uploadIndexData(webgl, 0, this.ebodata);
         }
 
-        private checkMeshCapacity(vertexcount:number,eboLen:number,webgl:WebGLRenderingContext)
+        private checkMeshCapacity(vertexcount:number,eboLen:number,webgl:WebGL2RenderingContext)
         {
             if(this.currentVerteCount+vertexcount>this.maxVerteCount)
             {

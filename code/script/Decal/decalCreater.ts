@@ -204,7 +204,7 @@ class decalGeometry{
     private vertices : m4m.math.vector3 []= [];
     private normals : m4m.math.vector3[]= [];
     private uvs : m4m.math.vector2[] = [];
-    constructor(public tragetMeshf: m4m.framework.meshFilter , public position:m4m.math.vector3, public orientation:m4m.math.quaternion,public size:m4m.math.vector3 , webgl : WebGLRenderingContext){
+    constructor(public tragetMeshf: m4m.framework.meshFilter , public position:m4m.math.vector3, public orientation:m4m.math.quaternion,public size:m4m.math.vector3 , webgl : WebGL2RenderingContext){
     	// THREE.BufferGeometry.call( this );
         decalGeometry.id++;
         this.mesh = new m4m.framework.mesh(`decalGeometry_${decalGeometry.id}`);

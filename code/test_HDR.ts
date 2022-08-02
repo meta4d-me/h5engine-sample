@@ -110,7 +110,7 @@ class HDR_sample implements IState {
             tex[3],
             tex[4],
             tex[5],
-            WebGLRenderingContext.LINEAR_MIPMAP_LINEAR, WebGLRenderingContext.LINEAR, WebGLRenderingContext.TEXTURE_CUBE_MAP
+            WebGL2RenderingContext.LINEAR_MIPMAP_LINEAR, WebGL2RenderingContext.LINEAR, WebGL2RenderingContext.TEXTURE_CUBE_MAP
         );
         return cubeTex;
     }
