@@ -270,7 +270,7 @@ class demo_navigaionRVO implements IState
         this.lastLine =new m4m.framework.transform();
         let mf = this.lastLine.gameObject.addComponent(`meshFilter`) as m4m.framework.meshFilter;
         mf.mesh = mesh;
-        mesh.glMesh.lineMode = WebGLRenderingContext.LINE_STRIP;
+        mesh.glMesh.lineMode = WebGL2RenderingContext.LINE_STRIP;
         this.lastLine.gameObject.addComponent(`meshRenderer`) as m4m.framework.meshRenderer;
         this.lastLine.localTranslate.x =this.lastLine.localTranslate.y =this.lastLine.localTranslate.z = 0;
         this.scene.addChild(this.lastLine);
