@@ -1,13 +1,8 @@
-namespace util
-{
-    export function loadShader(assetMgr: m4m.framework.assetMgr)
-    {
-        return new Promise<void>((resolve, reject) =>
-        {
-            assetMgr.load(`${resRootPath}shader/shader.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (_state) =>
-            {
-                if (_state.isfinish)
-                {
+namespace util {
+    export function loadShader(assetMgr: m4m.framework.assetMgr) {
+        return new Promise<void>((resolve, reject) => {
+            assetMgr.load(`${resRootPath}shader/shader.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (_state) => {
+                if (_state.isfinish) {
                     resolve();
                 }
             }
@@ -15,14 +10,10 @@ namespace util
         })
     }
 
-    export function loadModel(assetMgr: m4m.framework.assetMgr, modelName: string)
-    {
-        return new Promise<m4m.framework.prefab>((resolve, reject) =>
-        {
-            assetMgr.load(`${resRootPath}prefab/${modelName}/${modelName}.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (s) =>
-            {
-                if (s.isfinish)
-                {
+    export function loadModel(assetMgr: m4m.framework.assetMgr, modelName: string) {
+        return new Promise<m4m.framework.prefab>((resolve, reject) => {
+            assetMgr.load(`${resRootPath}prefab/${modelName}/${modelName}.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (s) => {
+                if (s.isfinish) {
                     let prefab = assetMgr.getAssetByName(modelName + ".prefab.json", `${modelName}.assetbundle.json`) as m4m.framework.prefab;
                     resolve(prefab);
                 }
@@ -30,8 +21,7 @@ namespace util
         })
     }
 
-    export function addCamera(scene: m4m.framework.scene)
-    {
+    export function addCamera(scene: m4m.framework.scene) {
         //添加一个摄像机
         var objCam = new m4m.framework.transform();
         objCam.name = "sth.";
@@ -45,26 +35,23 @@ namespace util
         return objCam;
     }
 
-    export function loadTex(url: string, assetMgr: m4m.framework.assetMgr)
-    {
-        return new Promise<void>((resolve, reject) =>
-        {
-            assetMgr.load(url, m4m.framework.AssetTypeEnum.Auto, (s) =>
-            {
-                if (s.isfinish)
-                {
-                    resolve();
+    export function loadTex(url: string, assetMgr: m4m.framework.assetMgr) {
+        return new Promise<m4m.framework.texture>((resolve, reject) => {
+            assetMgr.load(url, m4m.framework.AssetTypeEnum.Auto, (s) => {
+                if (s.isfinish) {
+                    let idx = url.lastIndexOf("/");
+                    let texFileName = idx != -1 ? url.substring(idx + 1) : url;
+                    let tex = assetMgr.getAssetByName(texFileName) as m4m.framework.texture;
+                    resolve(tex);
                 }
-                else
-                {
+                else {
                     reject()
                 }
             })
         })
     }
 
-    export function loadTextures(urls: string[], assetMgr: m4m.framework.assetMgr)
-    {
+    export function loadTextures(urls: string[], assetMgr: m4m.framework.assetMgr) {
         return Promise.all(urls.map(item => loadTex(item, assetMgr)))
     }
 

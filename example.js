@@ -1288,6 +1288,7 @@ var main = /** @class */ (function () {
             demoList.addBtn("skinMesh角色换装", function () { return new testReload(); });
             demoList.addBtn("物理2d_dome", function () { return new physic2d_dome(); });
             demoList.addBtn("导航网格", function () { return new test_navMesh(); });
+            demoList.addBtn("GPU压缩纹理", function () { return new test_CompressTexture(); });
             // demoList.addBtn("Android平台ETC1压缩纹理", () => new test_ETC1_KTX());
             return new demoList();
         });
@@ -4911,6 +4912,94 @@ var test_3DPhysics_motor_wheel = /** @class */ (function () {
         this.syncDisplayRT();
     };
     return test_3DPhysics_motor_wheel;
+}());
+/** GPU 压缩纹理测试 */
+var test_CompressTexture = /** @class */ (function () {
+    function test_CompressTexture() {
+        this.texType = "PNG";
+        this.texTypeFileMap = {
+            PNG: "".concat(resRootPath, "texture/Scene02_shiwu_01.png"),
+            ASTC: "".concat(resRootPath, "texture/Scene02_shiwu_01_5x5.astc"),
+            PVR: "".concat(resRootPath, "texture/Scene02_shiwu_01.pvr"),
+            S3TC: "".concat(resRootPath, "texture/Scene02_shiwu_01.dds"),
+            ETC: "".concat(resRootPath, "texture/Scene02_shiwu_01.ktx"),
+        };
+    }
+    test_CompressTexture.prototype.start = function (app) {
+        return __awaiter(this, void 0, void 0, function () {
+            var scene, objCam, camera, hoverc;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        this.app = app;
+                        return [4 /*yield*/, datGui.init()];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, util.loadShader(app.getAssetMgr())];
+                    case 2:
+                        _a.sent();
+                        scene = m4m.framework.sceneMgr.scene;
+                        objCam = new m4m.framework.transform();
+                        objCam.name = "sth.";
+                        scene.addChild(objCam);
+                        camera = objCam.gameObject.addComponent("camera");
+                        camera.near = 0.01;
+                        camera.far = 120;
+                        camera.fov = Math.PI * 0.3;
+                        camera.backgroundColor = new m4m.math.color(0.3, 0.3, 0.3, 1);
+                        objCam.localTranslate = new m4m.math.vector3(0, 15, -15);
+                        objCam.lookatPoint(new m4m.math.vector3(0, 0, 0));
+                        hoverc = camera.gameObject.addComponent("HoverCameraScript");
+                        hoverc.panAngle = 180;
+                        hoverc.tiltAngle = 45;
+                        hoverc.distance = 10;
+                        hoverc.scaleSpeed = 0.1;
+                        hoverc.lookAtPoint = new m4m.math.vector3(0, 0, 0);
+                        //模型
+                        this.model = m4m.framework.TransformUtil.CreatePrimitive(m4m.framework.PrimitiveType.Cube).gameObject.renderer;
+                        this.model.materials[0].setShader(app.getAssetMgr().getShader("simple.shader.json"));
+                        //
+                        scene.addChild(this.model.gameObject.transform);
+                        //GUI
+                        this.setGUI();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    test_CompressTexture.prototype.setGUI = function () {
+        if (!dat)
+            return;
+        var gui = new dat.GUI();
+        var title = { str: "GPU压缩纹理" };
+        gui.add(title, "str");
+        //force
+        gui.add(this, "texType", ["PNG", "ASTC", "PVR", "S3TC", "ETC"]).name("\u7EB9\u7406\u7C7B\u578B");
+        //方法
+        gui.add(this, "changeTexture").name("\u52A0\u8F7D\u66FF\u6362\u7EB9\u7406");
+    };
+    test_CompressTexture.prototype.changeTexture = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var file, tex, mat;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        file = this.texTypeFileMap[this.texType];
+                        if (!file)
+                            return [2 /*return*/];
+                        return [4 /*yield*/, util.loadTex(file, this.app.getAssetMgr())];
+                    case 1:
+                        tex = _a.sent();
+                        mat = this.model.materials[0];
+                        mat.setTexture("_MainTex", tex);
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    test_CompressTexture.prototype.update = function (delta) {
+    };
+    return test_CompressTexture;
 }());
 /** 表面贴花 样例 */
 var test_Decal = /** @class */ (function () {
@@ -17100,7 +17189,10 @@ var util;
         return new Promise(function (resolve, reject) {
             assetMgr.load(url, m4m.framework.AssetTypeEnum.Auto, function (s) {
                 if (s.isfinish) {
-                    resolve();
+                    var idx = url.lastIndexOf("/");
+                    var texFileName = idx != -1 ? url.substring(idx + 1) : url;
+                    var tex = assetMgr.getAssetByName(texFileName);
+                    resolve(tex);
                 }
                 else {
                     reject();

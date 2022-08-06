@@ -43,6 +43,7 @@ class main implements m4m.framework.IUserCode {
             demoList.addBtn("skinMesh角色换装", () => new testReload());
             demoList.addBtn("物理2d_dome", () => new physic2d_dome());
             demoList.addBtn("导航网格", () => new test_navMesh());
+            demoList.addBtn("GPU压缩纹理", () => new test_CompressTexture());
             // demoList.addBtn("Android平台ETC1压缩纹理", () => new test_ETC1_KTX());
             return new demoList();
         });
