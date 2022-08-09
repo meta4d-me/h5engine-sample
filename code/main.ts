@@ -35,7 +35,7 @@ class main implements m4m.framework.IUserCode {
             demoList.addBtn("射线检测", () => new test_pick_boxcollider());
             demoList.addBtn("test_pick", () => new test_pick());
             demoList.addBtn("test_sound", () => new t.test_sound());
-            demoList.addBtn("f14effect", () => new dome.db_test_f14eff());
+            demoList.addBtn("f14effect 特效系统", () => new dome.db_test_f14eff());
             demoList.addBtn("test_anim", () => new test_anim());
             demoList.addBtn("关键帧动画", () => new test_keyFrameAni());
             demoList.addBtn("test_f4skin", () => new test_f4skin());

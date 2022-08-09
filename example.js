@@ -1280,7 +1280,7 @@ var main = /** @class */ (function () {
             demoList.addBtn("射线检测", function () { return new test_pick_boxcollider(); });
             demoList.addBtn("test_pick", function () { return new test_pick(); });
             demoList.addBtn("test_sound", function () { return new t.test_sound(); });
-            demoList.addBtn("f14effect", function () { return new dome.db_test_f14eff(); });
+            demoList.addBtn("f14effect 特效系统", function () { return new dome.db_test_f14eff(); });
             demoList.addBtn("test_anim", function () { return new test_anim(); });
             demoList.addBtn("关键帧动画", function () { return new test_keyFrameAni(); });
             demoList.addBtn("test_f4skin", function () { return new test_f4skin(); });
