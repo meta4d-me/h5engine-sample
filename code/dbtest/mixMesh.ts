@@ -37,12 +37,12 @@ namespace dome
             // gmesh.glMesh.uploadVertexData(webgl, vboArr);
 
             gmesh.glMesh.addIndex(webgl, this.ebodata.length);
+            gmesh.glMesh.initVAO();
             // gmesh.glMesh.uploadIndexData(webgl, 0, eboArr);
             gmesh.submesh = [];
             {
                 var sm = new m4m.framework.subMeshInfo();
                 sm.matIndex = 0;
-                sm.useVertexIndex = 0;
                 sm.start = 0;
                 sm.size = this.ebodata.length;
                 sm.line = false;

@@ -254,6 +254,7 @@ class decalGeometry{
         this.mesh.glMesh.uploadVertexData(webgl, vertexs);
         this.mesh.glMesh.addIndex(webgl, indices.length);
         this.mesh.glMesh.uploadIndexData(webgl, 0, indices);
+        this.mesh.glMesh.initVAO();
 
         //sub mesh
         this.mesh.submesh = [];

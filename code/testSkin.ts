@@ -232,6 +232,9 @@ class test_f4skin implements IState {
 
         mesh.glMesh.uploadIndexSubData(ctx, 0, ebo);
 
+        mesh.glMesh.initVAO();
+
+
         return mesh;
     }
 

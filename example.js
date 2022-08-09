@@ -641,7 +641,7 @@ var demo_navigaionRVO = /** @class */ (function () {
         this.lastLine = new m4m.framework.transform();
         var mf = this.lastLine.gameObject.addComponent("meshFilter");
         mf.mesh = mesh;
-        mesh.glMesh.lineMode = WebGL2RenderingContext.LINE_STRIP;
+        //mesh.glMesh.lineMode = WebGL2RenderingContext.LINE_STRIP;
         this.lastLine.gameObject.addComponent("meshRenderer");
         this.lastLine.localTranslate.x = this.lastLine.localTranslate.y = this.lastLine.localTranslate.z = 0;
         this.scene.addChild(this.lastLine);
@@ -668,11 +668,11 @@ var demo_navigaionRVO = /** @class */ (function () {
         _mesh.glMesh.uploadVertexSubData(this.app.webgl, v32);
         _mesh.glMesh.addIndex(this.app.webgl, i16.length);
         _mesh.glMesh.uploadIndexSubData(this.app.webgl, 0, i16);
+        _mesh.glMesh.initVAO();
         _mesh.submesh = [];
         {
             var sm = new m4m.framework.subMeshInfo();
             sm.matIndex = 0;
-            sm.useVertexIndex = 0;
             sm.start = 0;
             sm.size = i16.length;
             sm.line = true;
@@ -2782,6 +2782,7 @@ var test_f4skin = /** @class */ (function () {
         sm.line = false;
         mesh.submesh.push(sm);
         mesh.glMesh.uploadIndexSubData(ctx, 0, ebo);
+        mesh.glMesh.initVAO();
         return mesh;
     };
     test_f4skin.prototype.start = function (app) {
@@ -8011,6 +8012,7 @@ var test_navMesh = /** @class */ (function () {
         _mesh.glMesh.uploadVertexSubData(this.app.webgl, v32);
         _mesh.glMesh.addIndex(this.app.webgl, i16.length);
         _mesh.glMesh.uploadIndexSubData(this.app.webgl, 0, i16);
+        _mesh.glMesh.initVAO();
         _mesh.submesh = [];
         {
             var sm = new m4m.framework.subMeshInfo();
@@ -18141,12 +18143,12 @@ var dome;
             gmesh.glMesh.initBuffer(webgl, vf, vCount, m4m.render.MeshTypeEnum.Dynamic);
             // gmesh.glMesh.uploadVertexData(webgl, vboArr);
             gmesh.glMesh.addIndex(webgl, this.ebodata.length);
+            gmesh.glMesh.initVAO();
             // gmesh.glMesh.uploadIndexData(webgl, 0, eboArr);
             gmesh.submesh = [];
             {
                 var sm = new m4m.framework.subMeshInfo();
                 sm.matIndex = 0;
-                sm.useVertexIndex = 0;
                 sm.start = 0;
                 sm.size = this.ebodata.length;
                 sm.line = false;
@@ -18864,11 +18866,11 @@ var dome;
             _mesh.glMesh.uploadVertexData(this.app.webgl, v32);
             _mesh.glMesh.addIndex(this.app.webgl, i16.length);
             _mesh.glMesh.uploadIndexData(this.app.webgl, 0, i16);
+            _mesh.glMesh.initVAO();
             _mesh.submesh = [];
             {
                 var sm = new m4m.framework.subMeshInfo();
                 sm.matIndex = 0;
-                sm.useVertexIndex = 0;
                 sm.start = 0;
                 sm.size = i16.length;
                 sm.line = false;
@@ -20609,6 +20611,7 @@ var decalGeometry = /** @class */ (function () {
         this.mesh.glMesh.uploadVertexData(webgl, vertexs);
         this.mesh.glMesh.addIndex(webgl, indices.length);
         this.mesh.glMesh.uploadIndexData(webgl, 0, indices);
+        this.mesh.glMesh.initVAO();
         //sub mesh
         this.mesh.submesh = [];
         var minfo = new m4m.framework.subMeshInfo();
