@@ -5035,7 +5035,6 @@ var test_GPU_instancing = /** @class */ (function () {
                     case 2:
                         // await demoTool.loadbySync(`${resRootPath}shader/customShader/customShader.assetbundle.json`, app.getAssetMgr());  //项目shader
                         _a.sent();
-                        m4m["hehe"] = true;
                         scene = this._scene = app.getScene();
                         this.cubeRoot = new m4m.framework.transform();
                         this.cubeRoot.localTranslate.y = -5;
@@ -5063,7 +5062,7 @@ var test_GPU_instancing = /** @class */ (function () {
                         app.showDrawCall();
                         app.showFps();
                         _dat = new dat.GUI();
-                        _dat.add(this, "modelType", ["", "bullet_11", "bullet_12"]);
+                        _dat.add(this, "modelType", ["", "bullet_11"]);
                         _dat.add(this, 'isInstancing').listen();
                         _dat.add(this, 'instanceSwitch');
                         _dat.add(this, 'batcherSwitch');
@@ -5205,7 +5204,15 @@ var test_GPU_instancing = /** @class */ (function () {
         obj.name = "cube_".concat(++this.count);
         this.cubeRoot.addChild(obj);
         var range = this.subRange;
+        var scaleRange = 1;
+        var rotRnage = 180;
+        //位置
         m4m.math.vec3Set(obj.localPosition, this.getRandom(range), this.getRandom(range), this.getRandom(range));
+        //缩放
+        var s = this.getRandom(scaleRange) + 0.5;
+        m4m.math.vec3Set(obj.localScale, s, s, s);
+        //旋转
+        m4m.math.quatFromEulerAngles(this.getRandom(rotRnage), this.getRandom(rotRnage), this.getRandom(rotRnage), obj.localRotate);
         //change materail
         var mr = obj.gameObject.getComponent("meshRenderer");
         var mat = this._mat_ins;
@@ -5816,7 +5823,7 @@ var test_LineRenderer = /** @class */ (function () {
  */
 var test_ParticleSystem = /** @class */ (function () {
     function test_ParticleSystem() {
-        this._particles = ["ParticleAdditive", "treasurechest", "Particle_Sweat_Disable", "Particle_Dust_Disable", "ParticleAlphaBlended", "ps_inheritVelocity", "ParticleSystem", "ps_noise", "Fire", "Flames", "shark-levelup"];
+        this._particles = ["ParticleAdditive", "Particle_Sweat_Disable", "Particle_Dust_Disable", "ParticleAlphaBlended", "ps_inheritVelocity", "ParticleSystem", "ps_noise", "Fire", "Flames", "shark-levelup"];
         this._isMove = false;
         this._particleStartPosition = new m4m.math.vector3();
         this._particleCurrentPosition = new m4m.math.vector3();

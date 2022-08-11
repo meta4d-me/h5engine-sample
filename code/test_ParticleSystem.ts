@@ -23,7 +23,7 @@ class test_ParticleSystem implements IState
     camera: m4m.framework.camera;
     astMgr: m4m.framework.assetMgr;
 
-    private _particles = ["ParticleAdditive", "treasurechest", "Particle_Sweat_Disable", "Particle_Dust_Disable", "ParticleAlphaBlended", "ps_inheritVelocity", "ParticleSystem", "ps_noise", "Fire", "Flames", "shark-levelup"];
+    private _particles = ["ParticleAdditive", "Particle_Sweat_Disable", "Particle_Dust_Disable", "ParticleAlphaBlended", "ps_inheritVelocity", "ParticleSystem", "ps_noise", "Fire", "Flames", "shark-levelup"];
     private _particle: m4m.framework.transform;
 
     private _isMove = false;
