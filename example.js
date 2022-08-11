@@ -641,7 +641,7 @@ var demo_navigaionRVO = /** @class */ (function () {
         this.lastLine = new m4m.framework.transform();
         var mf = this.lastLine.gameObject.addComponent("meshFilter");
         mf.mesh = mesh;
-        mesh.glMesh.lineMode = WebGL2RenderingContext.LINE_STRIP;
+        //mesh.glMesh.lineMode = WebGL2RenderingContext.LINE_STRIP;
         this.lastLine.gameObject.addComponent("meshRenderer");
         this.lastLine.localTranslate.x = this.lastLine.localTranslate.y = this.lastLine.localTranslate.z = 0;
         this.scene.addChild(this.lastLine);
@@ -668,11 +668,11 @@ var demo_navigaionRVO = /** @class */ (function () {
         _mesh.glMesh.uploadVertexSubData(this.app.webgl, v32);
         _mesh.glMesh.addIndex(this.app.webgl, i16.length);
         _mesh.glMesh.uploadIndexSubData(this.app.webgl, 0, i16);
+        _mesh.glMesh.initVAO();
         _mesh.submesh = [];
         {
             var sm = new m4m.framework.subMeshInfo();
             sm.matIndex = 0;
-            sm.useVertexIndex = 0;
             sm.start = 0;
             sm.size = i16.length;
             sm.line = true;
@@ -1280,7 +1280,7 @@ var main = /** @class */ (function () {
             demoList.addBtn("射线检测", function () { return new test_pick_boxcollider(); });
             demoList.addBtn("test_pick", function () { return new test_pick(); });
             demoList.addBtn("test_sound", function () { return new t.test_sound(); });
-            demoList.addBtn("f14effect", function () { return new dome.db_test_f14eff(); });
+            demoList.addBtn("f14effect 特效系统", function () { return new dome.db_test_f14eff(); });
             demoList.addBtn("test_anim", function () { return new test_anim(); });
             demoList.addBtn("关键帧动画", function () { return new test_keyFrameAni(); });
             demoList.addBtn("test_f4skin", function () { return new test_f4skin(); });
@@ -2783,6 +2783,7 @@ var test_f4skin = /** @class */ (function () {
         sm.line = false;
         mesh.submesh.push(sm);
         mesh.glMesh.uploadIndexSubData(ctx, 0, ebo);
+        mesh.glMesh.initVAO();
         return mesh;
     };
     test_f4skin.prototype.start = function (app) {
@@ -5123,7 +5124,6 @@ var test_GPU_instancing = /** @class */ (function () {
                     case 2:
                         // await demoTool.loadbySync(`${resRootPath}shader/customShader/customShader.assetbundle.json`, app.getAssetMgr());  //项目shader
                         _a.sent();
-                        m4m["hehe"] = true;
                         scene = this._scene = app.getScene();
                         this.cubeRoot = new m4m.framework.transform();
                         this.cubeRoot.localTranslate.y = -5;
@@ -5151,7 +5151,7 @@ var test_GPU_instancing = /** @class */ (function () {
                         app.showDrawCall();
                         app.showFps();
                         _dat = new dat.GUI();
-                        _dat.add(this, "modelType", ["", "bullet_11", "bullet_12"]);
+                        _dat.add(this, "modelType", ["", "bullet_11"]);
                         _dat.add(this, 'isInstancing').listen();
                         _dat.add(this, 'instanceSwitch');
                         _dat.add(this, 'batcherSwitch');
@@ -5293,7 +5293,15 @@ var test_GPU_instancing = /** @class */ (function () {
         obj.name = "cube_".concat(++this.count);
         this.cubeRoot.addChild(obj);
         var range = this.subRange;
+        var scaleRange = 1;
+        var rotRnage = 180;
+        //位置
         m4m.math.vec3Set(obj.localPosition, this.getRandom(range), this.getRandom(range), this.getRandom(range));
+        //缩放
+        var s = this.getRandom(scaleRange) + 0.5;
+        m4m.math.vec3Set(obj.localScale, s, s, s);
+        //旋转
+        m4m.math.quatFromEulerAngles(this.getRandom(rotRnage), this.getRandom(rotRnage), this.getRandom(rotRnage), obj.localRotate);
         //change materail
         var mr = obj.gameObject.getComponent("meshRenderer");
         var mat = this._mat_ins;
@@ -5904,7 +5912,7 @@ var test_LineRenderer = /** @class */ (function () {
  */
 var test_ParticleSystem = /** @class */ (function () {
     function test_ParticleSystem() {
-        this._particles = ["ParticleAdditive", "treasurechest", "Particle_Sweat_Disable", "Particle_Dust_Disable", "ParticleAlphaBlended", "ps_inheritVelocity", "ParticleSystem", "ps_noise", "Fire", "Flames", "shark-levelup"];
+        this._particles = ["ParticleAdditive", "fastshell_ps", "Particle_Sweat_Disable", "Particle_Dust_Disable", "ParticleAlphaBlended", "ps_inheritVelocity", "ParticleSystem", "ps_noise", "Fire", "Flames", "shark-levelup"];
         this._isMove = false;
         this._particleStartPosition = new m4m.math.vector3();
         this._particleCurrentPosition = new m4m.math.vector3();
@@ -8100,6 +8108,7 @@ var test_navMesh = /** @class */ (function () {
         _mesh.glMesh.uploadVertexSubData(this.app.webgl, v32);
         _mesh.glMesh.addIndex(this.app.webgl, i16.length);
         _mesh.glMesh.uploadIndexSubData(this.app.webgl, 0, i16);
+        _mesh.glMesh.initVAO();
         _mesh.submesh = [];
         {
             var sm = new m4m.framework.subMeshInfo();
@@ -18233,12 +18242,12 @@ var dome;
             gmesh.glMesh.initBuffer(webgl, vf, vCount, m4m.render.MeshTypeEnum.Dynamic);
             // gmesh.glMesh.uploadVertexData(webgl, vboArr);
             gmesh.glMesh.addIndex(webgl, this.ebodata.length);
+            gmesh.glMesh.initVAO();
             // gmesh.glMesh.uploadIndexData(webgl, 0, eboArr);
             gmesh.submesh = [];
             {
                 var sm = new m4m.framework.subMeshInfo();
                 sm.matIndex = 0;
-                sm.useVertexIndex = 0;
                 sm.start = 0;
                 sm.size = this.ebodata.length;
                 sm.line = false;
@@ -18956,11 +18965,11 @@ var dome;
             _mesh.glMesh.uploadVertexData(this.app.webgl, v32);
             _mesh.glMesh.addIndex(this.app.webgl, i16.length);
             _mesh.glMesh.uploadIndexData(this.app.webgl, 0, i16);
+            _mesh.glMesh.initVAO();
             _mesh.submesh = [];
             {
                 var sm = new m4m.framework.subMeshInfo();
                 sm.matIndex = 0;
-                sm.useVertexIndex = 0;
                 sm.start = 0;
                 sm.size = i16.length;
                 sm.line = false;
@@ -20701,6 +20710,7 @@ var decalGeometry = /** @class */ (function () {
         this.mesh.glMesh.uploadVertexData(webgl, vertexs);
         this.mesh.glMesh.addIndex(webgl, indices.length);
         this.mesh.glMesh.uploadIndexData(webgl, 0, indices);
+        this.mesh.glMesh.initVAO();
         //sub mesh
         this.mesh.submesh = [];
         var minfo = new m4m.framework.subMeshInfo();
