@@ -1,14 +1,11 @@
 /// <reference path="../lib/dat.gui.d.ts" />
 
-namespace m4m.math
-{
-    export interface color
-    {
+namespace m4m.math {
+    export interface color {
         "__class__"?: "m4m.math.color"
     }
 
-    export interface vector3
-    {
+    export interface vector3 {
         "__class__"?: "m4m.math.vector3"
     }
 }
@@ -16,14 +13,13 @@ namespace m4m.math
 /** 
  * 粒子系統示例
  */
-class test_ParticleSystem implements IState
-{
+class test_ParticleSystem implements IState {
     app: m4m.framework.application;
     scene: m4m.framework.scene;
     camera: m4m.framework.camera;
     astMgr: m4m.framework.assetMgr;
 
-    private _particles = ["ParticleAdditive", "Particle_Sweat_Disable", "Particle_Dust_Disable", "ParticleAlphaBlended", "ps_inheritVelocity", "ParticleSystem", "ps_noise", "Fire", "Flames", "shark-levelup"];
+    private _particles = ["ParticleAdditive", "fastshell_ps", "Particle_Sweat_Disable", "Particle_Dust_Disable", "ParticleAlphaBlended", "ps_inheritVelocity", "ParticleSystem", "ps_noise", "Fire", "Flames", "shark-levelup"];
     private _particle: m4m.framework.transform;
 
     private _isMove = false;
@@ -33,8 +29,7 @@ class test_ParticleSystem implements IState
     private _moveAngle = 0;
     private _moveAngleSpeed = 1;
 
-    async start(app: m4m.framework.application)
-    {
+    async start(app: m4m.framework.application) {
         this.app = app;
         var scene = this.scene = this.app.getScene();
         this.astMgr = this.app.getAssetMgr();
@@ -57,8 +52,7 @@ class test_ParticleSystem implements IState
         this.init();
     }
 
-    setGUI()
-    {
+    setGUI() {
         if (!dat) return;
         let gui = new dat.GUI();
         gui.add(this, 'particleName', this._particles);
@@ -69,43 +63,35 @@ class test_ParticleSystem implements IState
         gui.add(this, 'stop');
     }
 
-    play()
-    {
-        this._particle.gameObject.getComponentsInChildren("ParticleSystem").forEach(v =>
-        {
+    play() {
+        this._particle.gameObject.getComponentsInChildren("ParticleSystem").forEach(v => {
             var ps: m4m.framework.ParticleSystem = <any>v;
             ps.play();
 
-            ps.addListener("particleCompleted", (ps) =>
-            {
+            ps.addListener("particleCompleted", (ps) => {
                 console.log("粒子系统播放完成！");
             }, this);
 
         })
     }
 
-    stop()
-    {
-        this._particle.gameObject.getComponentsInChildren("ParticleSystem").forEach(v =>
-        {
+    stop() {
+        this._particle.gameObject.getComponentsInChildren("ParticleSystem").forEach(v => {
             var ps: m4m.framework.ParticleSystem = <any>v;
             ps.stop();
         })
     }
 
-    private get particleName()
-    {
+    private get particleName() {
         return this._particleName;
     }
-    private set particleName(v)
-    {
+    private set particleName(v) {
         this._showParticle(v);
         this._particleName = v;
     }
     private _particleName: string = "ps_inheritVelocity";
 
-    private init()
-    {
+    private init() {
         //相机-----------------------------------
         var objCam = new m4m.framework.transform();
         objCam.name = "sth.";
@@ -129,10 +115,8 @@ class test_ParticleSystem implements IState
         // this.initParticleSystem();
     }
 
-    private async _showParticle(res: string)
-    {
-        if (this._particle)
-        {
+    private async _showParticle(res: string) {
+        if (this._particle) {
             this.scene.removeChild(this._particle);
             this._particle = null;
         }
@@ -153,12 +137,10 @@ class test_ParticleSystem implements IState
         this.play();
     }
 
-    update(delta: number)
-    {
+    update(delta: number) {
         if (!this._particle) return;
 
-        if (this._isMove)
-        {
+        if (this._isMove) {
             var offsetX = Math.cos(this._moveAngle / 180 * Math.PI) * this._moveRadius;
             var offsetZ = Math.sin(this._moveAngle / 180 * Math.PI) * this._moveRadius;
 
@@ -169,8 +151,7 @@ class test_ParticleSystem implements IState
             this._particle.localPosition = this._particleCurrentPosition;
 
             this._moveAngle += this._moveAngleSpeed;
-        } else
-        {
+        } else {
             this._particle.localPosition = this._particleStartPosition;
         }
     }

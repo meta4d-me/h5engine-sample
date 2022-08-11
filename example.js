@@ -5823,7 +5823,7 @@ var test_LineRenderer = /** @class */ (function () {
  */
 var test_ParticleSystem = /** @class */ (function () {
     function test_ParticleSystem() {
-        this._particles = ["ParticleAdditive", "Particle_Sweat_Disable", "Particle_Dust_Disable", "ParticleAlphaBlended", "ps_inheritVelocity", "ParticleSystem", "ps_noise", "Fire", "Flames", "shark-levelup"];
+        this._particles = ["ParticleAdditive", "fastshell_ps", "Particle_Sweat_Disable", "Particle_Dust_Disable", "ParticleAlphaBlended", "ps_inheritVelocity", "ParticleSystem", "ps_noise", "Fire", "Flames", "shark-levelup"];
         this._isMove = false;
         this._particleStartPosition = new m4m.math.vector3();
         this._particleCurrentPosition = new m4m.math.vector3();
