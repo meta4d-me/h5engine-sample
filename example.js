@@ -1276,7 +1276,8 @@ var main = /** @class */ (function () {
         this.addBtn("基础==>", function () {
             demoList.addBtn("最小demo", function () { return new mini_sample(); });
             demoList.addBtn("test_load", function () { return new test_load(); });
-            demoList.addBtn("test_loadScene", function () { return new test_loadScene(); });
+            demoList.addBtn("加载场景", function () { return new test_loadScene(); });
+            demoList.addBtn("测试VR场景", function () { return new test_loadSceneVR(); });
             demoList.addBtn("射线检测", function () { return new test_pick_boxcollider(); });
             demoList.addBtn("test_pick", function () { return new test_pick(); });
             demoList.addBtn("test_sound", function () { return new t.test_sound(); });
@@ -1828,6 +1829,69 @@ var test_loadScene = /** @class */ (function () {
     test_loadScene.prototype.update = function (delta) {
     };
     return test_loadScene;
+}());
+var test_loadSceneVR = /** @class */ (function () {
+    function test_loadSceneVR() {
+    }
+    test_loadSceneVR.prototype.start = function (app) {
+        var _this = this;
+        console.log("i am here.");
+        this.app = app;
+        this.scene = this.app.getScene();
+        var assetMgr = this.app.getAssetMgr();
+        var objCamRoot = new m4m.framework.transform();
+        app.getScene().addChild(objCamRoot);
+        objCamRoot.localTranslate = new m4m.math.vector3(52, 48, 6);
+        {
+            //添加一个摄像机
+            var objCamL = new m4m.framework.transform();
+            objCamRoot.addChild(objCamL);
+            //app.getScene().addChild(objCam);
+            var cam = objCamL.gameObject.addComponent("camera");
+            cam.near = 0.01;
+            cam.far = 500;
+            cam.fov = Math.PI * 105 / 180; //105度相机
+            cam.viewport = new m4m.math.rect(0, 0, 0.5, 1);
+            objCamL.localTranslate = new m4m.math.vector3(-0.1, 0, 0); //偏左
+        }
+        {
+            //添加一个摄像机
+            var objCamR = new m4m.framework.transform();
+            objCamRoot.addChild(objCamR);
+            //app.getScene().addChild(objCam);
+            var camR = objCamR.gameObject.addComponent("camera");
+            camR.clearOption_Color = false;
+            camR.near = 0.01;
+            camR.far = 500;
+            camR.fov = Math.PI * 105 / 180; //105度相机
+            camR.viewport = new m4m.math.rect(0.5, 0, 0.5, 1);
+            objCamR.localTranslate = new m4m.math.vector3(0.1, 0, 0); //偏右
+        }
+        //相机控制
+        var hoverc = objCamRoot.gameObject.addComponent("HoverCameraScript");
+        hoverc.panAngle = 163;
+        hoverc.tiltAngle = 16.5;
+        hoverc.distance = 1;
+        hoverc.scaleSpeed = 0.1;
+        hoverc.lookAtPoint = new m4m.math.vector3(43, 40, 15);
+        util.loadShader(assetMgr)
+            .then(function () {
+            var sceneName = "MainCity_";
+            assetMgr.load("".concat(resRootPath, "prefab/").concat(sceneName, "/").concat(sceneName, ".assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s1) {
+                if (s1.isfinish) {
+                    var _scene = assetMgr.getAssetByName(sceneName + ".scene.json", "".concat(sceneName, ".assetbundle.json"));
+                    var _root = _scene.getSceneRoot();
+                    _this.scene.addChild(_root);
+                    _this.app.getScene().lightmaps = [];
+                    _scene.useLightMap(_this.app.getScene());
+                    _scene.useFog(_this.app.getScene());
+                }
+            });
+        });
+    };
+    test_loadSceneVR.prototype.update = function (delta) {
+    };
+    return test_loadSceneVR;
 }());
 var test_loadMulBundle = /** @class */ (function () {
     function test_loadMulBundle() {

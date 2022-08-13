@@ -31,7 +31,8 @@ class main implements m4m.framework.IUserCode {
         this.addBtn("基础==>", () => {
             demoList.addBtn("最小demo", () => new mini_sample());
             demoList.addBtn("test_load", () => new test_load());
-            demoList.addBtn("test_loadScene", () => new test_loadScene());
+            demoList.addBtn("加载场景", () => new test_loadScene());
+            demoList.addBtn("测试VR场景", () => new test_loadSceneVR());
             demoList.addBtn("射线检测", () => new test_pick_boxcollider());
             demoList.addBtn("test_pick", () => new test_pick());
             demoList.addBtn("test_sound", () => new t.test_sound());
