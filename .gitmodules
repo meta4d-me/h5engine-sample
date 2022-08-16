@@ -1,3 +1,4 @@
 [submodule "exampleResource"]
 	path = exampleResource
 	url = http://pwd.cafegame.cn:7990/scm/engine/exampleresource.git
+	branch = master
