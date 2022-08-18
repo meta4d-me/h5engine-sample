@@ -55,4 +55,42 @@ namespace util {
         return Promise.all(urls.map(item => loadTex(item, assetMgr)))
     }
 
+    /**
+     * 运行时 加载 .js 库
+     * @param url .js 文件 URL
+     */
+    export function loadJSLib(url: string): Promise<any> {
+        return new Promise<any>((res, rej) => {
+            let htmlS = document.createElement("script");
+            htmlS.src = url;
+            //挂载到doc
+            let attParent = document.childNodes[document.childNodes.length - 1];
+            attParent.appendChild(htmlS);
+            htmlS.onload = () => {
+                //code加载完毕
+                res(null);
+            }
+            htmlS.onerror = (err) => {
+                rej(`error : ${err}`);
+            }
+        });
+    }
+
+    /**
+     * 加载文件 以arrayBuffer 格式
+     * @param url 文件URL
+     */
+    export function loadArrayBuffer(url): Promise<ArrayBuffer> {
+        return new Promise<ArrayBuffer>((res, rej) => {
+            m4m.io.loadArrayBuffer(url, (_bin, _err, isFail) => {
+                if (isFail) {
+                    rej(`load fail! URL${url} , err ${_err}`);
+                    return;
+                }
+                //成功
+                res(_bin);
+            });
+        });
+    }
+
 }

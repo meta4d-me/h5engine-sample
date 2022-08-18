@@ -1290,6 +1290,7 @@ var main = /** @class */ (function () {
             demoList.addBtn("物理2d_dome", function () { return new physic2d_dome(); });
             demoList.addBtn("导航网格", function () { return new test_navMesh(); });
             demoList.addBtn("GPU压缩纹理", function () { return new test_CompressTexture(); });
+            demoList.addBtn("draco压缩网格格式加载", function () { return new test_load_draco(); });
             // demoList.addBtn("Android平台ETC1压缩纹理", () => new test_ETC1_KTX());
             return new demoList();
         });
@@ -7940,6 +7941,278 @@ var test_loadCompressUseAssetbundle = /** @class */ (function () {
     test_loadCompressUseAssetbundle.prototype.update = function (delta) {
     };
     return test_loadCompressUseAssetbundle;
+}());
+var test_load_draco = /** @class */ (function () {
+    function test_load_draco() {
+        this.AttributeIDs = {
+            position: 'POSITION',
+            normal: 'NORMAL',
+            color: 'COLOR',
+            uv: 'TEX_COORD'
+        };
+        this.AttributeTypes = {
+            position: Float32Array,
+            normal: Float32Array,
+            color: Float32Array,
+            uv: Float32Array
+        };
+    }
+    test_load_draco.prototype.start = function (app) {
+        return __awaiter(this, void 0, void 0, function () {
+            var scene, objCam, cam, hoverc, lNdoe, light, _mesh, model, mf, mr, mat, sh;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        scene = app.getScene();
+                        objCam = new m4m.framework.transform();
+                        scene.addChild(objCam);
+                        cam = objCam.gameObject.addComponent("camera");
+                        cam.near = 0.01;
+                        cam.far = 120;
+                        cam.fov = Math.PI * 0.3;
+                        objCam.localTranslate = new m4m.math.vector3(0, 15, -15);
+                        objCam.lookatPoint(new m4m.math.vector3(0, 0, 0));
+                        hoverc = cam.gameObject.addComponent("HoverCameraScript");
+                        hoverc.panAngle = 180;
+                        hoverc.tiltAngle = 45;
+                        hoverc.distance = 20;
+                        hoverc.scaleSpeed = 0.1;
+                        hoverc.lookAtPoint = new m4m.math.vector3(0, 0, 0);
+                        lNdoe = new m4m.framework.transform();
+                        light = lNdoe.gameObject.addComponent("light");
+                        light.type = m4m.framework.LightTypeEnum.Direction;
+                        scene.addChild(lNdoe);
+                        //加载shader包
+                        return [4 /*yield*/, util.loadShader(app.getAssetMgr())];
+                    case 1:
+                        //加载shader包
+                        _a.sent();
+                        //------------------------------------------------------------
+                        //加载draco JS
+                        return [4 /*yield*/, util.loadJSLib("lib/draco_decoder.js")];
+                    case 2:
+                        //------------------------------------------------------------
+                        //加载draco JS
+                        _a.sent();
+                        return [4 /*yield*/, this.loadDraco("".concat(resRootPath, "draco/ring.drc"))];
+                    case 3:
+                        _mesh = _a.sent();
+                        model = new m4m.framework.transform();
+                        model.name = "test Draco";
+                        m4m.math.vec3ScaleByNum(model.localScale, 0.1, model.localScale);
+                        mf = model.gameObject.addComponent("meshFilter");
+                        mf.mesh = _mesh;
+                        mr = model.gameObject.addComponent("meshRenderer");
+                        mat = mr.materials[0] = new m4m.framework.material();
+                        sh = app.getAssetMgr().getShader("diffuse_bothside.shader.json");
+                        mat.setShader(sh);
+                        //加到场景
+                        scene.addChild(model);
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    /**
+     * 创建 引擎 mesh资源
+     * @param index
+     * @param attributes
+     * @param resName
+     */
+    test_load_draco.prototype.makeMesh = function (index, attributes, resName) {
+        if (resName === void 0) { resName = "dracoMesh"; }
+        var webgl = m4m.framework.sceneMgr.app.webgl;
+        // let fileName = fileUrl;
+        // let _idx = fileUrl.lastIndexOf("/");
+        // if (_idx != -1) { fileName = fileUrl.substring(_idx + 1); }
+        // const outMesh = new m4m.framework.mesh(fileName);
+        var outMesh = new m4m.framework.mesh();
+        var meshData = outMesh.data = new m4m.render.meshData();
+        var vfs = 0;
+        var vLen = 0;
+        var vIdxMap = {};
+        //收集 顶点格式
+        for (var i = 0, len = attributes.length; i < len; i++) {
+            var att = attributes[i];
+            var _vf = void 0;
+            switch (att.name) {
+                case "position":
+                    meshData.pos = [];
+                    _vf = m4m.render.VertexFormatMask.Position;
+                    vLen = att.array.length / 3;
+                    break;
+                case "normal":
+                    _vf = m4m.render.VertexFormatMask.Normal;
+                    meshData.normal = [];
+                    break;
+                case "color":
+                    _vf = m4m.render.VertexFormatMask.Color;
+                    meshData.color = [];
+                    break;
+                case "uv":
+                    _vf = m4m.render.VertexFormatMask.UV0;
+                    meshData.uv = [];
+                    break;
+            }
+            vfs |= _vf;
+            vIdxMap[_vf] = i;
+        }
+        meshData.originVF = vfs;
+        //所有 顶点数据 填入  meshData
+        for (var i = 0; i < vLen; i++) {
+            if (vfs & m4m.render.VertexFormatMask.Position) {
+                var att = attributes[vIdxMap[m4m.render.VertexFormatMask.Position]];
+                var arr = att.array;
+                var offset = i * 3;
+                meshData.pos.push(new m4m.math.vector3(arr[0 + offset], arr[1 + offset], arr[2 + offset]));
+            }
+            if (vfs & m4m.render.VertexFormatMask.Normal) {
+                var att = attributes[vIdxMap[m4m.render.VertexFormatMask.Normal]];
+                var arr = att.array;
+                var offset = i * 3;
+                meshData.normal.push(new m4m.math.vector3(arr[0 + offset], arr[1 + offset], arr[2 + offset]));
+            }
+            if (vfs & m4m.render.VertexFormatMask.Color) {
+                var att = attributes[vIdxMap[m4m.render.VertexFormatMask.Color]];
+                var arr = att.array;
+                var offset = i * 4;
+                meshData.color.push(new m4m.math.color(arr[0 + offset], arr[1 + offset], arr[2 + offset], arr[3 + offset]));
+            }
+            if (vfs & m4m.render.VertexFormatMask.UV0) {
+                var att = attributes[vIdxMap[m4m.render.VertexFormatMask.UV0]];
+                var arr = att.array;
+                var offset = i * 2;
+                meshData.uv.push(new m4m.math.vector2(arr[0 + offset], arr[1 + offset]));
+            }
+        }
+        //三角面索引 处理
+        var triIndexArr = index.array;
+        var _triIndexNums = meshData.trisindex = [];
+        for (var i = 0, len = triIndexArr.length / 3; i < len; i++) {
+            var offset = i * 3;
+            _triIndexNums.push(triIndexArr[0 + offset], triIndexArr[1 + offset], triIndexArr[2 + offset]);
+        }
+        //加一个 submesh
+        var _subMeshInfo = new m4m.framework.subMeshInfo();
+        outMesh.submesh.push(_subMeshInfo);
+        _subMeshInfo.size = _triIndexNums.length;
+        _subMeshInfo.start = 0;
+        _subMeshInfo.matIndex = 0;
+        //glMesh 处理 设置webgl状态 将数据设置到 GPU
+        var glMesh = outMesh.glMesh = new m4m.render.glMesh();
+        var vertexs = meshData.genVertexDataArray(meshData.originVF);
+        var indices = meshData.genIndexDataArray();
+        glMesh.initBuffer(webgl, meshData.originVF, meshData.pos.length);
+        glMesh.uploadVertexData(webgl, vertexs);
+        glMesh.addIndex(webgl, indices.length);
+        glMesh.uploadIndexData(webgl, 0, indices);
+        glMesh.initVAO();
+        return outMesh;
+    };
+    /**
+     * 加载draco 格式mesh
+     * @param fileUrl draco文件
+     * @returns mesh
+     */
+    test_load_draco.prototype.loadDraco = function (fileUrl) {
+        return __awaiter(this, void 0, void 0, function () {
+            var buf, u8Buf, draco, buffer, decoder, geometryType, outputGeometry, status, attributes, attName, attType, attributeID, attribute, decodeAtt, index, fileName, _idx, outMesh;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, util.loadArrayBuffer(fileUrl)];
+                    case 1:
+                        buf = _a.sent();
+                        u8Buf = new Uint8Array(buf);
+                        return [4 /*yield*/, globalThis.DracoDecoderModule()];
+                    case 2:
+                        draco = _a.sent();
+                        buffer = new draco.DecoderBuffer();
+                        buffer.Init(u8Buf, u8Buf.length);
+                        decoder = new draco.Decoder();
+                        geometryType = decoder.GetEncodedGeometryType(buffer);
+                        if (geometryType == draco.TRIANGULAR_MESH) {
+                            outputGeometry = new draco.Mesh();
+                            status = decoder.DecodeBufferToMesh(buffer, outputGeometry);
+                        }
+                        else {
+                            outputGeometry = new draco.PointCloud();
+                            status = decoder.DecodeBufferToPointCloud(buffer, outputGeometry);
+                        }
+                        //检查解码解析是否成功
+                        if (!status.ok() || status.ptr === 0) {
+                            throw new Error("draco \u89E3\u7801\u5931\u8D25 URL : ".concat(buf, ",error: ").concat(status.error_msg()));
+                        }
+                        attributes = [];
+                        //收集 所有的 顶点 attributes.
+                        for (attName in this.AttributeIDs) {
+                            attType = this.AttributeTypes[attName];
+                            attributeID = decoder.GetAttributeId(outputGeometry, draco[this.AttributeIDs[attName]]);
+                            ;
+                            if (attributeID === -1)
+                                continue; //不包含该att
+                            attribute = decoder.GetAttribute(outputGeometry, attributeID);
+                            decodeAtt = this.getDecodeAttribute(draco, decoder, outputGeometry, attName, attType, attribute);
+                            attributes.push(decodeAtt);
+                        }
+                        //收集 index
+                        if (geometryType == draco.TRIANGULAR_MESH) {
+                            index = this.getDecodeIndex(draco, decoder, outputGeometry);
+                        }
+                        //销毁draco
+                        draco.destroy(outputGeometry);
+                        draco.destroy(decoder);
+                        draco.destroy(buffer);
+                        fileName = fileUrl;
+                        _idx = fileUrl.lastIndexOf("/");
+                        if (_idx != -1) {
+                            fileName = fileUrl.substring(_idx + 1);
+                        }
+                        outMesh = this.makeMesh(index, attributes, fileName);
+                        return [2 /*return*/, outMesh];
+                }
+            });
+        });
+    };
+    test_load_draco.prototype.getDecodeIndex = function (draco, decoder, dracoGeometry) {
+        var numFaces = dracoGeometry.num_faces();
+        var numIndices = numFaces * 3;
+        var byteLength = numIndices * 4;
+        var ptr = draco._malloc(byteLength);
+        decoder.GetTrianglesUInt32Array(dracoGeometry, byteLength, ptr);
+        var index = new Uint32Array(draco.HEAPF32.buffer, ptr, numIndices).slice();
+        draco._free(ptr);
+        return { array: index, itemSize: 1 };
+    };
+    test_load_draco.prototype.getDecodeAttribute = function (draco, decoder, dracoGeometry, attributeName, attributeType, attribute) {
+        var numComponents = attribute.num_components();
+        var numPoints = dracoGeometry.num_points();
+        var numValues = numPoints * numComponents;
+        var byteLength = numValues * attributeType.BYTES_PER_ELEMENT;
+        var dataType = this.getDracoDataType(draco, attributeType);
+        var ptr = draco._malloc(byteLength);
+        decoder.GetAttributeDataArrayForAllPoints(dracoGeometry, attribute, dataType, byteLength, ptr);
+        var array = new attributeType(draco.HEAPF32.buffer, ptr, numValues).slice();
+        draco._free(ptr);
+        return {
+            name: attributeName,
+            array: array,
+            itemSize: numComponents
+        };
+    };
+    test_load_draco.prototype.getDracoDataType = function (draco, attributeType) {
+        switch (attributeType) {
+            case Float32Array: return draco.DT_FLOAT32;
+            case Int8Array: return draco.DT_INT8;
+            case Int16Array: return draco.DT_INT16;
+            case Int32Array: return draco.DT_INT32;
+            case Uint8Array: return draco.DT_UINT8;
+            case Uint16Array: return draco.DT_UINT16;
+            case Uint32Array: return draco.DT_UINT32;
+        }
+    };
+    test_load_draco.prototype.update = function (delta) {
+    };
+    return test_load_draco;
 }());
 var demo;
 (function (demo) {
@@ -17278,6 +17551,44 @@ var util;
         return Promise.all(urls.map(function (item) { return loadTex(item, assetMgr); }));
     }
     util.loadTextures = loadTextures;
+    /**
+     * 运行时 加载 .js 库
+     * @param url .js 文件 URL
+     */
+    function loadJSLib(url) {
+        return new Promise(function (res, rej) {
+            var htmlS = document.createElement("script");
+            htmlS.src = url;
+            //挂载到doc
+            var attParent = document.childNodes[document.childNodes.length - 1];
+            attParent.appendChild(htmlS);
+            htmlS.onload = function () {
+                //code加载完毕
+                res(null);
+            };
+            htmlS.onerror = function (err) {
+                rej("error : ".concat(err));
+            };
+        });
+    }
+    util.loadJSLib = loadJSLib;
+    /**
+     * 加载文件 以arrayBuffer 格式
+     * @param url 文件URL
+     */
+    function loadArrayBuffer(url) {
+        return new Promise(function (res, rej) {
+            m4m.io.loadArrayBuffer(url, function (_bin, _err, isFail) {
+                if (isFail) {
+                    rej("load fail! URL".concat(url, " , err ").concat(_err));
+                    return;
+                }
+                //成功
+                res(_bin);
+            });
+        });
+    }
+    util.loadArrayBuffer = loadArrayBuffer;
 })(util || (util = {}));
 //加载动作病简单使用动作的Dome
 var UseAniplayClipDemo = /** @class */ (function () {
