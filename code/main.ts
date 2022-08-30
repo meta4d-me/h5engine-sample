@@ -20,9 +20,13 @@ class main implements m4m.framework.IUserCode {
         //关闭 guid 依赖
         m4m.framework.assetMgr.openGuid = false;
 
+        //移动端调试
+        if(window['eruda']){
+            setTimeout(() => {
+                window['eruda']?.init();
+            }, 500);
+        }
         this.clearBtn();
-        // 移动端调试log
-        window['eruda']?.init();
         // new HDR_sample().start(this.app);
 
         // return;
@@ -49,7 +53,7 @@ class main implements m4m.framework.IUserCode {
             // demoList.addBtn("Android平台ETC1压缩纹理", () => new test_ETC1_KTX());
             return new demoList();
         });
-        
+
         //-------------------------------------渲染
         this.addBtn("渲染==>", () => {
             demoList.addBtn("test_posteffect(后期效果)", () => new t.test_posteffect());

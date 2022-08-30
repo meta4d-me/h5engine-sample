@@ -19,7 +19,8 @@
     "skipLibCheck": true,
     "outFile": "../example.js",
     "types": [
-      "../../../lib/m4m"
+      "../../../lib/m4m",
+      "../lib/webxr"
     ]
   }
 }
