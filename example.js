@@ -6371,12 +6371,21 @@ var HDR_sample = /** @class */ (function () {
             //获取后缀
             var suffix = "";
             var idx = this._Model.lastIndexOf(".");
-            if (idx) {
+            if (idx != -1) {
                 suffix = this._Model.substring(idx);
             }
-            suffix = suffix !== null && suffix !== void 0 ? suffix : ".gltf";
-            var _file = "".concat(this._Model).concat(suffix);
-            var _gltfFolder = "".concat(resRootPath, "pbrRes/").concat(this._Model, "/");
+            suffix = suffix ? suffix : ".gltf";
+            var _file = void 0;
+            var _gltfFolder = void 0;
+            if (suffix == ".gltf") {
+                _file = "".concat(this._Model).concat(suffix);
+                _gltfFolder = "".concat(resRootPath, "pbrRes/").concat(this._Model, "/");
+            }
+            else {
+                //可能是 .glb
+                _file = this._Model;
+                _gltfFolder = "".concat(resRootPath, "pbrRes/");
+            }
             if (!this.isEnableGUI) {
                 //没有GUI的选择输入，看是否有有效 url 参数。
                 _gltfFolder = par.get('folder') || _gltfFolder;

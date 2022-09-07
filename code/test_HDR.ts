@@ -400,12 +400,20 @@ class HDR_sample implements IState {
             //获取后缀
             let suffix = "";
             let idx = this._Model.lastIndexOf(".");
-            if (idx) {
+            if (idx != -1) {
                 suffix = this._Model.substring(idx);
             }
-            suffix = suffix ?? ".gltf";
-            let _file = `${this._Model}${suffix}`;
-            let _gltfFolder = `${resRootPath}pbrRes/${this._Model}/`;
+            suffix = suffix ? suffix : ".gltf";
+            let _file: string;
+            let _gltfFolder: string;
+            if (suffix == ".gltf") {
+                _file = `${this._Model}${suffix}`;
+                _gltfFolder = `${resRootPath}pbrRes/${this._Model}/`;
+            } else {
+                //可能是 .glb
+                _file = this._Model;
+                _gltfFolder = `${resRootPath}pbrRes/`;
+            }
 
             if (!this.isEnableGUI) {
                 //没有GUI的选择输入，看是否有有效 url 参数。
