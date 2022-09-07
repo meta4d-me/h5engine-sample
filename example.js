@@ -5987,6 +5987,24 @@ var HDR_sample = /** @class */ (function () {
                 scale: 1,
                 cb: function (root) { }
             },
+            {
+                gltfFolder: "".concat(resRootPath, "pbrRes/"),
+                file: '2CylinderEngine.glb',
+                scale: 0.05,
+                cb: function (root) { }
+            },
+            {
+                gltfFolder: "".concat(resRootPath, "pbrRes/"),
+                file: 'AlphaBlendModeTest.glb',
+                scale: 5,
+                cb: function (root) { }
+            },
+            {
+                gltfFolder: "".concat(resRootPath, "pbrRes/"),
+                file: 'BoomBox.glb',
+                scale: 100,
+                cb: function (root) { }
+            },
             // {
             //     gltfFolder: 'res/pbrRes/model/',
             //     file: 'demo.gltf',
@@ -6148,7 +6166,7 @@ var HDR_sample = /** @class */ (function () {
                         loadGLTF = function (_a) {
                             var gltfFolder = _a.gltfFolder, file = _a.file, scale = _a.scale;
                             return __awaiter(_this, void 0, void 0, function () {
-                                var gltf, root, rtLights;
+                                var rtLights, root, gltf;
                                 return __generator(this, function (_b) {
                                     switch (_b.label) {
                                         case 0: return [4 /*yield*/, this.load(gltfFolder, file)];
@@ -6350,7 +6368,14 @@ var HDR_sample = /** @class */ (function () {
         if (!model) {
             var _scale = 1;
             var _cb = function (root) { };
-            var _file = "".concat(this._Model, ".gltf");
+            //获取后缀
+            var suffix = "";
+            var idx = this._Model.lastIndexOf(".");
+            if (idx) {
+                suffix = this._Model.substring(idx);
+            }
+            suffix = suffix !== null && suffix !== void 0 ? suffix : ".gltf";
+            var _file = "".concat(this._Model).concat(suffix);
             var _gltfFolder = "".concat(resRootPath, "pbrRes/").concat(this._Model, "/");
             if (!this.isEnableGUI) {
                 //没有GUI的选择输入，看是否有有效 url 参数。

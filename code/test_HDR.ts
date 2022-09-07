@@ -50,6 +50,24 @@ class HDR_sample implements IState {
             scale: 1,
             cb: root => { }
         },
+        {
+            gltfFolder: `${resRootPath}pbrRes/`,
+            file: '2CylinderEngine.glb',
+            scale: 0.05,
+            cb: root => { }
+        },
+        {
+            gltfFolder: `${resRootPath}pbrRes/`,
+            file: 'AlphaBlendModeTest.glb',
+            scale: 5,
+            cb: root => { }
+        },
+        {
+            gltfFolder: `${resRootPath}pbrRes/`,
+            file: 'BoomBox.glb',
+            scale: 100,
+            cb: root => { }
+        },
         // {
         //     gltfFolder: 'res/pbrRes/model/',
         //     file: 'demo.gltf',
@@ -184,7 +202,7 @@ class HDR_sample implements IState {
         const env = await this.loadCubeTexture(`${this.HDRpath}${this._HDR}/`);
         const irradianceSH = await this.loadCubeTexture(`${this.HDRpath}${this._HDR}_diff/`);
         const skybox = new m4m.framework.transform();
-        skybox.enableCulling = false ; //skybox 不会被视锥剔除
+        skybox.enableCulling = false; //skybox 不会被视锥剔除
         // this.scene.addChild(skybox);
         this.modelRoot.addChild(skybox);
         let mf_c = skybox.gameObject.addComponent("meshFilter") as m4m.framework.meshFilter;
@@ -202,9 +220,12 @@ class HDR_sample implements IState {
         let realtimeLights: m4m.framework.gltfRealtimeLight[] = [];
 
         const loadGLTF = async ({ gltfFolder, file, scale }) => {
+            // const isGLB = (file as string).toLowerCase().lastIndexOf(".glb") != -1;
+            let rtLights: m4m.framework.gltfRealtimeLight[];
+            let root: m4m.framework.transform;
             const gltf = await this.load<m4m.framework.gltf>(gltfFolder, file);
-            const root = await gltf.load(this.assetMgr, this.app.webgl, gltfFolder, null, env, irradianceSH, exp, ambientCubemapLight.specularIntensity, ambientCubemapLight.diffuseIntensity);
-            let rtLights = gltf.getRealtimeLights();
+            root = await gltf.load(this.assetMgr, this.app.webgl, gltfFolder, null, env, irradianceSH, exp, ambientCubemapLight.specularIntensity, ambientCubemapLight.diffuseIntensity);
+            rtLights = gltf.getRealtimeLights();
             if (rtLights) { realtimeLights = rtLights; }
             m4m.math.vec3SetAll(root.localScale, scale ?? 1);
             root.localScale.x *= -1;
@@ -212,6 +233,7 @@ class HDR_sample implements IState {
             this.modelRoot.addChild(root);
             return root;
         }
+
         const par = this.urlParameter;
         exp = par.has('exp') ? parseFloat(par.get('exp')) : exp;
         if (!gltfModels) gltfModels = [];
@@ -375,7 +397,14 @@ class HDR_sample implements IState {
         if (!model) {
             let _scale = 1;
             let _cb = root => { };
-            let _file = `${this._Model}.gltf`;
+            //获取后缀
+            let suffix = "";
+            let idx = this._Model.lastIndexOf(".");
+            if (idx) {
+                suffix = this._Model.substring(idx);
+            }
+            suffix = suffix ?? ".gltf";
+            let _file = `${this._Model}${suffix}`;
             let _gltfFolder = `${resRootPath}pbrRes/${this._Model}/`;
 
             if (!this.isEnableGUI) {
