@@ -6005,6 +6005,12 @@ var HDR_sample = /** @class */ (function () {
                 scale: 100,
                 cb: function (root) { }
             },
+            {
+                gltfFolder: "".concat(resRootPath, "pbrRes/"),
+                file: 'lightmapBGL.glb',
+                scale: 1,
+                cb: function (root) { }
+            },
             // {
             //     gltfFolder: 'res/pbrRes/model/',
             //     file: 'demo.gltf',

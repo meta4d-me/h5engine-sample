@@ -68,6 +68,12 @@ class HDR_sample implements IState {
             scale: 100,
             cb: root => { }
         },
+        {
+            gltfFolder: `${resRootPath}pbrRes/`,
+            file: 'lightmapBGL.glb',
+            scale: 1,
+            cb: root => { }
+        },
         // {
         //     gltfFolder: 'res/pbrRes/model/',
         //     file: 'demo.gltf',
