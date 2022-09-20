@@ -1,4 +1,18 @@
 namespace util {
+
+    /**
+     * 异步加载 any 资源
+     * @param url 资源url
+     */
+    export function loadRes<T>(url: string) {
+        const mgr = m4m.framework.sceneMgr.app.getAssetMgr();
+        return new Promise<T>((res) => {
+            mgr.load(url, m4m.framework.AssetTypeEnum.Auto, () => {
+                res(mgr.getAssetByName(url.split('/').pop()) as any);
+            });
+        });
+    }
+
     export function loadShader(assetMgr: m4m.framework.assetMgr) {
         return new Promise<void>((resolve, reject) => {
             assetMgr.load(`${resRootPath}shader/shader.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (_state) => {

@@ -1324,6 +1324,7 @@ var main = /** @class */ (function () {
             demoList.addBtn("test_UI组件", function () { return new test_UI_Component(); });
             demoList.addBtn("test_UI预设体加载", function () { return new test_uiPerfabLoad(); });
             demoList.addBtn("UI 新手引导mask", function () { return new test_UIGuideMask(); });
+            demoList.addBtn("UI 使用 纹理数组模式(webgl2 优化)", function () { return new test_UI_Texture_Array(); });
             return new demoList();
         });
         //-------------------------------------------物理
@@ -7409,6 +7410,78 @@ var test_UIGuideMask = /** @class */ (function () {
     test_UIGuideMask.prototype.update = function (delta) {
     };
     return test_UIGuideMask;
+}());
+/**
+ * UI 渲染使用 纹理数组 样例（webgl2 特性优化尝试）
+ */
+var test_UI_Texture_Array = /** @class */ (function () {
+    function test_UI_Texture_Array() {
+        this.taskmgr = new m4m.framework.taskMgr();
+        this.atlasNames = ["TA_NUMs", "TA_UIs", "TA_ICON"];
+        this.atlasPath = "".concat(resRootPath, "atlas/");
+    }
+    test_UI_Texture_Array.prototype.loadAtlas = function (resName) {
+        return __awaiter(this, void 0, void 0, function () {
+            var imgFile, jsonFile, _img, _atlas;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        imgFile = "".concat(this.atlasPath).concat(resName, "/").concat(resName, ".png");
+                        jsonFile = "".concat(this.atlasPath).concat(resName, "/").concat(resName, ".atlas.json");
+                        return [4 /*yield*/, util.loadRes(imgFile)];
+                    case 1:
+                        _img = _a.sent();
+                        return [4 /*yield*/, util.loadRes(jsonFile)];
+                    case 2:
+                        _atlas = _a.sent();
+                        _atlas.texture = _img;
+                        return [2 /*return*/, _atlas];
+                }
+            });
+        });
+    };
+    test_UI_Texture_Array.prototype.start = function (app) {
+        return __awaiter(this, void 0, void 0, function () {
+            var objCam, pArr;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        //初始化
+                        this.app = app;
+                        this.scene = this.app.getScene();
+                        this.assetMgr = this.app.getAssetMgr();
+                        objCam = new m4m.framework.transform();
+                        objCam.name = "sth.";
+                        this.scene.addChild(objCam);
+                        this.camera = objCam.gameObject.addComponent("camera");
+                        this.camera.near = 0.01;
+                        this.camera.far = 10;
+                        //2dUI root
+                        this.rooto2d = new m4m.framework.overlay2D();
+                        this.camera.addOverLay(this.rooto2d);
+                        //node root
+                        this.normalRoot = new m4m.framework.transform2D();
+                        this.normalRoot.name = "noramlRoot";
+                        this.textureArrayRoot = new m4m.framework.transform2D();
+                        this.textureArrayRoot.name = "textureArrayRoot";
+                        pArr = [];
+                        this.atlasNames.forEach(function (name) {
+                            pArr.push(_this.loadAtlas(name));
+                        });
+                        return [4 /*yield*/, Promise.all(pArr)];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    test_UI_Texture_Array.prototype.randomMakeUI = function () {
+    };
+    test_UI_Texture_Array.prototype.update = function (delta) {
+    };
+    return test_UI_Texture_Array;
 }());
 //UI 组件样例
 var test_UI_Component = /** @class */ (function () {
@@ -18026,6 +18099,19 @@ var t;
 })(t || (t = {}));
 var util;
 (function (util) {
+    /**
+     * 异步加载 any 资源
+     * @param url 资源url
+     */
+    function loadRes(url) {
+        var mgr = m4m.framework.sceneMgr.app.getAssetMgr();
+        return new Promise(function (res) {
+            mgr.load(url, m4m.framework.AssetTypeEnum.Auto, function () {
+                res(mgr.getAssetByName(url.split('/').pop()));
+            });
+        });
+    }
+    util.loadRes = loadRes;
     function loadShader(assetMgr) {
         return new Promise(function (resolve, reject) {
             assetMgr.load("".concat(resRootPath, "shader/shader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (_state) {
