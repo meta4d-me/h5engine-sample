@@ -7416,9 +7416,28 @@ var test_UIGuideMask = /** @class */ (function () {
  */
 var test_UI_Texture_Array = /** @class */ (function () {
     function test_UI_Texture_Array() {
-        this.taskmgr = new m4m.framework.taskMgr();
         this.atlasNames = ["TA_NUMs", "TA_UIs", "TA_ICON"];
+        this.atlasMap = {};
         this.atlasPath = "".concat(resRootPath, "atlas/");
+        this.UITempletes = [
+            { atlas: "TA_NUMs", spRes: "ui_lianji_0", w: 32, h: 42 },
+            { atlas: "TA_NUMs", spRes: "ui_lianji_1", w: 32, h: 42 },
+            { atlas: "TA_NUMs", spRes: "ui_lianji_2", w: 32, h: 42 },
+            { atlas: "TA_NUMs", spRes: "ui_lianji_3", w: 32, h: 42 },
+            { atlas: "TA_NUMs", spRes: "ui_lianji_4", w: 32, h: 42 },
+            { atlas: "TA_NUMs", spRes: "ui_lianji_5", w: 32, h: 42 },
+            { atlas: "TA_NUMs", spRes: "ui_lianji_6", w: 32, h: 42 },
+            { atlas: "TA_NUMs", spRes: "ui_lianji_7", w: 32, h: 42 },
+            { atlas: "TA_NUMs", spRes: "ui_lianji_8", w: 32, h: 42 },
+            { atlas: "TA_NUMs", spRes: "ui_lianji_9", w: 32, h: 42 },
+            { atlas: "TA_UIs", spRes: "bg", w: 100, h: 79 },
+            { atlas: "TA_UIs", spRes: "ui_boundary_close", w: 25, h: 25 },
+            { atlas: "TA_UIs", spRes: "ui_boundary_close_in", w: 25, h: 25 },
+            { atlas: "TA_UIs", spRes: "ui_public_button_1", w: 135, h: 54 },
+            { atlas: "TA_UIs", spRes: "ui_public_button_hits", w: 135, h: 54 },
+            { atlas: "TA_UIs", spRes: "ui_public_input", w: 39, h: 28 },
+            { atlas: "TA_ICON", spRes: "zg03", w: 180, h: 180 },
+        ];
     }
     test_UI_Texture_Array.prototype.loadAtlas = function (resName) {
         return __awaiter(this, void 0, void 0, function () {
@@ -7440,9 +7459,91 @@ var test_UI_Texture_Array = /** @class */ (function () {
             });
         });
     };
+    test_UI_Texture_Array.prototype.switchUIMode = function (texArrayMode) {
+        this.textureArrayRoot.visible = false;
+        this.normalRoot.visible = false;
+        if (texArrayMode) {
+            this.textureArrayRoot.visible = true;
+        }
+        else {
+            this.normalRoot.visible = true;
+        }
+    };
+    test_UI_Texture_Array.prototype.randomMakeUI = function () {
+        //随机创建 UI
+        var count = 100;
+        var range = 800;
+        var _loop_2 = function (i) {
+            //位置
+            var x = Math.floor(range * Math.random());
+            var y = Math.floor(range * Math.random());
+            //旋转
+            var angle = 360 * Math.random();
+            //元素
+            var ele = this_2.UITempletes[Math.floor(this_2.UITempletes.length * Math.random())];
+            var atlas = this_2.atlasMap[ele.atlas];
+            var sp = atlas.sprites[ele.spRes];
+            //创建 UI
+            //normal UI
+            var nUINode = this_2.makeUI(sp, ele.w, ele.h);
+            this_2.normalRoot.addChild(nUINode);
+            //textureArray UI
+            var tUINode = this_2.makeTexArrayUI();
+            this_2.textureArrayRoot.addChild(tUINode);
+            //修改 RTS
+            [nUINode, nUINode].forEach(function (n) {
+                m4m.math.vec2Set(n.localTranslate, x, y);
+                n.localRotate = angle;
+            });
+        };
+        var this_2 = this;
+        for (var i = 0; i < count; i++) {
+            _loop_2(i);
+        }
+    };
+    test_UI_Texture_Array.prototype.makeUI = function (sp, w, h) {
+        var result = m4m.framework.TransformUtil.Create2DPrimitive(m4m.framework.Primitive2DType.Image2D);
+        var img = result.getComponent("image2D");
+        img.sprite = sp;
+        result.width = w;
+        result.height = h;
+        return result;
+    };
+    test_UI_Texture_Array.prototype.makeTexArrayUI = function () {
+        var result = new m4m.framework.transform2D();
+        return result;
+    };
+    test_UI_Texture_Array.prototype.makeTexArraySahder = function () {
+        var shKey = "_texArray";
+        var sh = new m4m.framework.shader("shader/".concat(shKey));
+        var shaderJson = "{\n                \"properties\": [\n                \"_MainTex('MainTex',Texture)='white'{}\",\n                \"_MaskTex('MaskTex',Texture)='white'{}\"\n                ]\n            }\n        ";
+        var vs = "#version 300 es\n            precision mediump float;\n\n            layout(location = 0) in vec3 _glesVertex;    \n            layout(location = 3) in vec4 _glesColor;                   \n            layout(location = 4) in vec4 _glesMultiTexCoord0;          \n            uniform highp mat4 glstate_matrix_mvp;       \n            out lowp vec4 xlv_COLOR;                 \n            out highp vec2 xlv_TEXCOORD0;            \n            void main()                                      \n            {                                                \n                highp vec4 tmpvar_1;                         \n                tmpvar_1.w = 1.0;                            \n                tmpvar_1.xyz = _glesVertex.xyz;              \n                xlv_COLOR = _glesColor;                      \n                xlv_TEXCOORD0 = vec2(_glesMultiTexCoord0.x,1.0-_glesMultiTexCoord0.y);      \n                gl_Position = (glstate_matrix_mvp * tmpvar_1);   \n            }\n        ";
+        var fs = "#version 300 es\n        precision mediump float;\n\n        uniform sampler2D _MainTex;\n        in lowp vec4 xlv_COLOR;\n        in highp vec2 xlv_TEXCOORD0;\n        out vec4 color;\n        void main()\n        {\n            lowp vec4 tmpvar_3;\n            tmpvar_3 = (xlv_COLOR * texture(_MainTex, xlv_TEXCOORD0));\n            color = tmpvar_3;\n        }\n        ";
+        //
+        var assetMgr = m4m.framework.sceneMgr.app.getAssetMgr();
+        var pool = assetMgr.shaderPool;
+        pool.compileVS(assetMgr.webgl, shKey, vs);
+        pool.compileFS(assetMgr.webgl, shKey, fs);
+        var program = pool.linkProgram(assetMgr.webgl, shKey, shKey);
+        //
+        sh.defaultAsset = true;
+        sh.passes["base"] = [];
+        var p = new m4m.render.glDrawPass();
+        p.setProgram(program);
+        sh.passes["base"].push(p);
+        sh.fillUnDefUniform(p);
+        sh._parseProperties(assetMgr, JSON.parse(shaderJson).properties);
+        p.state_showface = m4m.render.ShowFaceStateEnum.ALL;
+        p.state_ztest = false;
+        p.state_zwrite = false;
+        p.state_ztest_method = m4m.render.webglkit.LEQUAL;
+        p.setAlphaBlend(m4m.render.BlendModeEnum.Blend);
+        assetMgr.mapShader[sh.getName()] = sh;
+        return sh;
+    };
     test_UI_Texture_Array.prototype.start = function (app) {
         return __awaiter(this, void 0, void 0, function () {
-            var objCam, pArr;
+            var objCam, pArr, atlasList;
             var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -7450,7 +7551,6 @@ var test_UI_Texture_Array = /** @class */ (function () {
                         //初始化
                         this.app = app;
                         this.scene = this.app.getScene();
-                        this.assetMgr = this.app.getAssetMgr();
                         objCam = new m4m.framework.transform();
                         objCam.name = "sth.";
                         this.scene.addChild(objCam);
@@ -7463,21 +7563,28 @@ var test_UI_Texture_Array = /** @class */ (function () {
                         //node root
                         this.normalRoot = new m4m.framework.transform2D();
                         this.normalRoot.name = "noramlRoot";
+                        this.rooto2d.addChild(this.normalRoot);
                         this.textureArrayRoot = new m4m.framework.transform2D();
                         this.textureArrayRoot.name = "textureArrayRoot";
+                        this.rooto2d.addChild(this.textureArrayRoot);
                         pArr = [];
                         this.atlasNames.forEach(function (name) {
                             pArr.push(_this.loadAtlas(name));
                         });
                         return [4 /*yield*/, Promise.all(pArr)];
                     case 1:
-                        _a.sent();
+                        atlasList = _a.sent();
+                        this.atlasNames.forEach(function (res, i) {
+                            _this.atlasMap[res] = atlasList[i];
+                        });
+                        //创建 UI
+                        this.randomMakeUI();
+                        //
+                        this.switchUIMode(false);
                         return [2 /*return*/];
                 }
             });
         });
-    };
-    test_UI_Texture_Array.prototype.randomMakeUI = function () {
     };
     test_UI_Texture_Array.prototype.update = function (delta) {
     };
@@ -10902,7 +11009,7 @@ var test_spine_IK = /** @class */ (function () {
                     //初始化骨骼UI
                     var temptMat = _this._comp.getToCanvasMatrix();
                     var temptPos = new m4m.math.vector2();
-                    var _loop_2 = function (i) {
+                    var _loop_3 = function (i) {
                         // if(this.bonesPos[this.controlBones[i]]!=null)
                         var boneName = _this.controlBones[i];
                         var bone = _this._comp.skeleton.findBone(boneName);
@@ -10932,7 +11039,7 @@ var test_spine_IK = /** @class */ (function () {
                         ui.appendChild(boneUI);
                     };
                     for (var i = 0; i < _this.controlBones.length; i++) {
-                        _loop_2(i);
+                        _loop_3(i);
                     }
                 }
             };
@@ -11245,7 +11352,7 @@ var test_spine_stretchyMan = /** @class */ (function () {
                     // m4m.math.matrix3x2MakeTransformRTS(worldPos, worldScale, worldRot.v, this._temptMat);
                     var toCanvasMat = _this._comp.getToCanvasMatrix();
                     var temptPos = new m4m.math.vector2();
-                    var _loop_3 = function (i) {
+                    var _loop_4 = function (i) {
                         // if(this.bonesPos[this.controlBones[i]]!=null)
                         var boneName = _this.controlBones[i];
                         var bone = _this._comp.skeleton.findBone(boneName);
@@ -11275,7 +11382,7 @@ var test_spine_stretchyMan = /** @class */ (function () {
                         ui.appendChild(boneUI);
                     };
                     for (var i = 0; i < _this.controlBones.length; i++) {
-                        _loop_3(i);
+                        _loop_4(i);
                     }
                 }
             };
@@ -11489,7 +11596,7 @@ var test_spine_vin = /** @class */ (function () {
                     document.addEventListener("mouseup", function () { return _this._chooseBone = null; });
                     var temptMat = _this._comp.getToCanvasMatrix();
                     var temptPos = new m4m.math.vector2();
-                    var _loop_4 = function (i) {
+                    var _loop_5 = function (i) {
                         // if(this.bonesPos[this.controlBones[i]]!=null)
                         var boneName = _this.controlBones[i];
                         var bone = _this._comp.skeleton.findBone(boneName);
@@ -11519,7 +11626,7 @@ var test_spine_vin = /** @class */ (function () {
                         ui.appendChild(boneUI);
                     };
                     for (var i = 0; i < _this.controlBones.length; i++) {
-                        _loop_4(i);
+                        _loop_5(i);
                     }
                 }
             };
@@ -11626,7 +11733,7 @@ var test_spine_wheelTransform = /** @class */ (function () {
                     //初始化骨骼UI
                     var temptMat_5 = _this._comp.getToCanvasMatrix();
                     var temptPos_6 = new m4m.math.vector2();
-                    var _loop_5 = function (i) {
+                    var _loop_6 = function (i) {
                         // if(this.bonesPos[this.controlBones[i]]!=null)
                         var boneName = _this.controlBones[i];
                         var bone_2 = _this._comp.skeleton.findBone(boneName);
@@ -11656,7 +11763,7 @@ var test_spine_wheelTransform = /** @class */ (function () {
                         ui.appendChild(boneUI);
                     };
                     for (var i = 0; i < _this.controlBones.length; i++) {
-                        _loop_5(i);
+                        _loop_6(i);
                     }
                 }
                 //计算旋转骨骼的屏幕坐标
@@ -14111,12 +14218,12 @@ var test_effect = /** @class */ (function () {
             _this.app.getAssetMgr().savePrefab(_this.tr, name, function (data, resourses) {
                 console.log(data.files);
                 console.log(resourses.length);
-                var _loop_6 = function (key) {
+                var _loop_7 = function (key) {
                     var val = data.files[key];
                     var blob = localSave.Instance.file_str2blob(val);
                     var files = [];
                     var resPath = path + "/resources/";
-                    var _loop_7 = function (i) {
+                    var _loop_8 = function (i) {
                         var resourceUrl = resourses[i];
                         var resourceName = _this.getNameFromURL(resourceUrl);
                         var resourceLength = 0;
@@ -14136,7 +14243,7 @@ var test_effect = /** @class */ (function () {
                     };
                     //保存资源
                     for (var i = 0; i < resourses.length; i++) {
-                        _loop_7(i);
+                        _loop_8(i);
                     }
                     localSave.Instance.save(resPath + name + ".prefab.json", blob);
                     var fileInfo = { "name": "resources/" + name + ".prefab.json", "length": 100 };
@@ -14146,7 +14253,7 @@ var test_effect = /** @class */ (function () {
                     localSave.Instance.save(path + "/" + name + ".assetbundle.json", assetBundleBlob);
                 };
                 for (var key in data.files) {
-                    _loop_6(key);
+                    _loop_7(key);
                 }
             });
         };
