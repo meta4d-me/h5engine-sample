@@ -21,7 +21,7 @@ class main implements m4m.framework.IUserCode {
         m4m.framework.assetMgr.openGuid = false;
 
         //移动端调试
-        if(window['eruda']){
+        if (window['eruda']) {
             setTimeout(() => {
                 window['eruda']?.init();
             }, 500);
@@ -124,6 +124,11 @@ class main implements m4m.framework.IUserCode {
             return new demoList();
         });
 
+        //-------------------------------------------GLTF样例
+        this.addBtn("GLTF样例==>", () => {
+            demoList.addBtn("GLTF_动画", () => new test_gltf_animation());
+            return new demoList();
+        });
 
         //-------------------------------------其他
         this.addBtn("其他==>", () => {

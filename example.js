@@ -1363,6 +1363,11 @@ var main = /** @class */ (function () {
             demoList.addBtn("SPINE_换Mesh插槽图片", function () { return new test_spine_change_slot_mesh_tex(); });
             return new demoList();
         });
+        //-------------------------------------------GLTF样例
+        this.addBtn("GLTF样例==>", function () {
+            demoList.addBtn("GLTF_动画", function () { return new test_gltf_animation(); });
+            return new demoList();
+        });
         //-------------------------------------其他
         this.addBtn("其他==>", function () {
             demoList.addBtn("表面贴花(弹痕)", function () { return new test_Decal(); });
@@ -8073,6 +8078,73 @@ var test_fakepbr = /** @class */ (function () {
         }
     };
     return test_fakepbr;
+}());
+var test_gltf_animation = /** @class */ (function () {
+    function test_gltf_animation() {
+        this.taskmgr = new m4m.framework.taskMgr();
+    }
+    test_gltf_animation.prototype.loadShader = function (laststate, state) {
+        this.app.getAssetMgr().load("".concat(resRootPath, "shader/shader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
+            if (s.isfinish) {
+                state.finish = true;
+            }
+        });
+    };
+    test_gltf_animation.prototype.loadLongPrefab = function (laststate, state) {
+        var _this = this;
+        var resName = "long";
+        this.app.getAssetMgr().load("".concat(resRootPath, "gltf/elong.glb"), m4m.framework.AssetTypeEnum.Auto, function (s) {
+            if (s.isfinish) {
+                var _prefab = _this.app.getAssetMgr().getAssetByName("elong.glb");
+                _prefab.load(_this.app.getAssetMgr(), _this.app.webgl, "".concat(resRootPath, "gltf"), null, null, null)
+                    .then(function (res) {
+                    _this.dragon = res;
+                    _this.scene.addChild(res);
+                    _this.dragon.markDirty();
+                    _this.camTran = _this.dragon.find("Dummy001");
+                    var ap = _this.dragon.gameObject.getComponentsInChildren("animation")[0];
+                    ap.play("Run");
+                    state.finish = true;
+                });
+            }
+        });
+    };
+    test_gltf_animation.prototype.addCamera = function (laststate, state) {
+        //添加一个摄像机
+        var objCam = new m4m.framework.transform();
+        objCam.name = "sth.";
+        this.scene.addChild(objCam);
+        this.camera = objCam.gameObject.addComponent("camera");
+        this.camera.near = 0.01;
+        this.camera.far = 10000;
+        this.camera.backgroundColor = new m4m.math.color(0.11, 0.11, 0.11, 1.0);
+        objCam.localTranslate = new m4m.math.vector3(0, 0, -30);
+        CameraController.instance().init(this.app, this.camera);
+        objCam.markDirty(); //标记为需要刷新
+        var tranLight = new m4m.framework.transform();
+        tranLight.name = "light";
+        this.scene.addChild(tranLight);
+        this.light = tranLight.gameObject.addComponent("light");
+        this.light.type = m4m.framework.LightTypeEnum.Direction;
+        tranLight.localTranslate.x = 5;
+        tranLight.localTranslate.y = 5;
+        tranLight.localTranslate.z = -5;
+        tranLight.lookatPoint(new m4m.math.vector3(0, 0, 0));
+        tranLight.markDirty();
+        state.finish = true;
+    };
+    test_gltf_animation.prototype.start = function (app) {
+        this.app = app;
+        this.scene = app.getScene();
+        this.taskmgr.addTaskCall(this.loadShader.bind(this));
+        this.taskmgr.addTaskCall(this.loadLongPrefab.bind(this));
+        // this.taskmgr.addTaskCall(this.loadScene.bind(this));
+        this.taskmgr.addTaskCall(this.addCamera.bind(this));
+    };
+    test_gltf_animation.prototype.update = function (delta) {
+        this.taskmgr.move(delta);
+    };
+    return test_gltf_animation;
 }());
 var test_keyFrameAni = /** @class */ (function () {
     function test_keyFrameAni() {
