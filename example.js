@@ -1295,6 +1295,7 @@ var main = /** @class */ (function () {
             demoList.addBtn("导航网格", function () { return new test_navMesh(); });
             demoList.addBtn("GPU压缩纹理", function () { return new test_CompressTexture(); });
             demoList.addBtn("draco压缩网格格式加载", function () { return new test_load_draco(); });
+            demoList.addBtn("骨骼动画", function () { return new test_animationClip(); });
             // demoList.addBtn("Android平台ETC1压缩纹理", () => new test_ETC1_KTX());
             return new demoList();
         });
@@ -7785,6 +7786,68 @@ var test_UI_Component = /** @class */ (function () {
     };
     return test_UI_Component;
 }());
+var test_animationClip = /** @class */ (function () {
+    function test_animationClip() {
+    }
+    test_animationClip.prototype.start = function (app) {
+        var _this = this;
+        console.log("i am here.");
+        this.app = app;
+        this.scene = this.app.getScene();
+        m4m.framework.skinnedMeshRenderer.technicalType = "BONE_ARR";
+        m4m.framework.assetMgr.openGuid = true;
+        this.app.getAssetMgr().load("./".concat(resRootPath, "shader/shader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (state) {
+            if (state.isfinish) {
+                _this.app.getAssetMgr().load("./".concat(resRootPath, "prefab/elong_prefab/elong_prefab.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
+                    if (s.isfinish) {
+                        var _prefab = _this.app.getAssetMgr().getAssetByName("elong_prefab.prefab.json", "elong_prefab.assetbundle.json");
+                        var prefabObj_1 = _prefab.getCloneTrans();
+                        _this.scene.addChild(prefabObj_1);
+                        _this.prefab = prefabObj_1;
+                        _this.app.getAssetMgr().load("./".concat(resRootPath, "prefab/elong_prefab/resources/Ready.FBAni.min.aniclip.bin"), m4m.framework.AssetTypeEnum.Aniclip, function (s) {
+                            if (s.isfinish) {
+                                var aps = prefabObj_1.gameObject.getComponentsInChildren("aniplayer");
+                                var ap = aps[0];
+                                ap.addClip(s.resstateFirst.res);
+                                ap.play("Ready.FBAni.min.aniclip.bin");
+                            }
+                        });
+                    }
+                });
+            }
+        });
+        //添加一个摄像机
+        var objCam = new m4m.framework.transform();
+        objCam.name = "sth.";
+        this.scene.addChild(objCam);
+        this.camera = objCam.gameObject.addComponent("camera");
+        this.camera.near = 0.01;
+        this.camera.far = 100;
+        objCam.localTranslate = new m4m.math.vector3(0, 10, 30);
+        objCam.lookatPoint(new m4m.math.vector3(0, 0, 0));
+        objCam.markDirty(); //标记为需要刷新
+    };
+    // cube: m4m.framework.transform;
+    // cube2: m4m.framework.transform;
+    // cube3: m4m.framework.transform;
+    // timer: number = 0;
+    test_animationClip.prototype.update = function (delta) {
+        // this.timer += delta;
+        // var x = Math.sin(this.timer);
+        // var z = Math.cos(this.timer);
+        // var x2 = Math.sin(this.timer * 0.1);
+        // var z2 = Math.cos(this.timer * 0.1);
+        // var objCam = this.camera.gameObject.transform;
+        // objCam.localTranslate = new m4m.math.vector3(x2 * 5, 2.25, -z2 * 5);
+        // objCam.lookat(this.cube);
+        // objCam.markDirty();//标记为需要刷新
+        // objCam.updateWorldTran();
+        if (this.prefab) {
+            this.camera.gameObject.transform.lookat(this.prefab);
+        }
+    };
+    return test_animationClip;
+}());
 var t;
 (function (t_1) {
     var test_blend = /** @class */ (function () {
@@ -9148,12 +9211,12 @@ var test_optimize_size_animationClip = /** @class */ (function () {
                 _this.app.getAssetMgr().load("./".concat(resRootPath, "prefab/elong_prefab/elong_prefab.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
                     if (s.isfinish) {
                         var _prefab = _this.app.getAssetMgr().getAssetByName("elong_prefab.prefab.json", "elong_prefab.assetbundle.json");
-                        var prefabObj_1 = _prefab.getCloneTrans();
-                        _this.scene.addChild(prefabObj_1);
-                        _this.prefab = prefabObj_1;
+                        var prefabObj_2 = _prefab.getCloneTrans();
+                        _this.scene.addChild(prefabObj_2);
+                        _this.prefab = prefabObj_2;
                         _this.app.getAssetMgr().load("./".concat(resRootPath, "prefab/elong_prefab/resources/Ready.FBAni.min.aniclip.bin"), m4m.framework.AssetTypeEnum.Aniclip, function (s) {
                             if (s.isfinish) {
-                                var aps = prefabObj_1.gameObject.getComponentsInChildren("aniplayer");
+                                var aps = prefabObj_2.gameObject.getComponentsInChildren("aniplayer");
                                 var ap = aps[0];
                                 ap.addClip(s.resstateFirst.res);
                                 ap.play("Ready.FBAni.min.aniclip.bin");

@@ -50,6 +50,7 @@ class main implements m4m.framework.IUserCode {
             demoList.addBtn("导航网格", () => new test_navMesh());
             demoList.addBtn("GPU压缩纹理", () => new test_CompressTexture());
             demoList.addBtn("draco压缩网格格式加载", () => new test_load_draco());
+            demoList.addBtn("骨骼动画", () => new test_animationClip());
             // demoList.addBtn("Android平台ETC1压缩纹理", () => new test_ETC1_KTX());
             return new demoList();
         });
