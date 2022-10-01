@@ -10,9 +10,14 @@ class test_UI_Texture_Array implements IState {
     private scene: m4m.framework.scene;
     private camera: m4m.framework.camera;
     private rooto2d: m4m.framework.overlay2D;
+    private readonly texArrShaderName = `shader/texArrayImg`;
     private readonly atlasNames = ["TA_NUMs", "TA_UIs", "TA_ICON"];
     private atlasMap: { [res: string]: m4m.framework.atlas } = {};
+    private atlasArray: m4m.framework.atlas[] = [];
     private atlasPath = `${resRootPath}atlas/`;
+    private cacheTexArray: m4m.framework.texture;
+    private cacheAtlasTexs: m4m.framework.texture[] = [];
+
     private UITempletes: UIElement[] = [
         { atlas: "TA_NUMs", spRes: "ui_lianji_0", w: 32, h: 42 },
         { atlas: "TA_NUMs", spRes: "ui_lianji_1", w: 32, h: 42 },
@@ -46,11 +51,29 @@ class test_UI_Texture_Array implements IState {
     private switchUIMode(texArrayMode: boolean) {
         this.textureArrayRoot.visible = false;
         this.normalRoot.visible = false;
-
+        const spTexSet = (a: m4m.framework.atlas, tex: m4m.framework.texture) => {
+            a.texture = tex;
+            for (const k in a.sprites) {
+                const sp = a.sprites[k];
+                sp.texture = tex;
+            }
+        }
+        //go 切换
         if (texArrayMode) {
             this.textureArrayRoot.visible = true;
+            //纹理切换
+            // this.atlasArray.forEach(a => { a.texture = this.cacheTexArray; });
+            this.atlasArray.forEach(a => {
+                spTexSet(a, this.cacheTexArray);
+                // a.texture.glTexture = this.cacheTexArray.glTexture;
+            });
         } else {
             this.normalRoot.visible = true;
+            //纹理切换
+            this.atlasArray.forEach((a, i) => {
+                spTexSet(a, this.cacheAtlasTexs[i]);
+                // a.texture = this.cacheAtlasTexs[i];
+            });
         }
     }
 
@@ -70,16 +93,18 @@ class test_UI_Texture_Array implements IState {
 
             const atlas = this.atlasMap[ele.atlas];
             const sp = atlas.sprites[ele.spRes];
+            const texArrIndex = this.atlasNames.indexOf(ele.atlas);
+
             //创建 UI
             //normal UI
             const nUINode = this.makeUI(sp, ele.w, ele.h);
             this.normalRoot.addChild(nUINode);
             //textureArray UI
-            const tUINode = this.makeTexArrayUI();
+            const tUINode = this.makeTexArrayUI(sp, ele.w, ele.h, texArrIndex);
             this.textureArrayRoot.addChild(tUINode);
 
             //修改 RTS
-            [nUINode, nUINode].forEach(n => {
+            [nUINode, tUINode].forEach(n => {
                 m4m.math.vec2Set(n.localTranslate, x, y);
                 n.localRotate = angle;
             });
@@ -92,18 +117,27 @@ class test_UI_Texture_Array implements IState {
         img.sprite = sp;
         result.width = w;
         result.height = h;
+        m4m.math.vec2SetAll(result.pivot, 0.5);
         return result;
     }
 
-    private makeTexArrayUI() {
+    private makeTexArrayUI(sp: m4m.framework.sprite, w: number, h: number, texIndex: number = 0) {
         const result = new m4m.framework.transform2D();
-
+        const texArrImg = result.addComponent("texArrImage2D") as texArrImage2D;
+        texArrImg.setShaderByName(this.texArrShaderName);
+        texArrImg.sprite = sp;
+        texArrImg.texArrayIndex = texIndex;
+        result.width = w;
+        result.height = h;
+        m4m.math.vec2SetAll(result.pivot, 0.5);
         return result;
     }
 
+    //创建shader
     private makeTexArraySahder(): m4m.framework.shader {
-        const shKey = `_texArray`;
-        const sh = new m4m.framework.shader(`shader/${shKey}`);
+        const shKey = `texArrayImg`;
+        const sh = new m4m.framework.shader(this.texArrShaderName);
+        const gl = m4m.framework.sceneMgr.app.webgl;
 
         const shaderJson: string = `{
                 "properties": [
@@ -118,12 +152,16 @@ class test_UI_Texture_Array implements IState {
 
             layout(location = 0) in vec3 _glesVertex;    
             layout(location = 3) in vec4 _glesColor;                   
-            layout(location = 4) in vec4 _glesMultiTexCoord0;          
+            layout(location = 4) in vec4 _glesMultiTexCoord0; 
+            layout(location = 8) in vec4 _glesColorEx;                   
+
             uniform highp mat4 glstate_matrix_mvp;       
             out lowp vec4 xlv_COLOR;                 
-            out highp vec2 xlv_TEXCOORD0;            
+            out highp vec2 xlv_TEXCOORD0;
+            out float v_texArrIndex;
             void main()                                      
-            {                                                
+            {                           
+                v_texArrIndex = _glesColorEx.w;                  
                 highp vec4 tmpvar_1;                         
                 tmpvar_1.w = 1.0;                            
                 tmpvar_1.xyz = _glesVertex.xyz;              
@@ -134,19 +172,23 @@ class test_UI_Texture_Array implements IState {
         `;
 
         const fs = `#version 300 es
-        precision mediump float;
+            precision mediump float;
+            precision mediump sampler2DArray;
 
-        uniform sampler2D _MainTex;
-        in lowp vec4 xlv_COLOR;
-        in highp vec2 xlv_TEXCOORD0;
-        out vec4 color;
-        void main()
-        {
-            lowp vec4 tmpvar_3;
-            tmpvar_3 = (xlv_COLOR * texture(_MainTex, xlv_TEXCOORD0));
-            color = tmpvar_3;
-        }
-        `;
+            // uniform sampler2D _MainTex;
+            uniform sampler2DArray _MainTex;
+            in lowp vec4 xlv_COLOR;
+            in highp vec2 xlv_TEXCOORD0;
+            in float v_texArrIndex;
+            out vec4 color;
+            void main()
+            {
+                lowp vec4 _color;
+                // _color = (xlv_COLOR * texture(_MainTex, xlv_TEXCOORD0));
+                _color = (xlv_COLOR * texture(_MainTex, vec3(xlv_TEXCOORD0 , v_texArrIndex)));
+                color = _color;
+            }
+            `;
 
         //
         const assetMgr = m4m.framework.sceneMgr.app.getAssetMgr();
@@ -170,7 +212,62 @@ class test_UI_Texture_Array implements IState {
         p.setAlphaBlend(m4m.render.BlendModeEnum.Blend);
         assetMgr.mapShader[sh.getName()] = sh;
 
+        //smp2dArray type 
+        let texArray = m4m.render.UniformTypeEnum.CubeTexture + 1;
+        //
+        const mainTexUnif = p.mapuniforms[`_MainTex`];
+        mainTexUnif.type = texArray;
+        //
+        const applyObj = m4m.render.shaderUniform;
+        //增加处理方法
+        applyObj.applyuniformFunc[texArray] = (location, value) => {
+            let tex = value.glTexture.texture;
+            gl.activeTexture(m4m.render.webglkit.GetTextureNumber(applyObj.texindex));
+            gl.bindTexture(gl.TEXTURE_2D_ARRAY, tex);
+            gl.uniform1i(location, applyObj.texindex);
+            applyObj.texindex++;
+        };
+
         return sh;
+    }
+
+    private getHtmlImageMap() {
+        let _limit = {};
+        let _map: { [imgN: string]: HTMLImageElement } = {};
+        let nullObj = {};
+        this.atlasNames.forEach(n => {
+            _limit[n] = nullObj;
+            _map[n] = null;
+        });
+        const mapLoding = m4m.framework.assetMgr.mapLoading;
+        const mapImg = m4m.framework.assetMgr.mapImage;
+        for (const k in mapLoding) {
+            const val = mapLoding[k];
+            if (val.url.lastIndexOf(`.png`) == -1) continue;
+            let fileName = val.url.substring(val.url.lastIndexOf(`/`) + 1);
+            fileName = fileName.substring(0, fileName.indexOf("."));
+            if (_limit[fileName]) {
+                _map[fileName] = mapImg[k] as HTMLImageElement;
+            }
+        }
+        return _map;
+    }
+
+    //创建texture2D 纹理
+    private makeTex2dArray(texMap: { [imgN: string]: HTMLImageElement }): m4m.framework.texture {
+        let texs: HTMLImageElement[] = [];
+        for (let i = 0, len = this.atlasNames.length; i < len; i++) {
+            let atlasName = this.atlasNames[i];
+            texs.push(texMap[atlasName]);
+        }
+
+        const glTex: tex2DArray = new tex2DArray(texs[0].width, texs[0].height);
+        glTex.uploadImage(texs);
+
+        const result = new m4m.framework.texture(`tex2dArray`);
+        result.glTexture = glTex;
+
+        return result;
     }
 
     async start(app: m4m.framework.application) {
@@ -208,16 +305,458 @@ class test_UI_Texture_Array implements IState {
         const atlasList = await Promise.all(pArr);
         this.atlasNames.forEach((res, i) => {
             this.atlasMap[res] = atlasList[i];
+            this.atlasArray.push(atlasList[i]);
+            this.cacheAtlasTexs.push(atlasList[i].texture);
         });
 
+        //make textrue2d array 
+        let texMap = this.getHtmlImageMap();
+        this.cacheTexArray = this.makeTex2dArray(texMap);
+        //
+
+        //创建 texArrImg 着色器
+        this.makeTexArraySahder();
         //创建 UI
         this.randomMakeUI();
         //
-        this.switchUIMode(false);
+        this.switchUIMode(true);
     }
 
     update(delta: number) {
 
+    }
+
+}
+
+@m4m.reflect.node2DComponent
+@m4m.reflect.nodeRender
+class texArrImage2D implements m4m.framework.IRectRenderer {
+    static readonly ClassName: string = "texArrImage2D";
+
+    private _unitLen = 13;
+    //2d使用固定的顶点格式
+    //pos[0,1,2]color[3,4,5,6]uv[7,8]color2[9,10,11,12] length=13
+    private datar: number[] = [
+        0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1,
+        0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1,
+        0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1,
+        0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1,
+        0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1,
+        0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+    ];
+
+    private _sprite: m4m.framework.sprite;
+    private needRefreshImg = false;
+    /**
+     * @public
+     * @language zh_CN
+     * @classdesc
+     * 颜色
+     * @version m4m 1.0
+     */
+    @m4m.reflect.Field("color")
+    @m4m.reflect.UIStyle("color")
+    color: m4m.math.color = new m4m.math.color(1.0, 1.0, 1.0, 1.0);
+
+    private static readonly defUIShader = `shader/defui`;  //非mask 使用shader
+    private static readonly defMaskUIShader = `shader/defmaskui`; //mask 使用shader
+
+    private _CustomShaderName = ``;//自定义UIshader
+    /**
+     * @public
+     * @language zh_CN
+     * @classdesc
+     * 设置rander Shader名字
+     * @version m4m 1.0
+     */
+    setShaderByName(shaderName: string) {
+        this._CustomShaderName = shaderName;
+    }
+
+    /**
+     * @public
+     * @language zh_CN
+     * @classdesc
+     * 获取rander 的材质
+     * @version m4m 1.0
+     */
+    getMaterial() {
+        if (!this._uimat) {
+            return this.uimat;
+        }
+        return this._uimat;
+    }
+
+    private _darwRect: m4m.math.rect;
+
+    /**
+     * @public
+     * @language zh_CN
+     * @classdesc
+     * 获取渲染绘制矩形边界
+     * @version m4m 1.0
+     */
+    getDrawBounds() {
+        if (!this._darwRect) {
+            this._darwRect = new m4m.math.rect();
+            this.calcDrawRect();
+        }
+        return this._darwRect;
+    }
+
+    /**
+     * @private
+     * ui默认材质
+     */
+    private _uimat: m4m.framework.material;
+    private get uimat() {
+        let assetmgr = this.transform.canvas.assetmgr;
+        if (!assetmgr) return this._uimat;
+
+        this.searchTexture();
+        if (this._sprite && this._sprite.texture) {
+            let pMask = this.transform.parentIsMask;
+            let mat = this._uimat;
+            let rectTag = "";
+            let uiTag = "_ui";
+            if (pMask) {
+                // let prect = this.transform.maskRect;
+                // rectTag = `mask(${prect.x}_${prect.y}_${prect.w}_${prect.h})`; //when parentIsMask,can't multiplexing material , can be multiplexing when parent equal
+
+                let rId = this.transform.maskRectId;
+                rectTag = `mask(${rId})`;
+            }
+            let matName = this._sprite.texture.getName() + uiTag + rectTag;
+            if (!mat || mat.getName() != matName) {
+                if (mat) mat.unuse();
+                mat = assetmgr.getAssetByName(matName) as m4m.framework.material;
+                if (mat) mat.use();
+            }
+            if (!mat) {
+                mat = new m4m.framework.material(matName);
+                let sh = assetmgr.getShader(this._CustomShaderName);
+                sh = sh ? sh : assetmgr.getShader(pMask ? texArrImage2D.defMaskUIShader : texArrImage2D.defUIShader);
+                mat.setShader(sh);
+                mat.use();
+                this.needRefreshImg = true;
+            }
+            this._uimat = mat;
+        }
+        return this._uimat;
+    }
+
+    transform: m4m.framework.transform2D;
+
+    /**
+     * @public
+     * @language zh_CN
+     * @classdesc
+     * 精灵
+     * @version m4m 1.0
+     */
+    public set sprite(sprite: m4m.framework.sprite) {
+        if (sprite == this._sprite) return;
+
+        if (this._sprite) {
+            this._sprite.unuse();
+        }
+        if (!this._sprite || !sprite || this._sprite.texture != sprite.texture) {
+            this.needRefreshImg = true;
+        }
+
+        this._sprite = sprite;
+        if (sprite) {
+            this._sprite.use();
+            this._spriteName = this._sprite.getName();
+            this.prepareData();
+            if (this.transform != null) {
+                this.transform.markDirty();
+                this.updateTran();
+            }
+        } else {
+            this._spriteName = "";
+        }
+
+    }
+    public get sprite() {
+        return this._sprite;
+    }
+
+    @m4m.reflect.Field("string")
+    private _spriteName: string = "";
+
+
+    private _texArrayIndex = 0;
+    public get texArrayIndex() { return this._texArrayIndex; };
+    public set texArrayIndex(val: number) {
+        val = isNaN(val) || val == null ? 0 : val;
+        if (val == this._texArrayIndex) return;
+        this._texArrayIndex = val;
+        //刷新数据
+        if (this.datar.length != this._unitLen * 6) return;
+        for (let i = 0; i < 6; i++) {
+            this.datar[(i + 1) * this._unitLen - 1] = this._texArrayIndex;
+        }
+    };
+
+    /**
+     * @private
+     */
+    render(canvas: m4m.framework.canvas) {
+        let mat = this.uimat;
+        if (!mat) return;
+
+        let img;
+        if (this._sprite && this._sprite.texture) {
+            img = this._sprite.texture;
+        }
+
+        if (img) {
+            let needRMask = false;
+            if (this.needRefreshImg) {
+                mat.setTexture("_MainTex", img);
+                this.needRefreshImg = false;
+                needRMask = true;
+            }
+
+            if (this.transform.parentIsMask) {
+                if (!this._cacheMaskV4) this._cacheMaskV4 = new m4m.math.vector4();
+                let rect = this.transform.maskRect;
+                if (this._cacheMaskV4.x != rect.x || this._cacheMaskV4.y != rect.y || this._cacheMaskV4.w != rect.w || this._cacheMaskV4.z != rect.h || needRMask) {
+                    this._cacheMaskV4.x = rect.x; this._cacheMaskV4.y = rect.y; this._cacheMaskV4.z = rect.w; this._cacheMaskV4.w = rect.h;
+                    mat.setVector4("_maskRect", this._cacheMaskV4);
+                }
+            }
+
+            canvas.pushRawData(mat, this.datar);
+        }
+
+    }
+
+    //资源管理器中寻找 指定的贴图资源
+    private searchTexture() {
+        if (this._sprite) return;
+        let assetmgr = this.transform.canvas.assetmgr;
+        let temp = m4m.framework.assetMgr.mapNamed[this._spriteName];
+        let tspr: m4m.framework.sprite;
+        if (temp != null) {
+            tspr = assetmgr.getAssetByName(this._spriteName) as m4m.framework.sprite;
+        } else {
+            if (assetmgr.mapDefaultSprite[this._spriteName]) //找默认资源
+                tspr = assetmgr.getDefaultSprite(this._spriteName);
+        }
+        if (tspr) {
+            this.sprite = tspr;
+            this.needRefreshImg = true;
+            return;  //捕获到目标sprite后强制 下一帧渲染 （防止 transform树同步延迟 导致 右上角ghostShadow 问题）
+        }
+    }
+
+    private _cacheMaskV4: m4m.math.vector4;
+
+    /**
+     * @private
+     */
+    start() {
+
+    }
+
+    onPlay() {
+
+    }
+
+    /**
+     * @private
+     */
+    update(delta: number) {
+    }
+
+    /**
+     * @private
+     */
+    remove() {
+        if (this._sprite) this._sprite.unuse();
+        if (this._uimat) this._uimat.unuse();
+        this.datar.length = 0;
+        this.transform = null;
+    }
+
+    /**
+     * @private
+     * 根据显示方式来准备数据
+     */
+    private prepareData() {
+        if (this._sprite == null) return;
+        let urange = this._sprite.urange;
+        let vrange = this._sprite.vrange;
+        const texArrIdx = this._texArrayIndex;
+        this.datar = [
+            0, 0, 0, 1, 1, 1, 1, urange.x, vrange.x, 1, 1, 1, texArrIdx,
+            0, 0, 0, 1, 1, 1, 1, urange.y, vrange.x, 1, 1, 1, texArrIdx,
+            0, 0, 0, 1, 1, 1, 1, urange.x, vrange.y, 1, 1, 1, texArrIdx,
+            0, 0, 0, 1, 1, 1, 1, urange.x, vrange.y, 1, 1, 1, texArrIdx,
+            0, 0, 0, 1, 1, 1, 1, urange.y, vrange.x, 1, 1, 1, texArrIdx,
+            0, 0, 0, 1, 1, 1, 1, urange.y, vrange.y, 1, 1, 1, texArrIdx
+        ];
+    }
+
+    /**
+     * @private
+     */
+    updateTran() {
+        var m = this.transform.getWorldMatrix();
+
+        var l = -this.transform.pivot.x * this.transform.width;
+        var r = this.transform.width + l;
+        var t = -this.transform.pivot.y * this.transform.height;
+        var b = this.transform.height + t;
+
+        var x0 = l * m.rawData[0] + t * m.rawData[2] + m.rawData[4];
+        var y0 = l * m.rawData[1] + t * m.rawData[3] + m.rawData[5];
+        var x1 = r * m.rawData[0] + t * m.rawData[2] + m.rawData[4];
+        var y1 = r * m.rawData[1] + t * m.rawData[3] + m.rawData[5];
+        var x2 = l * m.rawData[0] + b * m.rawData[2] + m.rawData[4];
+        var y2 = l * m.rawData[1] + b * m.rawData[3] + m.rawData[5];
+        var x3 = r * m.rawData[0] + b * m.rawData[2] + m.rawData[4];
+        var y3 = r * m.rawData[1] + b * m.rawData[3] + m.rawData[5];
+
+        if (this._sprite == null) return;
+        this.updateSimpleData(x0, y0, x1, y1, x2, y2, x3, y3);
+        //主color
+        let vertexCount = this.datar.length / this._unitLen;
+        for (var i = 0; i < vertexCount; i++) {
+            this.datar[i * this._unitLen + 3] = this.color.r;
+            this.datar[i * this._unitLen + 4] = this.color.g;
+            this.datar[i * this._unitLen + 5] = this.color.b;
+            this.datar[i * this._unitLen + 6] = this.color.a;
+        }
+
+        //drawRect 
+        this.min_x = Math.min(x0, x1, x2, x3, this.min_x);
+        this.min_y = Math.min(y0, y1, y2, y3, this.min_y);
+        this.max_x = Math.max(x0, x1, x2, x3, this.max_x);
+        this.max_y = Math.max(y0, y1, y2, y3, this.max_y);
+        this.calcDrawRect();
+    }
+
+    private min_x: number = Number.MAX_VALUE;
+    private max_x: number = Number.MAX_VALUE * -1;
+    private min_y: number = Number.MAX_VALUE;
+    private max_y: number = Number.MAX_VALUE * -1;
+    /** 计算drawRect */
+    private calcDrawRect() {
+        if (!this._darwRect) return;
+        //drawBounds (y 轴反向)
+        let canvas = this.transform.canvas;
+        if (!canvas) return;
+        let minPos = m4m.poolv2();
+        minPos.x = this.min_x;
+        minPos.y = this.max_y;
+        canvas.clipPosToCanvasPos(minPos, minPos);
+
+        let maxPos = m4m.poolv2();
+        maxPos.x = this.max_x;
+        maxPos.y = this.min_y;
+        canvas.clipPosToCanvasPos(maxPos, maxPos);
+
+        this._darwRect.x = minPos.x;
+        this._darwRect.y = minPos.y;
+        this._darwRect.w = maxPos.x - minPos.x;
+        this._darwRect.h = maxPos.y - minPos.y;
+
+        this.min_x = this.min_y = Number.MAX_VALUE;
+        this.max_x = this.max_y = Number.MAX_VALUE * -1;
+
+        m4m.poolv2_del(minPos);
+        m4m.poolv2_del(maxPos);
+    }
+
+    /**
+     * @private
+     * 更新quad的顶点数据
+     */
+    private updateQuadData(x0: number, y0: number, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, quadIndex = 0, mirror: boolean = false) {
+        let _index: number = quadIndex * 6;
+        if (!mirror) {
+            this.datar[(_index + 0) * this._unitLen] = x0;
+            this.datar[(_index + 0) * this._unitLen + 1] = y0;
+            this.datar[(_index + 1) * this._unitLen] = x1;
+            this.datar[(_index + 1) * this._unitLen + 1] = y1;
+            this.datar[(_index + 2) * this._unitLen] = x2;
+            this.datar[(_index + 2) * this._unitLen + 1] = y2;
+            this.datar[(_index + 3) * this._unitLen] = x2;
+            this.datar[(_index + 3) * this._unitLen + 1] = y2;
+            this.datar[(_index + 4) * this._unitLen] = x1;
+            this.datar[(_index + 4) * this._unitLen + 1] = y1;
+            this.datar[(_index + 5) * this._unitLen] = x3;
+            this.datar[(_index + 5) * this._unitLen + 1] = y3;
+        }
+        else {
+            this.datar[(_index + 0) * this._unitLen] = x0;
+            this.datar[(_index + 0) * this._unitLen + 1] = y0;
+            this.datar[(_index + 1) * this._unitLen] = x1;
+            this.datar[(_index + 1) * this._unitLen + 1] = y1;
+            this.datar[(_index + 2) * this._unitLen] = x3;
+            this.datar[(_index + 2) * this._unitLen + 1] = y3;
+            this.datar[(_index + 3) * this._unitLen] = x0;
+            this.datar[(_index + 3) * this._unitLen + 1] = y0;
+            this.datar[(_index + 4) * this._unitLen] = x3;
+            this.datar[(_index + 4) * this._unitLen + 1] = y3;
+            this.datar[(_index + 5) * this._unitLen] = x2;
+            this.datar[(_index + 5) * this._unitLen + 1] = y2;
+        }
+    }
+
+    /**
+     * @private
+     * 更新常规数据
+     */
+    private updateSimpleData(x0: number, y0: number, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number) {
+        this.updateQuadData(x0, y0, x1, y1, x2, y2, x3, y3);
+    }
+
+}
+
+class tex2DArray implements m4m.render.ITexture {
+    constructor(w: number, h: number) {
+        this.width = w;
+        this.height = h;
+        this.texture = m4m.framework.sceneMgr.app.webgl.createTexture();
+    }
+
+    uploadImage(texs: HTMLImageElement[]) {
+        if (!texs || texs.length < 1) return;
+        const w = texs[0].width;
+        const h = texs[0].height;
+        const len = texs.length;
+        const gl = m4m.framework.sceneMgr.app.webgl;
+        gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.texture);
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
+        gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texImage3D(gl.TEXTURE_2D_ARRAY, 0, gl.RGBA, w, h, len, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+
+        for (let i = 0; i < len; i++) {
+            const tex = texs[i];
+            gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, i, tex.width, tex.height, 1, gl.RGBA, gl.UNSIGNED_BYTE, tex);
+        }
+
+        gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
+    }
+
+    texture: WebGLTexture;
+    width: number;
+    height: number;
+    isFrameBuffer(): boolean {
+        return false;
+    }
+    dispose(webgl: WebGL2RenderingContext) {
+    }
+    caclByteLength(): number {
+        return 0;
     }
 
 }
