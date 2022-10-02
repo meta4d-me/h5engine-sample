@@ -4,20 +4,29 @@ type UIElement = { atlas: string, spRes: string, w: number, h: number };
  * UI 渲染使用 纹理数组 样例（webgl2 特性优化尝试）
  */
 class test_UI_Texture_Array implements IState {
+    private readonly texArrShaderName = `shader/texArrayImg`;
+    private readonly atlasNames = ["TA_NUMs", "TA_UIs", "TA_ICON"];
+    private readonly makeUICount = 1500;    //创建的UI 的数量
     private normalRoot: m4m.framework.transform2D;
     private textureArrayRoot: m4m.framework.transform2D;
     private app: m4m.framework.application;
     private scene: m4m.framework.scene;
     private camera: m4m.framework.camera;
     private rooto2d: m4m.framework.overlay2D;
-    private readonly texArrShaderName = `shader/texArrayImg`;
-    private readonly atlasNames = ["TA_NUMs", "TA_UIs", "TA_ICON"];
     private atlasMap: { [res: string]: m4m.framework.atlas } = {};
     private atlasArray: m4m.framework.atlas[] = [];
     private atlasPath = `${resRootPath}atlas/`;
     private cacheTexArray: m4m.framework.texture;
     private cacheAtlasTexs: m4m.framework.texture[] = [];
+    private _isTexArrayUIMode = true;
+    private get isTexArrayUIMode() { return this._isTexArrayUIMode; }
+    private set isTexArrayUIMode(val: boolean) {
+        if (this._isTexArrayUIMode == val) return;
+        this._isTexArrayUIMode = val;
+        this.switchUIMode(this._isTexArrayUIMode);
+    }
 
+    //需要使用到的 sprite
     private UITempletes: UIElement[] = [
         { atlas: "TA_NUMs", spRes: "ui_lianji_0", w: 32, h: 42 },
         { atlas: "TA_NUMs", spRes: "ui_lianji_1", w: 32, h: 42 },
@@ -38,6 +47,7 @@ class test_UI_Texture_Array implements IState {
         { atlas: "TA_ICON", spRes: "zg03", w: 180, h: 180 },
     ];
 
+    //加载altas
     private async loadAtlas(resName: string): Promise<m4m.framework.atlas> {
         const imgFile = `${this.atlasPath}${resName}/${resName}.png`;
         const jsonFile = `${this.atlasPath}${resName}/${resName}.atlas.json`;
@@ -48,6 +58,9 @@ class test_UI_Texture_Array implements IState {
         return _atlas;
     }
 
+
+
+    //切换UI 模式
     private switchUIMode(texArrayMode: boolean) {
         this.textureArrayRoot.visible = false;
         this.normalRoot.visible = false;
@@ -62,24 +75,22 @@ class test_UI_Texture_Array implements IState {
         if (texArrayMode) {
             this.textureArrayRoot.visible = true;
             //纹理切换
-            // this.atlasArray.forEach(a => { a.texture = this.cacheTexArray; });
             this.atlasArray.forEach(a => {
                 spTexSet(a, this.cacheTexArray);
-                // a.texture.glTexture = this.cacheTexArray.glTexture;
             });
         } else {
             this.normalRoot.visible = true;
             //纹理切换
             this.atlasArray.forEach((a, i) => {
                 spTexSet(a, this.cacheAtlasTexs[i]);
-                // a.texture = this.cacheAtlasTexs[i];
             });
         }
     }
 
+    //随机创建UI节点
     private randomMakeUI() {
         //随机创建 UI
-        const count = 100;
+        const count = this.makeUICount;
         const range = 800;
 
         for (let i = 0; i < count; i++) {
@@ -111,6 +122,7 @@ class test_UI_Texture_Array implements IState {
         }
     }
 
+    //创建普通UI
     private makeUI(sp: m4m.framework.sprite, w: number, h: number) {
         const result = m4m.framework.TransformUtil.Create2DPrimitive(m4m.framework.Primitive2DType.Image2D);
         const img = result.getComponent("image2D") as m4m.framework.image2D;
@@ -121,6 +133,7 @@ class test_UI_Texture_Array implements IState {
         return result;
     }
 
+    //创建纹理数组模式UI
     private makeTexArrayUI(sp: m4m.framework.sprite, w: number, h: number, texIndex: number = 0) {
         const result = new m4m.framework.transform2D();
         const texArrImg = result.addComponent("texArrImage2D") as texArrImage2D;
@@ -212,6 +225,7 @@ class test_UI_Texture_Array implements IState {
         p.setAlphaBlend(m4m.render.BlendModeEnum.Blend);
         assetMgr.mapShader[sh.getName()] = sh;
 
+        //（取巧操作 ，整合到引擎需要调整）-----------------------
         //smp2dArray type 
         let texArray = m4m.render.UniformTypeEnum.CubeTexture + 1;
         //
@@ -228,9 +242,12 @@ class test_UI_Texture_Array implements IState {
             applyObj.texindex++;
         };
 
+        //----------------------------------------------------
+
         return sh;
     }
 
+    //从assetMgr 获取需要的 htmlImage 图片 （取巧操作 ，整合到引擎需要调整）
     private getHtmlImageMap() {
         let _limit = {};
         let _map: { [imgN: string]: HTMLImageElement } = {};
@@ -268,6 +285,32 @@ class test_UI_Texture_Array implements IState {
         result.glTexture = glTex;
 
         return result;
+    }
+
+    private async setGUI() {
+        await datGui.init();
+        if (!dat) return;
+        const app = m4m.framework.sceneMgr.app;
+        //
+        app.showFps();
+        app.showDrawCall();
+        //
+        const obj = {
+            isOnFPS: true,
+            swFPS: () => {
+                (obj.isOnFPS = !obj.isOnFPS) ? app.showFps() : app.closeFps();
+            },
+            isOnDCall: true,
+            swDC: () => {
+                (obj.isOnDCall = !obj.isOnDCall) ? app.showDrawCall() : app.closeDrawCall();
+            }
+
+        };
+
+        let gui = new dat.GUI();
+        gui.add(obj, `swFPS`).name(`FPS 开关`);
+        gui.add(obj, `swDC`).name(`drawcall 开关`);
+        gui.add(this, `isTexArrayUIMode`).name(`纹理数组 UI模式`);
     }
 
     async start(app: m4m.framework.application) {
@@ -320,6 +363,9 @@ class test_UI_Texture_Array implements IState {
         this.randomMakeUI();
         //
         this.switchUIMode(true);
+
+        //init gui
+        this.setGUI();
     }
 
     update(delta: number) {

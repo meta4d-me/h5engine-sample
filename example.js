@@ -7418,10 +7418,13 @@ var test_UI_Texture_Array = /** @class */ (function () {
     function test_UI_Texture_Array() {
         this.texArrShaderName = "shader/texArrayImg";
         this.atlasNames = ["TA_NUMs", "TA_UIs", "TA_ICON"];
+        this.makeUICount = 1500; //创建的UI 的数量
         this.atlasMap = {};
         this.atlasArray = [];
         this.atlasPath = "".concat(resRootPath, "atlas/");
         this.cacheAtlasTexs = [];
+        this._isTexArrayUIMode = true;
+        //需要使用到的 sprite
         this.UITempletes = [
             { atlas: "TA_NUMs", spRes: "ui_lianji_0", w: 32, h: 42 },
             { atlas: "TA_NUMs", spRes: "ui_lianji_1", w: 32, h: 42 },
@@ -7442,6 +7445,18 @@ var test_UI_Texture_Array = /** @class */ (function () {
             { atlas: "TA_ICON", spRes: "zg03", w: 180, h: 180 },
         ];
     }
+    Object.defineProperty(test_UI_Texture_Array.prototype, "isTexArrayUIMode", {
+        get: function () { return this._isTexArrayUIMode; },
+        set: function (val) {
+            if (this._isTexArrayUIMode == val)
+                return;
+            this._isTexArrayUIMode = val;
+            this.switchUIMode(this._isTexArrayUIMode);
+        },
+        enumerable: false,
+        configurable: true
+    });
+    //加载altas
     test_UI_Texture_Array.prototype.loadAtlas = function (resName) {
         return __awaiter(this, void 0, void 0, function () {
             var imgFile, jsonFile, _img, _atlas;
@@ -7462,6 +7477,7 @@ var test_UI_Texture_Array = /** @class */ (function () {
             });
         });
     };
+    //切换UI 模式
     test_UI_Texture_Array.prototype.switchUIMode = function (texArrayMode) {
         var _this = this;
         this.textureArrayRoot.visible = false;
@@ -7477,10 +7493,8 @@ var test_UI_Texture_Array = /** @class */ (function () {
         if (texArrayMode) {
             this.textureArrayRoot.visible = true;
             //纹理切换
-            // this.atlasArray.forEach(a => { a.texture = this.cacheTexArray; });
             this.atlasArray.forEach(function (a) {
                 spTexSet(a, _this.cacheTexArray);
-                // a.texture.glTexture = this.cacheTexArray.glTexture;
             });
         }
         else {
@@ -7488,13 +7502,13 @@ var test_UI_Texture_Array = /** @class */ (function () {
             //纹理切换
             this.atlasArray.forEach(function (a, i) {
                 spTexSet(a, _this.cacheAtlasTexs[i]);
-                // a.texture = this.cacheAtlasTexs[i];
             });
         }
     };
+    //随机创建UI节点
     test_UI_Texture_Array.prototype.randomMakeUI = function () {
         //随机创建 UI
-        var count = 100;
+        var count = this.makeUICount;
         var range = 800;
         var _loop_2 = function (i) {
             //位置
@@ -7525,6 +7539,7 @@ var test_UI_Texture_Array = /** @class */ (function () {
             _loop_2(i);
         }
     };
+    //创建普通UI
     test_UI_Texture_Array.prototype.makeUI = function (sp, w, h) {
         var result = m4m.framework.TransformUtil.Create2DPrimitive(m4m.framework.Primitive2DType.Image2D);
         var img = result.getComponent("image2D");
@@ -7534,6 +7549,7 @@ var test_UI_Texture_Array = /** @class */ (function () {
         m4m.math.vec2SetAll(result.pivot, 0.5);
         return result;
     };
+    //创建纹理数组模式UI
     test_UI_Texture_Array.prototype.makeTexArrayUI = function (sp, w, h, texIndex) {
         if (texIndex === void 0) { texIndex = 0; }
         var result = new m4m.framework.transform2D();
@@ -7574,6 +7590,7 @@ var test_UI_Texture_Array = /** @class */ (function () {
         p.state_ztest_method = m4m.render.webglkit.LEQUAL;
         p.setAlphaBlend(m4m.render.BlendModeEnum.Blend);
         assetMgr.mapShader[sh.getName()] = sh;
+        //（取巧操作 ，整合到引擎需要调整）-----------------------
         //smp2dArray type 
         var texArray = m4m.render.UniformTypeEnum.CubeTexture + 1;
         //
@@ -7589,8 +7606,10 @@ var test_UI_Texture_Array = /** @class */ (function () {
             gl.uniform1i(location, applyObj.texindex);
             applyObj.texindex++;
         };
+        //----------------------------------------------------
         return sh;
     };
+    //从assetMgr 获取需要的 htmlImage 图片 （取巧操作 ，整合到引擎需要调整）
     test_UI_Texture_Array.prototype.getHtmlImageMap = function () {
         var _limit = {};
         var _map = {};
@@ -7625,6 +7644,39 @@ var test_UI_Texture_Array = /** @class */ (function () {
         var result = new m4m.framework.texture("tex2dArray");
         result.glTexture = glTex;
         return result;
+    };
+    test_UI_Texture_Array.prototype.setGUI = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var app, obj, gui;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, datGui.init()];
+                    case 1:
+                        _a.sent();
+                        if (!dat)
+                            return [2 /*return*/];
+                        app = m4m.framework.sceneMgr.app;
+                        //
+                        app.showFps();
+                        app.showDrawCall();
+                        obj = {
+                            isOnFPS: true,
+                            swFPS: function () {
+                                (obj.isOnFPS = !obj.isOnFPS) ? app.showFps() : app.closeFps();
+                            },
+                            isOnDCall: true,
+                            swDC: function () {
+                                (obj.isOnDCall = !obj.isOnDCall) ? app.showDrawCall() : app.closeDrawCall();
+                            }
+                        };
+                        gui = new dat.GUI();
+                        gui.add(obj, "swFPS").name("FPS \u5F00\u5173");
+                        gui.add(obj, "swDC").name("drawcall \u5F00\u5173");
+                        gui.add(this, "isTexArrayUIMode").name("\u7EB9\u7406\u6570\u7EC4 UI\u6A21\u5F0F");
+                        return [2 /*return*/];
+                }
+            });
+        });
     };
     test_UI_Texture_Array.prototype.start = function (app) {
         return __awaiter(this, void 0, void 0, function () {
@@ -7673,6 +7725,8 @@ var test_UI_Texture_Array = /** @class */ (function () {
                         this.randomMakeUI();
                         //
                         this.switchUIMode(true);
+                        //init gui
+                        this.setGUI();
                         return [2 /*return*/];
                 }
             });
