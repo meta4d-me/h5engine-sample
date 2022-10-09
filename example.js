@@ -7794,7 +7794,7 @@ var test_animationClip = /** @class */ (function () {
         console.log("i am here.");
         this.app = app;
         this.scene = this.app.getScene();
-        m4m.framework.skinnedMeshRenderer.technicalType = "BONE_ARR";
+        m4m.framework.skinnedMeshRenderer.technicalType = "BONE_TEXTURE";
         m4m.framework.assetMgr.openGuid = true;
         this.app.getAssetMgr().load("./".concat(resRootPath, "shader/shader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (state) {
             if (state.isfinish) {
