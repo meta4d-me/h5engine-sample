@@ -8898,18 +8898,22 @@ var test_gltf_animation = /** @class */ (function () {
     };
     test_gltf_animation.prototype.loadLongPrefab = function (laststate, state) {
         var _this = this;
-        var resName = "long";
-        this.app.getAssetMgr().load("".concat(resRootPath, "gltf/elong.glb"), m4m.framework.AssetTypeEnum.Auto, function (s) {
+        var settring = ["elong", "Run"];
+        // let settring = ["MutantWalking", "001"];
+        this.app.getAssetMgr().load("".concat(resRootPath, "pbrRes/").concat(settring[0], ".glb"), m4m.framework.AssetTypeEnum.Auto, function (s) {
             if (s.isfinish) {
-                var _prefab = _this.app.getAssetMgr().getAssetByName("elong.glb");
-                _prefab.load(_this.app.getAssetMgr(), _this.app.webgl, "".concat(resRootPath, "gltf"), null, null, null)
+                var _prefab = _this.app.getAssetMgr().getAssetByName("".concat(settring[0], ".glb"));
+                _prefab.load(_this.app.getAssetMgr(), _this.app.webgl, "".concat(resRootPath, "pbrRes"), null, null, null)
                     .then(function (res) {
                     _this.dragon = res;
+                    var s = res.localScale;
+                    s.x *= -1;
+                    res.localScale = s;
                     _this.scene.addChild(res);
                     _this.dragon.markDirty();
                     _this.camTran = _this.dragon.find("Dummy001");
                     var ap = _this.dragon.gameObject.getComponentsInChildren("animation")[0];
-                    ap.play("Run");
+                    ap.play(settring[1]);
                     state.finish = true;
                 });
             }
@@ -8925,8 +8929,15 @@ var test_gltf_animation = /** @class */ (function () {
         this.camera.far = 10000;
         this.camera.backgroundColor = new m4m.math.color(0.11, 0.11, 0.11, 1.0);
         objCam.localTranslate = new m4m.math.vector3(0, 0, -30);
-        CameraController.instance().init(this.app, this.camera);
+        // CameraController.instance().init(this.app, this.camera);
         objCam.markDirty(); //标记为需要刷新
+        //相机控制
+        var hoverc = this.camera.gameObject.addComponent("HoverCameraScript");
+        hoverc.panAngle = 180;
+        hoverc.tiltAngle = 45;
+        hoverc.distance = 30;
+        hoverc.scaleSpeed = 0.1;
+        hoverc.lookAtPoint = new m4m.math.vector3(0, 0, 0);
         var tranLight = new m4m.framework.transform();
         tranLight.name = "light";
         this.scene.addChild(tranLight);

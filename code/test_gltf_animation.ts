@@ -17,18 +17,23 @@ class test_gltf_animation implements IState {
     }
 
     private loadLongPrefab(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
-        let resName = "long"
-        this.app.getAssetMgr().load(`${resRootPath}gltf/elong.glb`, m4m.framework.AssetTypeEnum.Auto, (s) => {
+        let settring = ["elong", "Run"];
+        // let settring = ["MutantWalking", "001"];
+        this.app.getAssetMgr().load(`${resRootPath}pbrRes/${settring[0]}.glb`, m4m.framework.AssetTypeEnum.Auto, (s) => {
             if (s.isfinish) {
-                var _prefab = this.app.getAssetMgr().getAssetByName(`elong.glb`) as m4m.framework.gltf;
-                _prefab.load(this.app.getAssetMgr(), this.app.webgl, `${resRootPath}gltf`, null, null, null)
+                var _prefab = this.app.getAssetMgr().getAssetByName(`${settring[0]}.glb`) as m4m.framework.gltf;
+                _prefab.load(this.app.getAssetMgr(), this.app.webgl, `${resRootPath}pbrRes`, null, null, null)
                     .then(res => {
                         this.dragon = res;
+                        let s = res.localScale;
+                        s.x *= -1;
+                        res.localScale = s;
+
                         this.scene.addChild(res);
                         this.dragon.markDirty();
                         this.camTran = this.dragon.find("Dummy001");
                         let ap = this.dragon.gameObject.getComponentsInChildren("animation")[0] as m4m.framework.animation;
-                        ap.play("Run");
+                        ap.play(settring[1]);
                         state.finish = true;
                     })
             }
@@ -45,8 +50,17 @@ class test_gltf_animation implements IState {
         this.camera.far = 10000;
         this.camera.backgroundColor = new m4m.math.color(0.11, 0.11, 0.11, 1.0);
         objCam.localTranslate = new m4m.math.vector3(0, 0, -30);
-        CameraController.instance().init(this.app, this.camera);
+        // CameraController.instance().init(this.app, this.camera);
         objCam.markDirty();//标记为需要刷新
+
+        //相机控制
+        let hoverc = this.camera.gameObject.addComponent("HoverCameraScript") as m4m.framework.HoverCameraScript;
+        hoverc.panAngle = 180;
+        hoverc.tiltAngle = 45;
+        hoverc.distance = 30;
+
+        hoverc.scaleSpeed = 0.1;
+        hoverc.lookAtPoint = new m4m.math.vector3(0, 0, 0);
 
         var tranLight = new m4m.framework.transform();
         tranLight.name = "light";
