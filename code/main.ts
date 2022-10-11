@@ -51,6 +51,8 @@ class main implements m4m.framework.IUserCode {
             demoList.addBtn("GPU压缩纹理", () => new test_CompressTexture());
             demoList.addBtn("draco压缩网格格式加载", () => new test_load_draco());
             demoList.addBtn("骨骼动画", () => new test_animationClip());
+            demoList.addBtn("GLTF_动画", () => new test_gltf_animation());
+            demoList.addBtn("地形", () => new test_Heightmap_terrain());
             // demoList.addBtn("Android平台ETC1压缩纹理", () => new test_ETC1_KTX());
             return new demoList();
         });
@@ -123,12 +125,6 @@ class main implements m4m.framework.IUserCode {
             demoList.addBtn("SPINE_转动约束", () => new test_spine_wheelTransform());
             demoList.addBtn("SPINE_换Region插槽图片", () => new test_spine_change_slot_region_tex());
             demoList.addBtn("SPINE_换Mesh插槽图片", () => new test_spine_change_slot_mesh_tex());
-            return new demoList();
-        });
-
-        //-------------------------------------------GLTF样例
-        this.addBtn("GLTF样例==>", () => {
-            demoList.addBtn("GLTF_动画", () => new test_gltf_animation());
             return new demoList();
         });
 

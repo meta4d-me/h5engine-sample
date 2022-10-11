@@ -1296,6 +1296,8 @@ var main = /** @class */ (function () {
             demoList.addBtn("GPU压缩纹理", function () { return new test_CompressTexture(); });
             demoList.addBtn("draco压缩网格格式加载", function () { return new test_load_draco(); });
             demoList.addBtn("骨骼动画", function () { return new test_animationClip(); });
+            demoList.addBtn("GLTF_动画", function () { return new test_gltf_animation(); });
+            demoList.addBtn("地形", function () { return new test_Heightmap_terrain(); });
             // demoList.addBtn("Android平台ETC1压缩纹理", () => new test_ETC1_KTX());
             return new demoList();
         });
@@ -1363,11 +1365,6 @@ var main = /** @class */ (function () {
             demoList.addBtn("SPINE_转动约束", function () { return new test_spine_wheelTransform(); });
             demoList.addBtn("SPINE_换Region插槽图片", function () { return new test_spine_change_slot_region_tex(); });
             demoList.addBtn("SPINE_换Mesh插槽图片", function () { return new test_spine_change_slot_mesh_tex(); });
-            return new demoList();
-        });
-        //-------------------------------------------GLTF样例
-        this.addBtn("GLTF样例==>", function () {
-            demoList.addBtn("GLTF_动画", function () { return new test_gltf_animation(); });
             return new demoList();
         });
         //-------------------------------------其他
@@ -6421,6 +6418,171 @@ var HDR_sample = /** @class */ (function () {
     };
     return HDR_sample;
 }());
+/**
+ * 高度图地形样例
+ */
+var test_Heightmap_terrain = /** @class */ (function () {
+    function test_Heightmap_terrain() {
+    }
+    test_Heightmap_terrain.prototype.start = function (app) {
+        return __awaiter(this, void 0, void 0, function () {
+            var scene, assetMgr, gl, objCam, cam, hoverc, planeNode, planeMR, planeMF, texNames, texUrl, texs, terrainMesh, mtr, tSH;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        scene = app.getScene();
+                        assetMgr = app.getAssetMgr();
+                        gl = app.webgl;
+                        objCam = new m4m.framework.transform();
+                        scene.addChild(objCam);
+                        cam = objCam.gameObject.addComponent("camera");
+                        cam.near = 0.01;
+                        cam.far = 2000;
+                        cam.fov = Math.PI * 0.3;
+                        objCam.localTranslate = new m4m.math.vector3(0, 15, -15);
+                        objCam.lookatPoint(new m4m.math.vector3(0, 0, 0));
+                        hoverc = cam.gameObject.addComponent("HoverCameraScript");
+                        hoverc.panAngle = 180;
+                        hoverc.tiltAngle = 45;
+                        hoverc.distance = 480;
+                        hoverc.scaleSpeed = 0.1;
+                        hoverc.lookAtPoint = new m4m.math.vector3(0, 2.5, 0);
+                        planeNode = m4m.framework.TransformUtil.CreatePrimitive(m4m.framework.PrimitiveType.Plane);
+                        planeMR = planeNode.gameObject.getComponent("meshRenderer");
+                        planeMF = planeNode.gameObject.getComponent("meshFilter");
+                        texNames = ["Heightmap_0.jpg", "blendMaskTexture.jpg", "splat_0Tex.png", "splat_1Tex.png", "splat_2Tex.png", "splat_3Tex.png"];
+                        texUrl = [];
+                        texNames.forEach(function (n) {
+                            texUrl.push("".concat(resRootPath, "texture/").concat(n));
+                        });
+                        return [4 /*yield*/, util.loadTextures(texUrl, assetMgr)];
+                    case 1:
+                        texs = _a.sent();
+                        terrainMesh = genElevationMesh(gl, texs[0], 1000, 200, 1000, 200, 200);
+                        planeMF.mesh = terrainMesh;
+                        mtr = planeMR.materials[0];
+                        //加载 shader 包
+                        return [4 /*yield*/, util.loadShader(assetMgr)];
+                    case 2:
+                        //加载 shader 包
+                        _a.sent();
+                        tSH = assetMgr.getShader("terrain_rgb_control.shader.json");
+                        mtr.setShader(tSH);
+                        //纹理
+                        mtr.setTexture("_Control", texs[1]);
+                        mtr.setTexture("_Splat0", texs[2]);
+                        mtr.setTexture("_Splat1", texs[3]);
+                        mtr.setTexture("_Splat2", texs[4]);
+                        mtr.setTexture("_Splat3", texs[5]);
+                        //缩放和平铺
+                        mtr.setVector4("_Splat0_ST", new m4m.math.vector4(26.7, 26.7, 0, 0));
+                        mtr.setVector4("_Splat1_ST", new m4m.math.vector4(16, 16, 0, 0));
+                        mtr.setVector4("_Splat2_ST", new m4m.math.vector4(26.7, 26.7, 0, 0));
+                        mtr.setVector4("_Splat3_ST", new m4m.math.vector4(26.7, 26.7, 0, 0));
+                        //添加到场景
+                        scene.addChild(planeNode);
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    test_Heightmap_terrain.prototype.update = function (delta) {
+    };
+    return test_Heightmap_terrain;
+}());
+/**
+ * 通过 高度图 ，生成 高度地势 mesh
+ * @param gl webgl上下文
+ * @param heightmap 高度图
+ * @param width x轴方向尺寸
+ * @param height y轴方向尺寸
+ * @param depth z轴方向尺寸
+ * @param segmentsW X轴的段落数
+ * @param segmentsH z轴的段落数
+ * @param maxElevation 最大高度
+ * @param minElevation 最小高度
+ * @returns
+ */
+function genElevationMesh(gl, heightmap, width, height, depth, segmentsW, segmentsH, maxElevation, minElevation) {
+    if (width === void 0) { width = 1000; }
+    if (height === void 0) { height = 100; }
+    if (depth === void 0) { depth = 1000; }
+    if (segmentsW === void 0) { segmentsW = 30; }
+    if (segmentsH === void 0) { segmentsH = 30; }
+    if (maxElevation === void 0) { maxElevation = 255; }
+    if (minElevation === void 0) { minElevation = 0; }
+    var pixelReader = heightmap.glTexture.getReader(true); //只读灰度信息
+    // pixelReader.getPixel();
+    var w = heightmap.glTexture.width;
+    var h = heightmap.glTexture.height;
+    //gen meshData
+    var data = new m4m.render.meshData();
+    data.pos = [];
+    data.trisindex = [];
+    data.normal = [];
+    data.tangent = [];
+    data.color = [];
+    data.uv = [];
+    data.uv2 = [];
+    var x, z, u, v, y, col, base, numInds = 0;
+    var tw = segmentsW + 1;
+    // let numVerts: number = (segmentsH + 1) * tw;
+    var uDiv = (w - 1) / segmentsW;
+    var vDiv = (h - 1) / segmentsH;
+    var scaleU = 1;
+    var scaleV = 1;
+    for (var zi = 0; zi <= segmentsH; ++zi) {
+        for (var xi = 0; xi <= segmentsW; ++xi) {
+            x = (xi / segmentsW - 0.5) * width;
+            z = (zi / segmentsH - 0.5) * depth;
+            u = Math.floor(xi * uDiv) / w;
+            v = Math.floor((segmentsH - zi) * vDiv) / h;
+            col = pixelReader.getPixel(u, v) & 0xff;
+            y = (col > maxElevation) ? (maxElevation / 0xff) * height : ((col < minElevation) ? (minElevation / 0xff) * height : (col / 0xff) * height);
+            //pos
+            data.pos.push(new m4m.math.vector3(x, y, z));
+            //normal
+            data.normal.push(new m4m.math.vector3(1, 1, 1)); //先填充一个值 ，准确值需要之后计算
+            //tan
+            data.tangent.push(new m4m.math.vector3(-1, 1, 1)); //先填充一个值 ，准确值需要之后计算
+            //color
+            data.color.push(new m4m.math.color(1, 1, 1, 1));
+            //uv
+            data.uv.push(new m4m.math.vector2(xi / segmentsW * scaleU, 1.0 - zi / segmentsH * scaleV));
+            //uv1
+            data.uv2.push(new m4m.math.vector2(xi / segmentsW, 1.0 - zi / segmentsH));
+            if (xi != segmentsW && zi != segmentsH) {
+                base = xi + zi * tw;
+                data.trisindex.push(base, base + tw + 1, base + tw, base, base + 1, base + tw + 1);
+            }
+        }
+    }
+    //gen mesh
+    var _mesh = new m4m.framework.mesh("".concat(heightmap.getName(), ".mesh.bin"));
+    _mesh.data = data;
+    var vf = m4m.render.VertexFormatMask.Position | m4m.render.VertexFormatMask.Normal | m4m.render.VertexFormatMask.Tangent | m4m.render.VertexFormatMask.Color | m4m.render.VertexFormatMask.UV0 | m4m.render.VertexFormatMask.UV1;
+    _mesh.data.originVF = vf;
+    var v32 = _mesh.data.genVertexDataArray(vf);
+    var i16 = _mesh.data.genIndexDataArray();
+    _mesh.glMesh = new m4m.render.glMesh();
+    _mesh.glMesh.initBuffer(gl, vf, _mesh.data.pos.length);
+    _mesh.glMesh.uploadVertexData(gl, v32);
+    _mesh.glMesh.addIndex(gl, i16.length);
+    _mesh.glMesh.uploadIndexData(gl, 0, i16);
+    _mesh.glMesh.initVAO();
+    //填充submesh 0
+    _mesh.submesh = [];
+    {
+        var sm = new m4m.framework.subMeshInfo();
+        sm.matIndex = 0;
+        sm.useVertexIndex = 0;
+        sm.start = 0;
+        sm.size = i16.length;
+        sm.line = false;
+        _mesh.submesh.push(sm);
+    }
+    return _mesh;
+}
 /// <reference path="../lib/dat.gui.d.ts" />
 /**
  * 线条渲染组件示例
