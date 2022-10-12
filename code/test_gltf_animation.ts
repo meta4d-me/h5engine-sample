@@ -32,8 +32,8 @@ class test_gltf_animation implements IState {
                         this.scene.addChild(res);
                         this.dragon.markDirty();
                         this.camTran = this.dragon.find("Dummy001");
-                        let ap = this.dragon.gameObject.getComponentsInChildren("animation")[0] as m4m.framework.animation;
-                        ap.play(settring[1]);
+                        // let ap = this.dragon.gameObject.getComponentsInChildren("animation")[0] as m4m.framework.animation;
+                        // ap.play(settring[1]);
                         state.finish = true;
                     })
             }

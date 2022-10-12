@@ -6,7 +6,7 @@ class test_animationClip implements IState {
         console.log("i am here.");
         this.app = app;
         this.scene = this.app.getScene();
-        m4m.framework.skinnedMeshRenderer.technicalType = "BONE_TEXTURE";
+        m4m.framework.skinnedMeshRenderer["technicalType"] = "BONE_TEXTURE";
         m4m.framework.assetMgr.openGuid = true;
         this.app.getAssetMgr().load(`./${resRootPath}shader/shader.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (state) => {
             if (state.isfinish) {

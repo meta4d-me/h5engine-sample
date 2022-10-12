@@ -8699,7 +8699,7 @@ var test_animationClip = /** @class */ (function () {
         console.log("i am here.");
         this.app = app;
         this.scene = this.app.getScene();
-        m4m.framework.skinnedMeshRenderer.technicalType = "BONE_TEXTURE";
+        m4m.framework.skinnedMeshRenderer["technicalType"] = "BONE_TEXTURE";
         m4m.framework.assetMgr.openGuid = true;
         this.app.getAssetMgr().load("./".concat(resRootPath, "shader/shader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (state) {
             if (state.isfinish) {
@@ -9074,8 +9074,8 @@ var test_gltf_animation = /** @class */ (function () {
                     _this.scene.addChild(res);
                     _this.dragon.markDirty();
                     _this.camTran = _this.dragon.find("Dummy001");
-                    var ap = _this.dragon.gameObject.getComponentsInChildren("animation")[0];
-                    ap.play(settring[1]);
+                    // let ap = this.dragon.gameObject.getComponentsInChildren("animation")[0] as m4m.framework.animation;
+                    // ap.play(settring[1]);
                     state.finish = true;
                 });
             }
