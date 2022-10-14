@@ -6424,12 +6424,39 @@ var HDR_sample = /** @class */ (function () {
 var test_Heightmap_terrain = /** @class */ (function () {
     function test_Heightmap_terrain() {
     }
+    test_Heightmap_terrain.getHeightmapPixels = function (heightmap) {
+        var pixelReader = heightmap.glTexture.getReader(true); //只读灰度信息
+        var w = heightmap.glTexture.width;
+        var h = heightmap.glTexture.height;
+        var array = new Uint8Array(w * h);
+        var uDiv = 1.0; //(w - 1) / (w - 1);
+        var vDiv = 1.0; //(h - 1) / (h - 1);
+        for (var row = 0; row < h; row++) {
+            for (var column = 0; column < w; column++) {
+                var x = (column / (w - 1) - 0.5) * w;
+                var z = (row / (h - 1) - 0.5) * h;
+                var u = Math.floor(column * uDiv) / w;
+                var v = Math.floor(((h - 1) - row) * vDiv) / h;
+                var index = row * w + column;
+                var color = pixelReader.getPixel(u, v) & 0xff;
+                console.log("color=" + color);
+                color = color & 0xff;
+                console.log("color 1=" + color);
+                array[index] = color;
+            }
+        }
+        //for(var ii = 0; ii < 1000; ii++)
+        //console.log(array[ii]);
+        return array;
+    };
     test_Heightmap_terrain.prototype.start = function (app) {
         return __awaiter(this, void 0, void 0, function () {
             var scene, assetMgr, gl, objCam, cam, hoverc, planeNode, planeMR, planeMF, texNames, texUrl, texs, terrainMesh, mtr, tSH;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        // return;
+                        console.log("test_Heightmap_terrain start");
                         scene = app.getScene();
                         assetMgr = app.getAssetMgr();
                         gl = app.webgl;
@@ -6444,13 +6471,13 @@ var test_Heightmap_terrain = /** @class */ (function () {
                         hoverc = cam.gameObject.addComponent("HoverCameraScript");
                         hoverc.panAngle = 180;
                         hoverc.tiltAngle = 45;
-                        hoverc.distance = 480;
+                        hoverc.distance = 18;
                         hoverc.scaleSpeed = 0.1;
                         hoverc.lookAtPoint = new m4m.math.vector3(0, 2.5, 0);
                         planeNode = m4m.framework.TransformUtil.CreatePrimitive(m4m.framework.PrimitiveType.Plane);
                         planeMR = planeNode.gameObject.getComponent("meshRenderer");
                         planeMF = planeNode.gameObject.getComponent("meshFilter");
-                        texNames = ["Heightmap_0.jpg", "blendMaskTexture.jpg", "splat_0Tex.png", "splat_1Tex.png", "splat_2Tex.png", "splat_3Tex.png"];
+                        texNames = ["211.jpg", "blendMaskTexture.jpg", "splat_0Tex.png", "splat_3Tex.png", "splat_2Tex.png", "splat_1Tex.png"];
                         texUrl = [];
                         texNames.forEach(function (n) {
                             texUrl.push("".concat(resRootPath, "texture/").concat(n));
@@ -6458,7 +6485,9 @@ var test_Heightmap_terrain = /** @class */ (function () {
                         return [4 /*yield*/, util.loadTextures(texUrl, assetMgr)];
                     case 1:
                         texs = _a.sent();
-                        terrainMesh = genElevationMesh(gl, texs[0], 1000, 200, 1000, 200, 200);
+                        this.heightData = test_Heightmap_terrain.getHeightmapPixels(texs[0]);
+                        console.log(this.heightData);
+                        terrainMesh = genElevationMesh(gl, texs[0], 255, 0, 15);
                         planeMF.mesh = terrainMesh;
                         mtr = planeMR.materials[0];
                         //加载 shader 包
@@ -6475,10 +6504,14 @@ var test_Heightmap_terrain = /** @class */ (function () {
                         mtr.setTexture("_Splat2", texs[4]);
                         mtr.setTexture("_Splat3", texs[5]);
                         //缩放和平铺
-                        mtr.setVector4("_Splat0_ST", new m4m.math.vector4(26.7, 26.7, 0, 0));
-                        mtr.setVector4("_Splat1_ST", new m4m.math.vector4(16, 16, 0, 0));
-                        mtr.setVector4("_Splat2_ST", new m4m.math.vector4(26.7, 26.7, 0, 0));
-                        mtr.setVector4("_Splat3_ST", new m4m.math.vector4(26.7, 26.7, 0, 0));
+                        // mtr.setVector4(`_Splat0_ST`, new m4m.math.vector4(26.7, 26.7, 0, 0));
+                        // mtr.setVector4(`_Splat1_ST`, new m4m.math.vector4(16, 16, 0, 0));
+                        // mtr.setVector4(`_Splat2_ST`, new m4m.math.vector4(26.7, 26.7, 0, 0));
+                        // mtr.setVector4(`_Splat3_ST`, new m4m.math.vector4(26.7, 26.7, 0, 0));
+                        mtr.setVector4("_Splat0_ST", new m4m.math.vector4(4, 4, 0, 0));
+                        mtr.setVector4("_Splat1_ST", new m4m.math.vector4(4, 4, 0, 0));
+                        mtr.setVector4("_Splat2_ST", new m4m.math.vector4(4, 4, 0, 0));
+                        mtr.setVector4("_Splat3_ST", new m4m.math.vector4(4, 4, 0, 0));
                         //添加到场景
                         scene.addChild(planeNode);
                         return [2 /*return*/];
@@ -6503,18 +6536,46 @@ var test_Heightmap_terrain = /** @class */ (function () {
  * @param minElevation 最小高度
  * @returns
  */
-function genElevationMesh(gl, heightmap, width, height, depth, segmentsW, segmentsH, maxElevation, minElevation) {
-    if (width === void 0) { width = 1000; }
-    if (height === void 0) { height = 100; }
-    if (depth === void 0) { depth = 1000; }
-    if (segmentsW === void 0) { segmentsW = 30; }
-    if (segmentsH === void 0) { segmentsH = 30; }
+//function genElevationMesh(gl: WebGL2RenderingContext, heightmap: m4m.framework.texture, width: number = 1000, height: number = 100, depth: number = 1000, segmentsW: number = 30, segmentsH: number = 30, maxElevation: number = 255, minElevation: number = 0): m4m.framework.mesh {
+function genElevationMesh(gl, heightmap, maxElevation, minElevation, heightScale) {
     if (maxElevation === void 0) { maxElevation = 255; }
     if (minElevation === void 0) { minElevation = 0; }
-    var pixelReader = heightmap.glTexture.getReader(true); //只读灰度信息
-    // pixelReader.getPixel();
+    if (heightScale === void 0) { heightScale = 12.0; }
+    var _heightdata = test_Heightmap_terrain.getHeightmapPixels(heightmap);
     var w = heightmap.glTexture.width;
     var h = heightmap.glTexture.height;
+    function InBounds(i, j) {
+        // True if ij are valid indices; false otherwise.
+        return i >= 0 && i < w &&
+            j >= 0 && j < h;
+    }
+    function Average(i, j) {
+        // ----------
+        // | 1| 2| 3|
+        // ----------
+        // |4 |ij| 6|
+        // ----------
+        // | 7| 8| 9|
+        // ----------
+        var avg = 0.0;
+        var num = 0.0;
+        for (var m = i - 1; m <= i + 1; ++m) {
+            for (var n = j - 1; n <= j + 1; ++n) {
+                if (InBounds(m, n)) {
+                    var index_ = m * w + n;
+                    avg += _heightdata[index_];
+                    num += 1;
+                }
+            }
+        }
+        return avg / num;
+    }
+    var heights = new Float32Array(w * h);
+    for (var i = 0; i < h; ++i) {
+        for (var j = 0; j < w; ++j) {
+            heights[i * w + j] = Average(i, j);
+        }
+    }
     //gen meshData
     var data = new m4m.render.meshData();
     data.pos = [];
@@ -6524,21 +6585,26 @@ function genElevationMesh(gl, heightmap, width, height, depth, segmentsW, segmen
     data.color = [];
     data.uv = [];
     data.uv2 = [];
+    var segmentsW = w - 1;
+    var segmentsH = h - 1;
     var x, z, u, v, y, col, base, numInds = 0;
+    var index_;
     var tw = segmentsW + 1;
     // let numVerts: number = (segmentsH + 1) * tw;
     var uDiv = (w - 1) / segmentsW;
     var vDiv = (h - 1) / segmentsH;
     var scaleU = 1;
     var scaleV = 1;
-    for (var zi = 0; zi <= segmentsH; ++zi) {
-        for (var xi = 0; xi <= segmentsW; ++xi) {
-            x = (xi / segmentsW - 0.5) * width;
-            z = (zi / segmentsH - 0.5) * depth;
+    for (var zi = 0; zi < h; ++zi) {
+        for (var xi = 0; xi < w; ++xi) {
+            x = (xi / segmentsW - 0.5) * w;
+            z = (zi / segmentsH - 0.5) * h;
             u = Math.floor(xi * uDiv) / w;
             v = Math.floor((segmentsH - zi) * vDiv) / h;
-            col = pixelReader.getPixel(u, v) & 0xff;
-            y = (col > maxElevation) ? (maxElevation / 0xff) * height : ((col < minElevation) ? (minElevation / 0xff) * height : (col / 0xff) * height);
+            index_ = zi * w + xi;
+            //col = _heightdata[index_];
+            col = heights[index_];
+            y = (col > maxElevation) ? (maxElevation / 0xff) * heightScale : ((col < minElevation) ? (minElevation / 0xff) * heightScale : (col / 0xff) * heightScale);
             //pos
             data.pos.push(new m4m.math.vector3(x, y, z));
             //normal
@@ -22281,6 +22347,7 @@ var m4m;
                 this.inputMgr.addPointListener(m4m.event.PointEventEnum.MouseWheel, this.onWheel, this);
                 this.inputMgr.addHTMLElementListener('touchstart', this.onTouch, this);
                 this.inputMgr.addHTMLElementListener('touchmove', this.onTouchMove, this);
+                this.inputMgr.addKeyListener(m4m.event.KeyEventEnum.KeyDown, this.onKeyDown, this);
             };
             HoverCameraScript.prototype.update = function (delta) {
                 var tiltRad = this._cur_tiltRad = m4m.math.numberLerp(this._cur_tiltRad, this._tiltRad, this.damping);
@@ -22289,9 +22356,11 @@ var m4m;
                 var distanceY = this.distance * (tiltRad == 0 ? 0 : Math.sin(tiltRad));
                 var distanceZ = this.distance * Math.cos(panRad) * Math.cos(tiltRad);
                 if (this.lookAtTarget) {
+                    console.log("has lookAtTarget");
                     m4m.math.vec3Clone(this.lookAtTarget.getWorldTranslate(), this.cupTargetV3);
                 }
                 else {
+                    console.log("has lookAtPoint");
                     m4m.math.vec3Clone(this.lookAtPoint, this.cupTargetV3);
                 }
                 m4m.math.vec3Add(this.cupTargetV3, this.targetOffset, this.cupTargetV3);
@@ -22300,6 +22369,29 @@ var m4m;
                 this.gameObject.transform.lookatPoint(this.cupTargetV3);
                 this.gameObject.transform.markDirty();
                 m4m.math.pool.delete_vector3(tempv3);
+            };
+            HoverCameraScript.prototype.onKeyDown = function (_a) {
+                var keyCode = _a[0];
+                if (keyCode == m4m.event.KeyCode.KeyA) {
+                    //console.log("onKeyDown A");
+                    this.lookAtPoint.x -= 0.17;
+                    this.cupTargetV3.x -= 0.17;
+                }
+                else if (keyCode == m4m.event.KeyCode.KeyD) {
+                    //console.log("onKeyDown D");
+                    this.lookAtPoint.x += 0.17;
+                    this.cupTargetV3.x += 0.17;
+                }
+                if (keyCode == m4m.event.KeyCode.KeyS) {
+                    //console.log("onKeyDown W");
+                    this.lookAtPoint.z -= 0.17;
+                    this.cupTargetV3.z -= 0.17;
+                }
+                else if (keyCode == m4m.event.KeyCode.KeyW) {
+                    //console.log("onKeyDown S");
+                    this.lookAtPoint.z += 0.17;
+                    this.cupTargetV3.z += 0.17;
+                }
             };
             HoverCameraScript.prototype.onPointDown = function () {
                 this._mouseDown = true;
@@ -22353,14 +22445,14 @@ var m4m;
             };
             HoverCameraScript.prototype.onTouchMove = function (ev) {
                 var _this = this;
-                var _a, _b;
+                var _b, _c;
                 if (ev.targetTouches.length == 1) {
                     var touch = this.inputMgr.touches[ev.targetTouches[0].identifier];
                     if (this.touchRotateID == ev.targetTouches[0].identifier) {
                         m4m.math.vec2Set(this.diffv2, touch.x, touch.y);
                         m4m.math.vec2Subtract(this.diffv2, this.lastTouch, this.diffv2);
-                        this.panAngle += (_a = this.diffv2.x / (window === null || window === void 0 ? void 0 : window.devicePixelRatio)) !== null && _a !== void 0 ? _a : 1;
-                        this.tiltAngle += (_b = this.diffv2.y / (window === null || window === void 0 ? void 0 : window.devicePixelRatio)) !== null && _b !== void 0 ? _b : 1;
+                        this.panAngle += (_b = this.diffv2.x / (window === null || window === void 0 ? void 0 : window.devicePixelRatio)) !== null && _b !== void 0 ? _b : 1;
+                        this.tiltAngle += (_c = this.diffv2.y / (window === null || window === void 0 ? void 0 : window.devicePixelRatio)) !== null && _c !== void 0 ? _c : 1;
                     }
                     m4m.math.vec2Set(this.lastTouch, touch.x, touch.y);
                     this.touchRotateID = ev.targetTouches[0].identifier;
@@ -22374,10 +22466,10 @@ var m4m;
                             pos: __assign({}, _this.inputMgr.touches[ev.targetTouches[i].identifier]),
                         };
                     });
-                    var deltas = touches.map(function (_a, i) {
-                        var _b;
-                        var id = _a.id, pos = _a.pos;
-                        var lastpos = (_b = _this.lastTouches.filter(function (t) { return t.id == id; })[0]) === null || _b === void 0 ? void 0 : _b.pos;
+                    var deltas = touches.map(function (_b, i) {
+                        var _c;
+                        var id = _b.id, pos = _b.pos;
+                        var lastpos = (_c = _this.lastTouches.filter(function (t) { return t.id == id; })[0]) === null || _c === void 0 ? void 0 : _c.pos;
                         if (lastpos) {
                             m4m.math.vec2Set(_this.panFingers[i], pos.x, pos.y);
                             m4m.math.vec2Set(_this.diffv2, lastpos.x, lastpos.y);
@@ -22389,14 +22481,14 @@ var m4m;
                     if (deltas.length == 2) {
                         var dot = m4m.math.vec2Dot(deltas[0], deltas[1]);
                         if (dot < 0.2) {
-                            var lastpos = this.lastTouches.map(function (_a) {
-                                var pos = _a.pos;
+                            var lastpos = this.lastTouches.map(function (_b) {
+                                var pos = _b.pos;
                                 return pos;
                             });
                             m4m.math.vec2Set(this.diffv2, lastpos[0].x - lastpos[1].x, lastpos[0].y - lastpos[1].y);
                             var dis = m4m.math.vec2Dot(this.diffv2, this.diffv2);
-                            var dpos = touches.map(function (_a) {
-                                var pos = _a.pos;
+                            var dpos = touches.map(function (_b) {
+                                var pos = _b.pos;
                                 return pos;
                             });
                             m4m.math.vec2Set(this.diffv2, dpos[0].x - dpos[1].x, dpos[0].y - dpos[1].y);
