@@ -74,6 +74,8 @@ namespace m4m.framework{
 
             this.inputMgr.addHTMLElementListener('touchstart', this.onTouch, this);
             this.inputMgr.addHTMLElementListener('touchmove', this.onTouchMove, this);
+
+            this.inputMgr.addKeyListener(m4m.event.KeyEventEnum.KeyDown, this.onKeyDown, this);
         }
 
         private cupTargetV3 = new m4m.math.vector3();
@@ -98,6 +100,35 @@ namespace m4m.framework{
             this.gameObject.transform.markDirty();
 
             m4m.math.pool.delete_vector3(tempv3);
+        }
+
+        private onKeyDown(_a)
+        {
+            
+            let keyCode = _a[0];
+            if(keyCode == m4m.event.KeyCode.KeyA)
+            {
+                this.lookAtPoint.x -= 0.17;
+                this.cupTargetV3.x -= 0.17;
+            }
+            else if(keyCode == m4m.event.KeyCode.KeyD)
+            {
+                this.lookAtPoint.x += 0.17;
+                this.cupTargetV3.x += 0.17;
+                
+            }
+            if(keyCode == m4m.event.KeyCode.KeyS)
+            {
+                this.lookAtPoint.z -= 0.17;
+                this.cupTargetV3.z -= 0.17;
+            }
+            else if(keyCode == m4m.event.KeyCode.KeyW)
+            {
+                this.lookAtPoint.z += 0.17;
+                this.cupTargetV3.z += 0.17;
+            }
+
+
         }
 
         private onPointDown() {
