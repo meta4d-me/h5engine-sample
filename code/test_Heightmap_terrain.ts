@@ -2,7 +2,45 @@
  * 高度图地形样例
  */
 class test_Heightmap_terrain implements IState {
+    heightData:Uint8Array;
+    w:number;
+    h:number;
+
+    static getHeightmapPixels(heightmap: m4m.framework.texture):Uint8Array
+    {
+        const pixelReader = (heightmap.glTexture as m4m.render.glTexture2D).getReader(true);    //只读灰度信息
+        let w = heightmap.glTexture.width;
+        let h = heightmap.glTexture.height;
+        var array = new Uint8Array(w * h);
+        const uDiv: number = 1.0;       //(w - 1) / (w - 1);
+        const vDiv: number = 1.0;       //(h - 1) / (h - 1);
+        for(var row = 0; row < h; row++)
+        {
+            for(var column = 0; column < w; column++)
+            {
+                var x = (column / (w - 1) - 0.5) * w;
+                var z = (row/ (h - 1) - 0.5) * h;
+                var u = Math.floor(column * uDiv) / w;
+                var v = Math.floor(((h - 1) - row) * vDiv) / h;
+                
+                var index = row * w + column;
+                var color = pixelReader.getPixel(u, v) & 0xff;
+                console.log("color=" + color);
+                color = color & 0xff;
+                console.log("color 1=" + color);
+                array[index] = color;
+                
+            }
+        }
+        //for(var ii = 0; ii < 1000; ii++)
+            //console.log(array[ii]);
+        return array;
+        
+    }
+
     async start(app: m4m.framework.application) {
+        // return;
+        console.log("test_Heightmap_terrain start");
         const scene = app.getScene();
         const assetMgr = app.getAssetMgr();
         const gl = app.webgl;
@@ -19,7 +57,7 @@ class test_Heightmap_terrain implements IState {
         let hoverc = cam.gameObject.addComponent("HoverCameraScript") as m4m.framework.HoverCameraScript;
         hoverc.panAngle = 180;
         hoverc.tiltAngle = 45;
-        hoverc.distance = 480;
+        hoverc.distance = 18;
         hoverc.scaleSpeed = 0.1;
         hoverc.lookAtPoint = new m4m.math.vector3(0, 2.5, 0)
 
@@ -29,15 +67,18 @@ class test_Heightmap_terrain implements IState {
         const planeMF = planeNode.gameObject.getComponent("meshFilter") as m4m.framework.meshFilter;
         // planeNode.localScale = new m4m.math.vector3(10, 10, 10);
         //加载纹理
-        const texNames = [`Heightmap_0.jpg`, `blendMaskTexture.jpg`, `splat_0Tex.png`, `splat_1Tex.png`, `splat_2Tex.png`, `splat_3Tex.png`];
+        const texNames = [`211.jpg`, `blendMaskTexture.jpg`, `splat_0Tex.png`, `splat_3Tex.png`, `splat_2Tex.png`, `splat_1Tex.png`];
         const texUrl = [];
         texNames.forEach(n => {
             texUrl.push(`${resRootPath}texture/${n}`)
         });
         const texs = await util.loadTextures(texUrl, assetMgr);
 
+        this.heightData = test_Heightmap_terrain.getHeightmapPixels(texs[0]);
+        console.log(this.heightData);
+
         //更换 mesh
-        const terrainMesh = genElevationMesh(gl, texs[0], 1000, 200, 1000, 200, 200);
+        const terrainMesh = genElevationMesh(gl, texs[0], 255, 0, 15);
         planeMF.mesh = terrainMesh;
 
         //材质
@@ -55,18 +96,25 @@ class test_Heightmap_terrain implements IState {
         mtr.setTexture("_Splat3", texs[5]);
 
         //缩放和平铺
-        mtr.setVector4(`_Splat0_ST`, new m4m.math.vector4(26.7, 26.7, 0, 0));
-        mtr.setVector4(`_Splat1_ST`, new m4m.math.vector4(16, 16, 0, 0));
-        mtr.setVector4(`_Splat2_ST`, new m4m.math.vector4(26.7, 26.7, 0, 0));
-        mtr.setVector4(`_Splat3_ST`, new m4m.math.vector4(26.7, 26.7, 0, 0));
+        // mtr.setVector4(`_Splat0_ST`, new m4m.math.vector4(26.7, 26.7, 0, 0));
+        // mtr.setVector4(`_Splat1_ST`, new m4m.math.vector4(16, 16, 0, 0));
+        // mtr.setVector4(`_Splat2_ST`, new m4m.math.vector4(26.7, 26.7, 0, 0));
+        // mtr.setVector4(`_Splat3_ST`, new m4m.math.vector4(26.7, 26.7, 0, 0));
+        mtr.setVector4(`_Splat0_ST`, new m4m.math.vector4(4, 4, 0, 0));
+        mtr.setVector4(`_Splat1_ST`, new m4m.math.vector4(4, 4, 0, 0));
+        mtr.setVector4(`_Splat2_ST`, new m4m.math.vector4(4, 4, 0, 0));
+        mtr.setVector4(`_Splat3_ST`, new m4m.math.vector4(4, 4, 0, 0));
 
         //添加到场景
         scene.addChild(planeNode);
     }
 
+    
+
     update(delta: number) {
 
     }
+    
 
 }
 
@@ -83,11 +131,54 @@ class test_Heightmap_terrain implements IState {
  * @param minElevation 最小高度
  * @returns 
  */
-function genElevationMesh(gl: WebGL2RenderingContext, heightmap: m4m.framework.texture, width: number = 1000, height: number = 100, depth: number = 1000, segmentsW: number = 30, segmentsH: number = 30, maxElevation: number = 255, minElevation: number = 0): m4m.framework.mesh {
-    const pixelReader = (heightmap.glTexture as m4m.render.glTexture2D).getReader(true);    //只读灰度信息
-    // pixelReader.getPixel();
+
+
+//function genElevationMesh(gl: WebGL2RenderingContext, heightmap: m4m.framework.texture, width: number = 1000, height: number = 100, depth: number = 1000, segmentsW: number = 30, segmentsH: number = 30, maxElevation: number = 255, minElevation: number = 0): m4m.framework.mesh {
+function genElevationMesh(gl: WebGL2RenderingContext, heightmap: m4m.framework.texture, maxElevation: number = 255, minElevation: number = 0, heightScale: number = 12.0): m4m.framework.mesh {    
+    let _heightdata = test_Heightmap_terrain.getHeightmapPixels(heightmap);
     const w = heightmap.glTexture.width;
     const h = heightmap.glTexture.height;
+
+    function InBounds(i : number, j : number): Boolean
+    {
+		// True if ij are valid indices; false otherwise.
+		return i >= 0 && i < w &&
+			j >= 0 && j < h;
+	}
+    function Average(i:number, j:number) :number
+	{
+		// ----------
+		// | 1| 2| 3|
+		// ----------
+		// |4 |ij| 6|
+		// ----------
+		// | 7| 8| 9|
+		// ----------
+		let avg = 0.0;
+		let num = 0.0;
+		for (var m = i - 1; m <= i + 1; ++m)
+		{
+			for (var n = j - 1; n <= j + 1; ++n)
+			{
+				if (InBounds(m, n))
+				{
+                    var index_ = m * w + n;
+					avg += _heightdata[index_];
+					num += 1;
+				}
+			}
+		}
+		return avg / num;
+	}
+    var heights = new Float32Array(w * h);
+    for (var i = 0; i < h; ++i)
+    {
+        for (var j = 0; j < w; ++j)
+        {
+            heights[i * w + j] = Average(i, j);
+        }
+    }
+
 
     //gen meshData
     const data = new m4m.render.meshData();
@@ -98,8 +189,10 @@ function genElevationMesh(gl: WebGL2RenderingContext, heightmap: m4m.framework.t
     data.color = [];
     data.uv = [];
     data.uv2 = [];
-
+    var segmentsW = w - 1;
+    var segmentsH = h - 1;
     let x: number, z: number, u: number, v: number, y: number, col: number, base: number, numInds = 0;
+    let index_:number;
     const tw: number = segmentsW + 1;
     // let numVerts: number = (segmentsH + 1) * tw;
     const uDiv: number = (w - 1) / segmentsW;
@@ -107,15 +200,17 @@ function genElevationMesh(gl: WebGL2RenderingContext, heightmap: m4m.framework.t
     const scaleU = 1;
     const scaleV = 1;
 
-    for (let zi: number = 0; zi <= segmentsH; ++zi) {
-        for (let xi: number = 0; xi <= segmentsW; ++xi) {
-            x = (xi / segmentsW - 0.5) * width;
-            z = (zi / segmentsH - 0.5) * depth;
+    for (let zi: number = 0; zi < h; ++zi) {
+        for (let xi: number = 0; xi < w; ++xi) {
+            x = (xi / segmentsW - 0.5) * w;
+            z = (zi / segmentsH - 0.5) * h;
             u = Math.floor(xi * uDiv) / w;
             v = Math.floor((segmentsH - zi) * vDiv) / h;
 
-            col = pixelReader.getPixel(u, v) & 0xff;
-            y = (col > maxElevation) ? (maxElevation / 0xff) * height : ((col < minElevation) ? (minElevation / 0xff) * height : (col / 0xff) * height);
+            index_ = zi * w + xi;
+            //col = _heightdata[index_];
+            col = heights[index_];
+            y = (col > maxElevation) ? (maxElevation / 0xff) * heightScale : ((col < minElevation) ? (minElevation / 0xff) * heightScale : (col / 0xff) * heightScale);
 
             //pos
             data.pos.push(new m4m.math.vector3(x, y, z));
