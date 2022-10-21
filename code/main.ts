@@ -86,6 +86,7 @@ class main implements m4m.framework.IUserCode {
             demoList.addBtn("test_UI预设体加载", () => new test_uiPerfabLoad());
             demoList.addBtn("UI 新手引导mask", () => new test_UIGuideMask());
             demoList.addBtn("UI 使用 纹理数组模式(webgl2 优化)", () => new test_UI_Texture_Array());
+            demoList.addBtn("UI 贴到3D空间", () => new test_UI_Attach3D());
             return new demoList();
         });
 
