@@ -8902,10 +8902,10 @@ var test_gltf_animation = /** @class */ (function () {
     test_gltf_animation.prototype.loadLongPrefab = function (laststate, state) {
         var _this = this;
         var resName = "long";
-        this.app.getAssetMgr().load(resRootPath + "gltf/elong.glb", m4m.framework.AssetTypeEnum.Auto, function (s) {
+        this.app.getAssetMgr().load(resRootPath + "pbrRes/elong.glb", m4m.framework.AssetTypeEnum.Auto, function (s) {
             if (s.isfinish) {
                 var _prefab = _this.app.getAssetMgr().getAssetByName("elong.glb");
-                _prefab.load(_this.app.getAssetMgr(), _this.app.webgl, resRootPath + "gltf", null, null, null)
+                _prefab.load(_this.app.getAssetMgr(), _this.app.webgl, resRootPath + "pbrRes", null, null, null)
                     .then(function (res) {
                     _this.dragon = res;
                     _this.scene.addChild(res);

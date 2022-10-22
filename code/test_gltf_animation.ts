@@ -18,10 +18,10 @@ class test_gltf_animation implements IState {
 
     private loadLongPrefab(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         let resName = "long"
-        this.app.getAssetMgr().load(`${resRootPath}gltf/elong.glb`, m4m.framework.AssetTypeEnum.Auto, (s) => {
+        this.app.getAssetMgr().load(`${resRootPath}pbrRes/elong.glb`, m4m.framework.AssetTypeEnum.Auto, (s) => {
             if (s.isfinish) {
                 var _prefab = this.app.getAssetMgr().getAssetByName(`elong.glb`) as m4m.framework.gltf;
-                _prefab.load(this.app.getAssetMgr(), this.app.webgl, `${resRootPath}gltf`, null, null, null)
+                _prefab.load(this.app.getAssetMgr(), this.app.webgl, `${resRootPath}pbrRes`, null, null, null)
                     .then(res => {
                         this.dragon = res;
                         this.scene.addChild(res);
