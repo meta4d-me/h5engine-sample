@@ -1294,6 +1294,7 @@ var main = /** @class */ (function () {
             demoList.addBtn("物理2d_dome", function () { return new physic2d_dome(); });
             demoList.addBtn("导航网格", function () { return new test_navMesh(); });
             demoList.addBtn("GPU压缩纹理", function () { return new test_CompressTexture(); });
+            demoList.addBtn("视频纹理", function () { return new test_videoTexture(); });
             demoList.addBtn("draco压缩网格格式加载", function () { return new test_load_draco(); });
             demoList.addBtn("骨骼动画", function () { return new test_animationClip(); });
             demoList.addBtn("GLTF_动画", function () { return new test_gltf_animation(); });
@@ -14672,6 +14673,96 @@ var AlignType;
     AlignType[AlignType["TOP_RIGHT"] = 8] = "TOP_RIGHT";
     AlignType[AlignType["BOTTOM_RIGHT"] = 9] = "BOTTOM_RIGHT";
 })(AlignType || (AlignType = {}));
+//UI 视频纹理
+var test_videoTexture = /** @class */ (function () {
+    function test_videoTexture() {
+    }
+    test_videoTexture.prototype.loadVideo = function (url) {
+        return new Promise(function (res, rej) {
+            var video = document.createElement("video");
+            //webgl跨域渲染要这样玩 [crossOrigin = ""]否则服务器允许跨域也没用
+            video.crossOrigin = "";
+            video.src = url;
+            //通过 play 触发视频加载
+            video.play().then(function () {
+                video.pause();
+                res(video);
+            }).catch(function (err) {
+                rej(err);
+            });
+        });
+    };
+    test_videoTexture.prototype.makeVideoTexture = function (video) {
+        var gl = m4m.framework.sceneMgr.app.webgl;
+        //
+        var tex = new m4m.framework.texture("videoTex");
+        var t2d = new m4m.render.glTexture2D(gl, m4m.render.TextureFormatEnum.RGB);
+        t2d.uploadImage(video, false, true, true, true); //
+        tex.glTexture = t2d;
+        //
+        var texF = t2d["getGLFormat"]();
+        //监听 视频帧返回
+        var updateVideo = function () {
+            video.requestVideoFrameCallback(updateVideo);
+            console.log("111");
+            //更新帧数据到 webgl 纹理
+            gl.bindTexture(gl.TEXTURE_2D, t2d.texture);
+            gl.texImage2D(gl.TEXTURE_2D, 0, texF.internalformatGL, texF.formatGL, 
+            //最后这个type，可以管格式
+            gl.UNSIGNED_BYTE, video);
+        };
+        if ('requestVideoFrameCallback' in video) {
+            video.requestVideoFrameCallback(updateVideo);
+        }
+        //
+        return tex;
+    };
+    test_videoTexture.prototype.start = function (app) {
+        return __awaiter(this, void 0, void 0, function () {
+            var assetMgr, obj, mr, scene, objCam, cam, hoverc, mat, video, vTex;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        assetMgr = app.getAssetMgr();
+                        obj = m4m.framework.TransformUtil.CreatePrimitive(m4m.framework.PrimitiveType.Quad, app);
+                        mr = obj.gameObject.getComponent("meshRenderer");
+                        scene = app.getScene();
+                        scene.addChild(obj);
+                        objCam = new m4m.framework.transform();
+                        scene.addChild(objCam);
+                        cam = objCam.gameObject.addComponent("camera");
+                        cam.near = 0.01;
+                        cam.far = 120;
+                        cam.fov = Math.PI * 0.3;
+                        objCam.localTranslate = new m4m.math.vector3(0, 5, -8);
+                        objCam.lookatPoint(new m4m.math.vector3(0, 0, 0));
+                        hoverc = cam.gameObject.addComponent("HoverCameraScript");
+                        hoverc.panAngle = 180;
+                        hoverc.tiltAngle = 20;
+                        hoverc.distance = 3;
+                        hoverc.scaleSpeed = 0.1;
+                        hoverc.lookAtPoint = new m4m.math.vector3(0, 0, 0);
+                        mat = mr.materials[0];
+                        mat.setShader(assetMgr.getShader("shader/def3dbeforeui"));
+                        return [4 /*yield*/, this.loadVideo("".concat(resRootPath, "video/movie.mp4"))];
+                    case 1:
+                        video = _a.sent();
+                        video.loop = true;
+                        video.play();
+                        vTex = this.makeVideoTexture(video);
+                        // mat.setTexture("_MainTex", assetMgr.getDefaultTexture("grid"));
+                        mat.setTexture("_MainTex", vTex);
+                        setTimeout(function () {
+                        }, 1000);
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    test_videoTexture.prototype.update = function (delta) {
+    };
+    return test_videoTexture;
+}());
 var test_anim = /** @class */ (function () {
     function test_anim() {
     }
