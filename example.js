@@ -14693,28 +14693,9 @@ var test_videoTexture = /** @class */ (function () {
         });
     };
     test_videoTexture.prototype.makeVideoTexture = function (video) {
-        var gl = m4m.framework.sceneMgr.app.webgl;
-        //
         var tex = new m4m.framework.texture("videoTex");
-        var t2d = new m4m.render.glTexture2D(gl, m4m.render.TextureFormatEnum.RGB);
-        t2d.uploadImage(video, false, true, true, true); //
+        var t2d = new m4m.render.videoTexture(video);
         tex.glTexture = t2d;
-        //
-        var texF = t2d["getGLFormat"]();
-        //监听 视频帧返回
-        var updateVideo = function () {
-            video.requestVideoFrameCallback(updateVideo);
-            console.log("111");
-            //更新帧数据到 webgl 纹理
-            gl.bindTexture(gl.TEXTURE_2D, t2d.texture);
-            gl.texImage2D(gl.TEXTURE_2D, 0, texF.internalformatGL, texF.formatGL, 
-            //最后这个type，可以管格式
-            gl.UNSIGNED_BYTE, video);
-        };
-        if ('requestVideoFrameCallback' in video) {
-            video.requestVideoFrameCallback(updateVideo);
-        }
-        //
         return tex;
     };
     test_videoTexture.prototype.start = function (app) {
@@ -14748,12 +14729,10 @@ var test_videoTexture = /** @class */ (function () {
                     case 1:
                         video = _a.sent();
                         video.loop = true;
-                        video.play();
                         vTex = this.makeVideoTexture(video);
                         // mat.setTexture("_MainTex", assetMgr.getDefaultTexture("grid"));
                         mat.setTexture("_MainTex", vTex);
-                        setTimeout(function () {
-                        }, 1000);
+                        video.play();
                         return [2 /*return*/];
                 }
             });

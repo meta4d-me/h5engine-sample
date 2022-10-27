@@ -18,32 +18,9 @@ class test_videoTexture implements IState {
     }
 
     private makeVideoTexture(video: HTMLVideoElement) {
-        const gl = m4m.framework.sceneMgr.app.webgl;
-        //
         const tex = new m4m.framework.texture("videoTex");
-        const t2d = new m4m.render.glTexture2D(gl, m4m.render.TextureFormatEnum.RGB);
-        t2d.uploadImage(video as any, false, true, true, true); //
+        const t2d = new m4m.render.videoTexture(video);
         tex.glTexture = t2d;
-        //
-        const texF: { internalformatGL: number, formatGL: number } = t2d["getGLFormat"]();
-        //监听 视频帧返回
-        const updateVideo = () => {
-            video.requestVideoFrameCallback(updateVideo);
-            console.log("111");
-            //更新帧数据到 webgl 纹理
-            gl.bindTexture(gl.TEXTURE_2D, t2d.texture);
-            gl.texImage2D(gl.TEXTURE_2D,
-                0,
-                texF.internalformatGL,
-                texF.formatGL,
-                //最后这个type，可以管格式
-                gl.UNSIGNED_BYTE
-                , video);
-        }
-        if ('requestVideoFrameCallback' in video) {
-            video.requestVideoFrameCallback(updateVideo);
-        }
-        //
         return tex;
     }
 
@@ -75,12 +52,10 @@ class test_videoTexture implements IState {
         //加载视屏纹理
         const video = await this.loadVideo(`${resRootPath}video/movie.mp4`);
         video.loop = true;
-        video.play();
         const vTex = this.makeVideoTexture(video);
         // mat.setTexture("_MainTex", assetMgr.getDefaultTexture("grid"));
         mat.setTexture("_MainTex", vTex);
-        setTimeout(() => {
-        }, 1000);
+        video.play();
     }
 
     update(delta: number) {
