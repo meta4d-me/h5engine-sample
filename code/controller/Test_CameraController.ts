@@ -91,6 +91,9 @@ class Test_CameraController {
     doMove(delta: number) {
         if (this.target == null)
             return;
+        if(!this.beRightClick)
+            return;
+
         //w
         if ((this.keyMap[m4m.framework.NumberUtil.KEY_W] != undefined && this.keyMap[m4m.framework.NumberUtil.KEY_W])
             || (this.keyMap[m4m.framework.NumberUtil.KEY_w] != undefined && this.keyMap[m4m.framework.NumberUtil.KEY_w])) {

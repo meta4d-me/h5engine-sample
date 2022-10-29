@@ -147,8 +147,8 @@ namespace m4m.framework{
             // if (moveY <= 2 && moveY >= -1) moveY = 0;
             if (this.inputMgr.isPressed(0)) {
 
-                this.panAngle += moveX * 0.5;
-                this.tiltAngle += moveY * 0.5;
+                //this.panAngle += moveX * 0.5;
+                //this.tiltAngle += moveY * 0.5;
 
             } else if(this.inputMgr.isPressed(1) || this.inputMgr.isPressed(2)) {
                 m4m.math.vec3Set(this.panDir, -moveX, moveY, 0);
