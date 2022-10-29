@@ -1294,6 +1294,7 @@ var main = /** @class */ (function () {
             demoList.addBtn("物理2d_dome", function () { return new physic2d_dome(); });
             demoList.addBtn("导航网格", function () { return new test_navMesh(); });
             demoList.addBtn("GPU压缩纹理", function () { return new test_CompressTexture(); });
+            demoList.addBtn("视频纹理", function () { return new test_videoTexture(); });
             demoList.addBtn("draco压缩网格格式加载", function () { return new test_load_draco(); });
             demoList.addBtn("骨骼动画", function () { return new test_animationClip(); });
             demoList.addBtn("GLTF_动画", function () { return new test_gltf_animation(); });
@@ -1328,6 +1329,7 @@ var main = /** @class */ (function () {
             demoList.addBtn("test_UI预设体加载", function () { return new test_uiPerfabLoad(); });
             demoList.addBtn("UI 新手引导mask", function () { return new test_UIGuideMask(); });
             demoList.addBtn("UI 使用 纹理数组模式(webgl2 优化)", function () { return new test_UI_Texture_Array(); });
+            demoList.addBtn("UI 贴到3D空间", function () { return new test_UI_Attach3D(); });
             return new demoList();
         });
         //-------------------------------------------物理
@@ -8813,6 +8815,183 @@ var test_UIGuideMask = /** @class */ (function () {
     };
     return test_UIGuideMask;
 }());
+/** UI 贴到 3D 空间 */
+var test_UI_Attach3D = /** @class */ (function () {
+    function test_UI_Attach3D() {
+        this.isDebugDisplay = true;
+    }
+    /**
+     * 创建3d节点
+     * @param w UI容器宽
+     * @param h UI容器高
+     * @param x 坐标x
+     * @param y 坐标y
+     * @param z 坐标z
+     * @returns
+     */
+    test_UI_Attach3D.prototype.makeUI3DNode = function (w, h, x, y, z) {
+        if (x === void 0) { x = 0; }
+        if (y === void 0) { y = 0; }
+        if (z === void 0) { z = 0; }
+        var scene = m4m.framework.sceneMgr.scene;
+        var node = this.isDebugDisplay ? m4m.framework.TransformUtil.CreatePrimitive(m4m.framework.PrimitiveType.Cube) : new m4m.framework.transform();
+        node.localPosition = new m4m.math.vector3(x, y, z);
+        var canRNdoe = new m4m.framework.transform();
+        var canvasR = canRNdoe.gameObject.addComponent("canvasRenderer");
+        canvasR.canvas.pixelWidth = w;
+        canvasR.canvas.pixelHeight = h;
+        canvasR.canvas.enableOutsideRenderClip = false;
+        //
+        scene.addChild(node);
+        node.addChild(canRNdoe);
+        //
+        if (this.isDebugDisplay) {
+            var lopt = m4m.framework.layoutOption;
+            var debugFrame = m4m.framework.TransformUtil.Create2DPrimitive(m4m.framework.Primitive2DType.RawImage2D).getComponent("rawImage2D");
+            debugFrame.image = this.debugBorderFrameImg;
+            debugFrame.transform.layoutState = lopt.TOP | lopt.LEFT | lopt.BOTTOM | lopt.RIGHT;
+            canvasR.canvas.addChild(debugFrame.transform);
+        }
+        return canvasR;
+    };
+    /** 创建UI组件 */
+    test_UI_Attach3D.prototype.createUIComps = function (root) {
+        return __awaiter(this, void 0, void 0, function () {
+            var app, assetMgr, texNames, texUrl, texs, fontjson, fontpng, _font, lab, img, btn, btnLab;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        app = m4m.framework.sceneMgr.app;
+                        assetMgr = app.getAssetMgr();
+                        texNames = ["zg256.png"];
+                        texUrl = [];
+                        texNames.forEach(function (n) {
+                            texUrl.push("".concat(resRootPath, "texture/").concat(n));
+                        });
+                        return [4 /*yield*/, util.loadTextures(texUrl, assetMgr)];
+                    case 1:
+                        texs = _a.sent();
+                        fontjson = "方正粗圆_GBK.font.json";
+                        fontpng = "方正粗圆_GBK.TTF.png";
+                        return [4 /*yield*/, util.loadRes("".concat(resRootPath, "font/").concat(fontpng))];
+                    case 2:
+                        _a.sent();
+                        return [4 /*yield*/, util.loadRes("".concat(resRootPath, "font/").concat(fontjson))];
+                    case 3:
+                        _font = _a.sent();
+                        lab = m4m.framework.TransformUtil.Create2DPrimitive(m4m.framework.Primitive2DType.Label).getComponent("label");
+                        lab.text = "\u6D4B\u8BD5UI\u7EC4\u4EF6 !";
+                        lab.transform.localTranslate = new m4m.math.vector2(20, 30);
+                        lab.font = _font;
+                        img = m4m.framework.TransformUtil.Create2DPrimitive(m4m.framework.Primitive2DType.RawImage2D).getComponent("rawImage2D");
+                        img.image = texs[0];
+                        img.transform.localTranslate = new m4m.math.vector2(100, 150);
+                        btn = m4m.framework.TransformUtil.Create2DPrimitive(m4m.framework.Primitive2DType.Button).getComponent("button");
+                        btn.transform.localTranslate = new m4m.math.vector2(150, 300);
+                        btnLab = btn.transform.getFirstComponentInChildren("label");
+                        btnLab.text = "\u6D4B\u8BD5\u6309\u94AE";
+                        btnLab.font = _font;
+                        //attach 
+                        root.addChild(lab.transform);
+                        root.addChild(img.transform);
+                        root.addChild(btn.transform);
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    test_UI_Attach3D.prototype.createSpines = function (root) {
+        var app = m4m.framework.sceneMgr.app;
+        var assetMgr = app.getAssetMgr();
+        var assetManager = new spine_m4m.SpineAssetMgr(assetMgr, "".concat(resRootPath, "spine/"));
+        var skeletonFile = "demos.json";
+        var atlasFile = "atlas1.atlas";
+        var animation = "walk";
+        Promise.all([
+            new Promise(function (resolve, reject) {
+                assetManager.loadJson(skeletonFile, function () { return resolve(); });
+            }),
+            new Promise(function (resolve, reject) {
+                assetManager.loadTextureAtlas(atlasFile, function () { return resolve(); });
+            })
+        ])
+            .then(function () {
+            var atlasLoader = new spine_m4m.AtlasAttachmentLoader(assetManager.get(atlasFile));
+            var skeletonJson = new spine_m4m.SkeletonJson(atlasLoader);
+            skeletonJson.scale = 0.4;
+            var skeletonData = skeletonJson.readSkeletonData(assetManager.get(skeletonFile).raptor);
+            var comp = new spine_m4m.spineSkeleton(skeletonData);
+            // this._comp = comp;
+            //设置播放动画
+            comp.state.setAnimation(0, animation, true);
+            var spineNode = new m4m.framework.transform2D();
+            //可用transform2d缩放等
+            spineNode.localTranslate = new m4m.math.vector2(300, 200);
+            // spineNode.localTranslate.x = root2d.canvas.pixelWidth / 2;
+            // spineNode.localTranslate.y = root2d.canvas.pixelHeight / 2;
+            // spineNode.localRotate = 30 * Math.PI / 180;
+            spineNode.localScale.x = -1;
+            m4m.math.vec2ScaleByNum(spineNode.localScale, 0.5, spineNode.localScale);
+            spineNode.addComponentDirect(comp);
+            spineNode.width = 200;
+            spineNode.height = 200;
+            root.addChild(spineNode);
+            //
+            var img = m4m.framework.TransformUtil.Create2DPrimitive(m4m.framework.Primitive2DType.RawImage2D).getComponent("rawImage2D");
+            img.image = assetMgr.getDefaultTexture("grid");
+            img.transform.localTranslate = new m4m.math.vector2(200, 300);
+            root.addChild(img.transform);
+        });
+    };
+    test_UI_Attach3D.prototype.start = function (app) {
+        return __awaiter(this, void 0, void 0, function () {
+            var scene, assetMgr, objCam, cam, hoverc, texs, baseUINode, spineNode;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        scene = app.getScene();
+                        assetMgr = scene.app.getAssetMgr();
+                        objCam = new m4m.framework.transform();
+                        scene.addChild(objCam);
+                        cam = objCam.gameObject.addComponent("camera");
+                        cam.near = 0.01;
+                        cam.far = 120;
+                        cam.fov = Math.PI * 0.3;
+                        objCam.localTranslate = new m4m.math.vector3(0, 15, -15);
+                        objCam.lookatPoint(new m4m.math.vector3(0, 0, 0));
+                        hoverc = cam.gameObject.addComponent("HoverCameraScript");
+                        hoverc.panAngle = 180;
+                        hoverc.tiltAngle = 45;
+                        hoverc.distance = 10;
+                        hoverc.scaleSpeed = 0.1;
+                        hoverc.lookAtPoint = new m4m.math.vector3(0, 2.5, 0);
+                        if (!this.isDebugDisplay) return [3 /*break*/, 2];
+                        return [4 /*yield*/, util.loadTextures(["".concat(resRootPath, "texture/borderFrame.png")], assetMgr)];
+                    case 1:
+                        texs = _a.sent();
+                        this.debugBorderFrameImg = texs[0];
+                        _a.label = 2;
+                    case 2:
+                        baseUINode = this.makeUI3DNode(400, 400);
+                        baseUINode.cameraTouch = cam;
+                        return [4 /*yield*/, this.createUIComps(baseUINode.canvas.getRoot())];
+                    case 3:
+                        _a.sent();
+                        spineNode = this.makeUI3DNode(600, 400, 2, 1, 3);
+                        // const spineNode = this.makeUI3DNode(600, 400);
+                        spineNode.cameraTouch = cam;
+                        return [4 /*yield*/, this.createSpines(spineNode.canvas.getRoot())];
+                    case 4:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    test_UI_Attach3D.prototype.update = function (delta) {
+    };
+    return test_UI_Attach3D;
+}());
 /**
  * UI 渲染使用 纹理数组 样例（webgl2 特性优化尝试）
  */
@@ -15728,6 +15907,75 @@ var AlignType;
     AlignType[AlignType["TOP_RIGHT"] = 8] = "TOP_RIGHT";
     AlignType[AlignType["BOTTOM_RIGHT"] = 9] = "BOTTOM_RIGHT";
 })(AlignType || (AlignType = {}));
+//UI 视频纹理
+var test_videoTexture = /** @class */ (function () {
+    function test_videoTexture() {
+    }
+    test_videoTexture.prototype.loadVideo = function (url) {
+        return new Promise(function (res, rej) {
+            var video = document.createElement("video");
+            //webgl跨域渲染要这样玩 [crossOrigin = ""]否则服务器允许跨域也没用
+            video.crossOrigin = "";
+            video.src = url;
+            //通过 play 触发视频加载
+            video.play().then(function () {
+                video.pause();
+                res(video);
+            }).catch(function (err) {
+                rej(err);
+            });
+        });
+    };
+    test_videoTexture.prototype.makeVideoTexture = function (video) {
+        var tex = new m4m.framework.texture("videoTex");
+        var t2d = new m4m.render.videoTexture(video);
+        tex.glTexture = t2d;
+        return tex;
+    };
+    test_videoTexture.prototype.start = function (app) {
+        return __awaiter(this, void 0, void 0, function () {
+            var assetMgr, obj, mr, scene, objCam, cam, hoverc, mat, video, vTex;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        assetMgr = app.getAssetMgr();
+                        obj = m4m.framework.TransformUtil.CreatePrimitive(m4m.framework.PrimitiveType.Quad, app);
+                        mr = obj.gameObject.getComponent("meshRenderer");
+                        scene = app.getScene();
+                        scene.addChild(obj);
+                        objCam = new m4m.framework.transform();
+                        scene.addChild(objCam);
+                        cam = objCam.gameObject.addComponent("camera");
+                        cam.near = 0.01;
+                        cam.far = 120;
+                        cam.fov = Math.PI * 0.3;
+                        objCam.localTranslate = new m4m.math.vector3(0, 5, -8);
+                        objCam.lookatPoint(new m4m.math.vector3(0, 0, 0));
+                        hoverc = cam.gameObject.addComponent("HoverCameraScript");
+                        hoverc.panAngle = 180;
+                        hoverc.tiltAngle = 20;
+                        hoverc.distance = 3;
+                        hoverc.scaleSpeed = 0.1;
+                        hoverc.lookAtPoint = new m4m.math.vector3(0, 0, 0);
+                        mat = mr.materials[0];
+                        mat.setShader(assetMgr.getShader("shader/def3dbeforeui"));
+                        return [4 /*yield*/, this.loadVideo("".concat(resRootPath, "video/movie.mp4"))];
+                    case 1:
+                        video = _a.sent();
+                        video.loop = true;
+                        vTex = this.makeVideoTexture(video);
+                        // mat.setTexture("_MainTex", assetMgr.getDefaultTexture("grid"));
+                        mat.setTexture("_MainTex", vTex);
+                        video.play();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    test_videoTexture.prototype.update = function (delta) {
+    };
+    return test_videoTexture;
+}());
 var test_anim = /** @class */ (function () {
     function test_anim() {
     }

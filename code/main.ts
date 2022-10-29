@@ -49,6 +49,7 @@ class main implements m4m.framework.IUserCode {
             demoList.addBtn("物理2d_dome", () => new physic2d_dome());
             demoList.addBtn("导航网格", () => new test_navMesh());
             demoList.addBtn("GPU压缩纹理", () => new test_CompressTexture());
+            demoList.addBtn("视频纹理", () => new test_videoTexture());
             demoList.addBtn("draco压缩网格格式加载", () => new test_load_draco());
             demoList.addBtn("骨骼动画", () => new test_animationClip());
             demoList.addBtn("GLTF_动画", () => new test_gltf_animation());
@@ -86,6 +87,7 @@ class main implements m4m.framework.IUserCode {
             demoList.addBtn("test_UI预设体加载", () => new test_uiPerfabLoad());
             demoList.addBtn("UI 新手引导mask", () => new test_UIGuideMask());
             demoList.addBtn("UI 使用 纹理数组模式(webgl2 优化)", () => new test_UI_Texture_Array());
+            demoList.addBtn("UI 贴到3D空间", () => new test_UI_Attach3D());
             return new demoList();
         });
 
