@@ -438,7 +438,7 @@ class test_Heightmap_terrain implements IState {
         labPage0.localTranslate.x = 1;
         labPage0.localTranslate.y = 1;
         var labelGeometry = labPage0.addComponent("label") as m4m.framework.label;
-        var txtlabPage0:string = "几何体";
+        var txtlabPage0:string = "刷地形";
         if(test_Heightmap_terrain.font_ != null)
             console.log("font is not null, OK");
         else
@@ -458,7 +458,7 @@ class test_Heightmap_terrain implements IState {
         labPage1.localTranslate.x = 1;
         labPage1.localTranslate.y = 1;
         var labelMaterial = labPage1.addComponent("label") as m4m.framework.label;
-        var txtlabPage1:string = "高度;UV比例";
+        var txtlabPage1:string = "高度\nUV比例";
         labelMaterial.font = test_Heightmap_terrain.font_;
         labelMaterial.text = txtlabPage1;
         labelMaterial.fontsize = 30;

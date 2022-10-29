@@ -6421,15 +6421,34 @@ var HDR_sample = /** @class */ (function () {
 /**
  * 高度图地形样例
  */
-var TerrainEditorHoldName = /** @class */ (function () {
-    function TerrainEditorHoldName() {
-    }
-    return TerrainEditorHoldName;
-}());
 var test_Heightmap_terrain = /** @class */ (function () {
     function test_Heightmap_terrain() {
         this.nFrame = 0;
+        this.mtrlRoot = new m4m.framework.transform2D;
+        this.texRoot = new m4m.framework.transform2D;
+        this.bk = new m4m.framework.transform2D;
         this.btn = [new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D];
+        this.page = [new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D];
+        this.heightScaleCtrl = new m4m.framework.transform2D;
+        this.textureUVScaleCtrl = [new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D];
+        this.textureUVInputCtrls = [
+            [new m4m.framework.transform2D, new m4m.framework.transform2D],
+            [new m4m.framework.transform2D, new m4m.framework.transform2D],
+            [new m4m.framework.transform2D, new m4m.framework.transform2D],
+            [new m4m.framework.transform2D, new m4m.framework.transform2D]
+        ];
+        this.iptFrame_HeightScale = [new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D];
+        this.mtr = [];
+        this.texs = [];
+        this.textureLayer = [
+            new m4m.framework.transform2D,
+            new m4m.framework.transform2D,
+            new m4m.framework.transform2D,
+            new m4m.framework.transform2D,
+            new m4m.framework.transform2D,
+            new m4m.framework.transform2D,
+            new m4m.framework.transform2D
+        ];
         this.brushSizeBtns = [new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D];
     }
     test_Heightmap_terrain.getHeightmapPixels = function (heightmap) {
@@ -6476,13 +6495,15 @@ var test_Heightmap_terrain = /** @class */ (function () {
     };
     test_Heightmap_terrain.prototype.start = function (app) {
         return __awaiter(this, void 0, void 0, function () {
-            var scene, assetMgr, gl, objCam, hoverc, callback, callModify, callTestHit, planeNode, planeMR, texNames, texUrl, texs, terrainMesh, mtr, tSH;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var scene, assetMgr, gl, objCam, hoverc, callback, callModify, callTestHit, hold, planeNode, planeMR, texNames, texUrl, _a, terrainMesh, tSH;
+            var _this = this;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
                         // return;
                         console.log("test_Heightmap_terrain start");
                         test_Heightmap_terrain.app = app;
+                        test_Heightmap_terrain.mouseDown = false;
                         scene = app.getScene();
                         assetMgr = app.getAssetMgr();
                         gl = app.webgl;
@@ -6506,24 +6527,27 @@ var test_Heightmap_terrain = /** @class */ (function () {
                         this.worldZ = 10000;
                         callModify = this.OnModify;
                         callTestHit = this.TestHit;
+                        //font
+                        test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "font/\u65B9\u6B63\u7C97\u5706_GBK.TTF.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
+                            if (s.isfinish) {
+                                test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "font/\u65B9\u6B63\u7C97\u5706_GBK.font.json"), m4m.framework.AssetTypeEnum.Auto, function (s1) {
+                                    if (s1.isfinish)
+                                        test_Heightmap_terrain.font_ = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("方正粗圆_GBK.font.json"); //;
+                                    _this.addbtn('0', '0', "Modify", _this);
+                                    _this.afterAddButton();
+                                    _this.OnPage(0);
+                                });
+                            }
+                        });
                         test_Heightmap_terrain.app.container.addEventListener("mousedown", function (e) {
                             console.log("mousedown");
-                            var mousePos = new m4m.math.vector2(test_Heightmap_terrain.app.getInputMgr().point.x, test_Heightmap_terrain.app.getInputMgr().point.y);
-                            /// left top area is ui so do not handle
-                            console.log("Mouse:" + mousePos.x, mousePos.y);
-                            if (mousePos.x < 105 * 3 && mousePos.y < (105 * 2 + 20 + 40))
-                                return;
-                            callTestHit();
-                            callModify();
-                            if (test_Heightmap_terrain.shifKey) {
-                                callback(true);
-                            }
-                            else {
-                                callback(false);
-                            }
+                            test_Heightmap_terrain.mouseDown = true;
                         }, false);
+                        hold = this.bk;
                         test_Heightmap_terrain.app.container.addEventListener("mouseup", function (e) {
                             console.log("mouseup");
+                            test_Heightmap_terrain.mouseDown = false;
+                            //test_Heightmap_terrain.bUpdatePickedTexture = false;
                         }, false);
                         test_Heightmap_terrain.app.container.addEventListener("keydown", function (e) {
                             console.log("keydown:" + e.code);
@@ -6564,41 +6588,45 @@ var test_Heightmap_terrain = /** @class */ (function () {
                         planeNode = m4m.framework.TransformUtil.CreatePrimitive(m4m.framework.PrimitiveType.Plane);
                         planeMR = planeNode.gameObject.getComponent("meshRenderer");
                         test_Heightmap_terrain.planeMF = planeNode.gameObject.getComponent("meshFilter");
-                        texNames = ["211.jpg", "blendMaskTexture.jpg", "splat_0Tex.png", "splat_3Tex.png", "splat_2Tex.png", "splat_1Tex.png"];
+                        texNames = ["211.jpg", "blendMaskTexture.png", "splat_0Tex.png", "splat_3Tex.png", "splat_2Tex.png", "splat_1Tex.png", "rock1.png", "grass2.png", "dirt2.png", "sand1.png", "mask.png"];
                         texUrl = [];
                         texNames.forEach(function (n) {
                             texUrl.push("".concat(resRootPath, "texture/").concat(n));
                         });
+                        _a = this;
                         return [4 /*yield*/, util.loadTextures(texUrl, assetMgr)];
                     case 1:
-                        texs = _a.sent();
+                        _a.texs = _b.sent();
                         //this.heightData = test_Heightmap_terrain.getHeightmapPixels(texs[0]);
                         console.log(this.heightData);
-                        terrainMesh = genElevationMesh(gl, texs[0], 255, 0, 15);
+                        terrainMesh = genElevationMesh(gl, this.texs[0], 255, 0, 15);
                         test_Heightmap_terrain.planeMF.mesh = terrainMesh;
-                        mtr = planeMR.materials[0];
+                        //材质
+                        this.mtr[0] = planeMR.materials[0];
                         //加载 shader 包
                         return [4 /*yield*/, util.loadShader(assetMgr)];
                     case 2:
                         //加载 shader 包
-                        _a.sent();
+                        _b.sent();
                         tSH = assetMgr.getShader("terrain_rgb_control.shader.json");
-                        mtr.setShader(tSH);
+                        this.mtr[0].setShader(tSH);
                         //纹理
-                        mtr.setTexture("_Control", texs[1]);
-                        mtr.setTexture("_Splat0", texs[2]);
-                        mtr.setTexture("_Splat1", texs[3]);
-                        mtr.setTexture("_Splat2", texs[4]);
-                        mtr.setTexture("_Splat3", texs[5]);
+                        this.mtr[0].setTexture("_Control", this.texs[1]);
+                        this.mtr[0].setTexture("_Splat0", this.texs[2]);
+                        this.mtr[0].setTexture("_Splat1", this.texs[3]);
+                        this.mtr[0].setTexture("_Splat2", this.texs[4]);
+                        this.mtr[0].setTexture("_Splat3", this.texs[5]);
                         //缩放和平铺
                         // mtr.setVector4(`_Splat0_ST`, new m4m.math.vector4(26.7, 26.7, 0, 0));
                         // mtr.setVector4(`_Splat1_ST`, new m4m.math.vector4(16, 16, 0, 0));
                         // mtr.setVector4(`_Splat2_ST`, new m4m.math.vector4(26.7, 26.7, 0, 0));
                         // mtr.setVector4(`_Splat3_ST`, new m4m.math.vector4(26.7, 26.7, 0, 0));
-                        mtr.setVector4("_Splat0_ST", new m4m.math.vector4(4, 4, 0, 0));
-                        mtr.setVector4("_Splat1_ST", new m4m.math.vector4(4, 4, 0, 0));
-                        mtr.setVector4("_Splat2_ST", new m4m.math.vector4(4, 4, 0, 0));
-                        mtr.setVector4("_Splat3_ST", new m4m.math.vector4(4, 4, 0, 0));
+                        this.mtr[0].setVector4("_Splat0_ST", new m4m.math.vector4(4, 4, 0, 0));
+                        this.mtr[0].setVector4("_Splat1_ST", new m4m.math.vector4(4, 4, 0, 0));
+                        this.mtr[0].setVector4("_Splat2_ST", new m4m.math.vector4(4, 4, 0, 0));
+                        this.mtr[0].setVector4("_Splat3_ST", new m4m.math.vector4(4, 4, 0, 0));
+                        this.mtr[0].setVector4("v_useTextureOrGPU", new m4m.math.vector4(1.0, 1.0, 0.01, 0.0));
+                        this.mtr[0].setVector4("_HeightScale", new m4m.math.vector4(15.0, 15.0, 15.0, 15.0));
                         //添加到场景
                         scene.addChild(planeNode);
                         return [2 /*return*/];
@@ -6634,7 +6662,6 @@ var test_Heightmap_terrain = /** @class */ (function () {
         else if (test_Heightmap_terrain.selectedBrushSize == 4) {
             curSize = 256.0;
         }
-        //var maskIndex:number = 0;
         for (var row = this.gridZ - curSize / 2; row < this.gridZ - curSize / 2 + curSize; row++) {
             for (var column = this.gridX - curSize / 2; column < this.gridX - curSize / 2 + curSize; column++) {
                 if (row < 0 || row > 209)
@@ -6664,14 +6691,126 @@ var test_Heightmap_terrain = /** @class */ (function () {
                     var f = test_Heightmap_terrain._heights_[index] - delta;
                     test_Heightmap_terrain._heights_[index] = f >= 0 ? f : 0;
                 }
-                //maskIndex += 1;
             }
         }
         var newMesh = UpdateElevationMesh(test_Heightmap_terrain.gl, 255, 0, 15);
         test_Heightmap_terrain.planeMF.mesh = newMesh;
     };
+    test_Heightmap_terrain.BrushTextureLoadFinished = function (brushIndex, brushSize) {
+        console.log("BrushTextureLoadFinished brushIndex:" + brushIndex + ", brushSize:" + brushSize);
+        var _name = "brush_" + String(brushIndex) + "_" + String(brushSize) + ".png";
+        var texture0 = test_Heightmap_terrain.app.getAssetMgr().getAssetByName(_name);
+        if (texture0 == null)
+            console.log(_name + " is null. FAIL");
+        else {
+            console.log(_name + " is not null. ok");
+            var key = String(brushSize) + "_" + String(brushIndex);
+            test_Heightmap_terrain.dictBrushData[key] = new Uint8Array(test_Heightmap_terrain.getHeightmapPixels1(texture0, 0));
+        }
+    };
     test_Heightmap_terrain.prototype.addbtn = function (top, left, text, app_) {
         var _this = this;
+        console.log("addbtn called");
+        this.bk.name = "background";
+        this.bk.width = 105 * 3;
+        this.bk.height = 105 * 5;
+        this.bk.pivot.x = 0;
+        this.bk.pivot.y = 0;
+        this.bk.localTranslate.x = 0;
+        this.bk.localTranslate.y = 0;
+        this.rooto2d.addChild(this.bk);
+        var background = this.bk.addComponent("rawImage2D");
+        this.page[0].name = "vertex";
+        this.page[1].name = "uv";
+        this.page[2].name = "texture";
+        this.page[0].width = 103;
+        this.page[1].width = 103;
+        this.page[2].width = 103;
+        this.page[0].height = 75;
+        this.page[1].height = 75;
+        this.page[2].height = 75;
+        this.page[0].pivot.x = 0;
+        this.page[1].pivot.x = 0;
+        this.page[2].pivot.x = 0;
+        this.page[0].pivot.y = 0;
+        this.page[1].pivot.y = 0;
+        this.page[2].pivot.y = 0;
+        this.page[0].localTranslate.x = 0;
+        this.page[1].localTranslate.x = 105;
+        this.page[2].localTranslate.x = 210;
+        this.page[0].localTranslate.y = 0;
+        this.page[1].localTranslate.y = 0;
+        this.page[2].localTranslate.y = 0;
+        var page0Btn = this.page[0].addComponent("button");
+        var page1Btn = this.page[1].addComponent("button");
+        var page2Btn = this.page[2].addComponent("button");
+        var page0BtnBack = this.page[0].addComponent("rawImage2D");
+        var page1BtnBack = this.page[1].addComponent("rawImage2D");
+        var page2BtnBack = this.page[2].addComponent("rawImage2D");
+        page0BtnBack.image = this.texs[10];
+        page1BtnBack.image = this.texs[10];
+        page2BtnBack.image = this.texs[10];
+        var labPage0 = new m4m.framework.transform2D();
+        labPage0.name = "labPage0";
+        labPage0.width = 103;
+        labPage0.height = 73;
+        labPage0.pivot.x = 0;
+        labPage0.pivot.y = 0;
+        labPage0.localTranslate.x = 1;
+        labPage0.localTranslate.y = 1;
+        var labelGeometry = labPage0.addComponent("label");
+        var txtlabPage0 = "刷地形";
+        if (test_Heightmap_terrain.font_ != null)
+            console.log("font is not null, OK");
+        else
+            console.log("font is null, Fail");
+        labelGeometry.font = test_Heightmap_terrain.font_;
+        labelGeometry.text = txtlabPage0;
+        labelGeometry.fontsize = 30;
+        labelGeometry.color = new m4m.math.color(1, 0, 0, 1);
+        this.page[0].addChild(labPage0);
+        var labPage1 = new m4m.framework.transform2D();
+        labPage1.name = "labPage1";
+        labPage1.width = 103;
+        labPage1.height = 73;
+        labPage1.pivot.x = 0;
+        labPage1.pivot.y = 0;
+        labPage1.localTranslate.x = 1;
+        labPage1.localTranslate.y = 1;
+        var labelMaterial = labPage1.addComponent("label");
+        var txtlabPage1 = "高度\nUV比例";
+        labelMaterial.font = test_Heightmap_terrain.font_;
+        labelMaterial.text = txtlabPage1;
+        labelMaterial.fontsize = 30;
+        labelMaterial.color = new m4m.math.color(1, 0, 0, 1);
+        this.page[1].addChild(labPage1);
+        var labPage2 = new m4m.framework.transform2D();
+        labPage2.name = "labPage2";
+        labPage2.width = 103;
+        labPage2.height = 73;
+        labPage2.pivot.x = 0;
+        labPage2.pivot.y = 0;
+        labPage2.localTranslate.x = 1;
+        labPage2.localTranslate.y = 1;
+        var labelTex = labPage2.addComponent("label");
+        var txtlabPage2 = "Texture";
+        labelTex.font = test_Heightmap_terrain.font_;
+        labelTex.text = txtlabPage2;
+        labelTex.fontsize = 30;
+        labelTex.color = new m4m.math.color(1, 0, 0, 1);
+        this.page[2].addChild(labPage2);
+        page0Btn.addListener(m4m.event.UIEventEnum.PointerClick, function () {
+            this.OnPage(0);
+        }, this);
+        page1Btn.addListener(m4m.event.UIEventEnum.PointerClick, function () {
+            this.OnPage(1);
+        }, this);
+        page2Btn.addListener(m4m.event.UIEventEnum.PointerClick, function () {
+            this.OnPage(2);
+        }, this);
+        this.bk.addChild(this.page[0]);
+        this.bk.addChild(this.page[1]);
+        this.bk.addChild(this.page[2]);
         for (var i = 0; i < 11; i++) {
             var row = Math.floor(i / 3);
             var col = i % 3;
@@ -6681,10 +6820,16 @@ var test_Heightmap_terrain = /** @class */ (function () {
             this.btn[i].pivot.x = 0;
             this.btn[i].pivot.y = 0;
             this.btn[i].localTranslate.x = i < 6 ? 105 * col : 40 * (i - 6);
-            this.btn[i].localTranslate.y = i < 6 ? 105 * row : 105 * 2 + 20;
-            this.rooto2d.addChild(this.btn[i]);
-            var btn_b = this.btn[i].addComponent("button");
-            btn_b.targetImage = this.btn[i].addComponent("image2D");
+            this.btn[i].localTranslate.y = i < 6 ? 105 * row + 80 : 105 * 2 + 20 + 80;
+            this.page[0].addChild(this.btn[i]);
+            if (this.btn[i].getComponent("button") == null) {
+                var btn_b = this.btn[i].addComponent("button");
+                btn_b.pressedColor = new m4m.math.color(1, 1, 1, 1);
+                btn_b.transition = m4m.framework.TransitionType.SpriteSwap;
+                if (this.btn[i].getComponent("image2D") == null) {
+                    btn_b.targetImage = this.btn[i].addComponent("image2D");
+                }
+            }
             if (i >= 6) {
                 var lab = new m4m.framework.transform2D();
                 lab.name = "lab";
@@ -6698,567 +6843,740 @@ var test_Heightmap_terrain = /** @class */ (function () {
                 var label = lab.addComponent("label");
                 var txt = "刷" + String(i - 6 + 1);
                 //label.font = _font;
+                label.font = test_Heightmap_terrain.font_;
                 label.text = txt;
                 label.fontsize = 18;
                 label.color = new m4m.math.color(1, 0, 0, 1);
                 this.btn[i].addChild(lab);
             }
-            //font
-            test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "font/STXINGKA.TTF.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
-                if (s.isfinish) {
-                    test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "font/STXINGKA.font.json"), m4m.framework.AssetTypeEnum.Auto, function (s1) {
-                        if (s1.isfinish)
-                            test_Heightmap_terrain.font_ = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("STXINGKA.font.json"); //;
-                        for (var m = 0; m < 11; m++) {
-                            var labels_ = _this.btn[m].getComponentsInChildren("label");
-                            for (var _i = 0, labels_1 = labels_; _i < labels_1.length; _i++) {
-                                var item = labels_1[_i];
-                                item.font = test_Heightmap_terrain.font_;
-                            }
-                        }
-                    });
-                }
-            });
-            //atlas
-            test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/brush0.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
-                if (s.isfinish) {
-                    test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/2.atlas.json"), m4m.framework.AssetTypeEnum.Auto, function (state) {
-                        if (state.isfinish) {
-                            var atlas = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("2.atlas.json");
-                            for (var imgIndex = 0; imgIndex < 11; imgIndex++) {
-                                var _btn_ = _this.btn[imgIndex].getComponent("button");
-                                var spriteName = "brush_" + (imgIndex);
-                                _btn_.targetImage.sprite = atlas.sprites[spriteName];
-                            }
-                        }
-                    });
-                }
-            });
-            //texture 资源
-            test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/brush_0_0.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
-                if (s.isfinish) {
-                    var texture0 = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("brush_0_0.png");
-                    if (texture0 == null)
-                        console.log("brush_0_0.png is null. FAIL");
-                    else {
-                        console.log("brush_0_0.png is not null. ok");
-                        var key = "0_0";
-                        test_Heightmap_terrain.dictBrushData[key] = new Uint8Array(test_Heightmap_terrain.getHeightmapPixels1(texture0, 0));
-                    }
-                }
-            });
-            test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/brush_0_1.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
-                if (s.isfinish) {
-                    var texture0 = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("brush_0_1.png");
-                    if (texture0 == null)
-                        console.log("brush_0_1.png is null. FAIL");
-                    else {
-                        console.log("brush_0_1.png is not null. ok");
-                        var key = "1_0";
-                        test_Heightmap_terrain.dictBrushData[key] = new Uint8Array(test_Heightmap_terrain.getHeightmapPixels1(texture0, 0));
-                    }
-                }
-            });
-            test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/brush_0_2.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
-                if (s.isfinish) {
-                    var texture0 = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("brush_0_2.png");
-                    if (texture0 == null)
-                        console.log("brush_0_2.png is null. FAIL");
-                    else {
-                        console.log("brush_0_2.png is not null. ok");
-                        var key = "2_0";
-                        test_Heightmap_terrain.dictBrushData[key] = new Uint8Array(test_Heightmap_terrain.getHeightmapPixels1(texture0, 0));
-                    }
-                }
-            });
-            test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/brush_0_3.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
-                if (s.isfinish) {
-                    var texture0 = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("brush_0_3.png");
-                    if (texture0 == null)
-                        console.log("brush_0_3.png is null. FAIL");
-                    else {
-                        console.log("brush_0_3.png is not null. ok");
-                        var key = "3_0";
-                        test_Heightmap_terrain.dictBrushData[key] = new Uint8Array(test_Heightmap_terrain.getHeightmapPixels1(texture0, 0));
-                    }
-                }
-            });
-            test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/brush_0_4.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
-                if (s.isfinish) {
-                    var texture0 = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("brush_0_4.png");
-                    if (texture0 == null)
-                        console.log("brush_0_4.png is null. FAIL");
-                    else {
-                        console.log("brush_0_4.png is not null. ok");
-                        var key = "4_0";
-                        test_Heightmap_terrain.dictBrushData[key] = new Uint8Array(test_Heightmap_terrain.getHeightmapPixels1(texture0, 0));
-                    }
-                }
-            });
-            test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/brush_1_0.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
-                if (s.isfinish) {
-                    var texture0 = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("brush_1_0.png");
-                    if (texture0 == null)
-                        console.log("texture1 is null. FAIL");
-                    else {
-                        console.log("brush_1_0.png is not null. ok");
-                        var key = "0_1";
-                        test_Heightmap_terrain.dictBrushData[key] = new Uint8Array(test_Heightmap_terrain.getHeightmapPixels1(texture0, 0));
-                    }
-                }
-            });
-            test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/brush_1_1.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
-                if (s.isfinish) {
-                    var texture0 = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("brush_1_1.png");
-                    if (texture0 == null)
-                        console.log("brush_1_1.png is null. FAIL");
-                    else {
-                        console.log("brush_1_1.png is not null. ok");
-                        var key = "1_1";
-                        test_Heightmap_terrain.dictBrushData[key] = new Uint8Array(test_Heightmap_terrain.getHeightmapPixels1(texture0, 0));
-                    }
-                }
-            });
-            test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/brush_1_2.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
-                if (s.isfinish) {
-                    var texture0 = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("brush_1_2.png");
-                    if (texture0 == null)
-                        console.log("brush_1_2.png is null. FAIL");
-                    else {
-                        console.log("brush_1_2.png is not null. ok");
-                        var key = "2_1";
-                        test_Heightmap_terrain.dictBrushData[key] = new Uint8Array(test_Heightmap_terrain.getHeightmapPixels1(texture0, 0));
-                    }
-                }
-            });
-            test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/brush_1_3.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
-                if (s.isfinish) {
-                    var texture0 = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("brush_1_3.png");
-                    if (texture0 == null)
-                        console.log("brush1_3.png is null. FAIL");
-                    else {
-                        console.log("brush_1_3.png is not null. ok");
-                        var key = "3_1";
-                        test_Heightmap_terrain.dictBrushData[key] = new Uint8Array(test_Heightmap_terrain.getHeightmapPixels1(texture0, 0));
-                    }
-                }
-            });
-            test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/brush_1_4.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
-                if (s.isfinish) {
-                    var texture0 = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("brush_1_4.png");
-                    if (texture0 == null)
-                        console.log("brush1_4.png is null. FAIL");
-                    else {
-                        console.log("brush_1_4.png is not null. ok");
-                        var key = "4_1";
-                        test_Heightmap_terrain.dictBrushData[key] = new Uint8Array(test_Heightmap_terrain.getHeightmapPixels1(texture0, 0));
-                    }
-                }
-            });
-            test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/brush_2_0.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
-                if (s.isfinish) {
-                    var texture0 = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("brush_2_0.png");
-                    if (texture0 == null)
-                        console.log("brush_2_0.png is null. FAIL");
-                    else {
-                        console.log("brush_2_0.png is not null. ok");
-                        var key = "0_2";
-                        test_Heightmap_terrain.dictBrushData[key] = new Uint8Array(test_Heightmap_terrain.getHeightmapPixels1(texture0, 0));
-                    }
-                }
-            });
-            test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/brush_2_1.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
-                if (s.isfinish) {
-                    var texture0 = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("brush_2_1.png");
-                    if (texture0 == null)
-                        console.log("brush_2_1.png is null. FAIL");
-                    else {
-                        console.log("brush_2_1.png is not null. ok");
-                        var key = "1_2";
-                        test_Heightmap_terrain.dictBrushData[key] = new Uint8Array(test_Heightmap_terrain.getHeightmapPixels1(texture0, 0));
-                    }
-                }
-            });
-            test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/brush_2_2.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
-                if (s.isfinish) {
-                    var texture0 = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("brush_2_2.png");
-                    if (texture0 == null)
-                        console.log("brush_2_2.png is null. FAIL");
-                    else {
-                        console.log("brush_2_2.png is not null. ok");
-                        var key = "2_2";
-                        test_Heightmap_terrain.dictBrushData[key] = new Uint8Array(test_Heightmap_terrain.getHeightmapPixels1(texture0, 0));
-                    }
-                }
-            });
-            test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/brush_2_3.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
-                if (s.isfinish) {
-                    var texture0 = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("brush_2_3.png");
-                    if (texture0 == null)
-                        console.log("brush_2_3.png is null. FAIL");
-                    else {
-                        console.log("brush_2_3.png is not null. ok");
-                        var key = "3_2";
-                        test_Heightmap_terrain.dictBrushData[key] = new Uint8Array(test_Heightmap_terrain.getHeightmapPixels1(texture0, 0));
-                    }
-                }
-            });
-            test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/brush_2_4.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
-                if (s.isfinish) {
-                    var texture0 = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("brush_2_4.png");
-                    if (texture0 == null)
-                        console.log("brush_2_4.png is null. FAIL");
-                    else {
-                        console.log("brush_2_4.png is not null. ok");
-                        var key = "4_2";
-                        test_Heightmap_terrain.dictBrushData[key] = new Uint8Array(test_Heightmap_terrain.getHeightmapPixels1(texture0, 0));
-                    }
-                }
-            });
-            test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/brush_3_0.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
-                if (s.isfinish) {
-                    var texture0 = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("brush_3_0.png");
-                    if (texture0 == null)
-                        console.log("brush_3_0.png is null. FAIL");
-                    else {
-                        console.log("brush_3_0.png is not null. ok");
-                        var key = "0_3";
-                        test_Heightmap_terrain.dictBrushData[key] = new Uint8Array(test_Heightmap_terrain.getHeightmapPixels1(texture0, 0));
-                    }
-                }
-            });
-            test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/brush_3_1.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
-                if (s.isfinish) {
-                    var texture0 = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("brush_3_1.png");
-                    if (texture0 == null)
-                        console.log("brush_3_1.png is null. FAIL");
-                    else {
-                        console.log("brush_3_1.png is not null. ok");
-                        var key = "1_3";
-                        test_Heightmap_terrain.dictBrushData[key] = new Uint8Array(test_Heightmap_terrain.getHeightmapPixels1(texture0, 0));
-                    }
-                }
-            });
-            test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/brush_3_2.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
-                if (s.isfinish) {
-                    var texture0 = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("brush_3_2.png");
-                    if (texture0 == null)
-                        console.log("brush_3_2.png is null. FAIL");
-                    else {
-                        console.log("brush_3_2.png is not null. ok");
-                        var key = "2_3";
-                        test_Heightmap_terrain.dictBrushData[key] = new Uint8Array(test_Heightmap_terrain.getHeightmapPixels1(texture0, 0));
-                    }
-                }
-            });
-            test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/brush_3_3.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
-                if (s.isfinish) {
-                    var texture0 = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("brush_3_3.png");
-                    if (texture0 == null)
-                        console.log("brush_3_3.png is null. FAIL");
-                    else {
-                        console.log("brush_3_3.png is not null. ok");
-                        var key = "3_3";
-                        test_Heightmap_terrain.dictBrushData[key] = new Uint8Array(test_Heightmap_terrain.getHeightmapPixels1(texture0, 0));
-                    }
-                }
-            });
-            test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/brush_3_4.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
-                if (s.isfinish) {
-                    var texture0 = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("brush_3_4.png");
-                    if (texture0 == null)
-                        console.log("brush_3_4.png is null. FAIL");
-                    else {
-                        console.log("brush_3_4.png is not null. ok");
-                        var key = "4_3";
-                        test_Heightmap_terrain.dictBrushData[key] = new Uint8Array(test_Heightmap_terrain.getHeightmapPixels1(texture0, 0));
-                    }
-                }
-            });
-            test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/brush_4_0.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
-                if (s.isfinish) {
-                    var texture0 = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("brush_4_0.png");
-                    if (texture0 == null)
-                        console.log("brush_4_0.png is null. FAIL");
-                    else {
-                        console.log("brush_4_0.png is not null. ok");
-                        var key = "0_4";
-                        test_Heightmap_terrain.dictBrushData[key] = new Uint8Array(test_Heightmap_terrain.getHeightmapPixels1(texture0, 0));
-                    }
-                }
-            });
-            test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/brush_4_1.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
-                if (s.isfinish) {
-                    var texture0 = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("brush_4_1.png");
-                    if (texture0 == null)
-                        console.log("brush_4_1.png is null. FAIL");
-                    else {
-                        console.log("brush_4_1.png is not null. ok");
-                        var key = "1_4";
-                        test_Heightmap_terrain.dictBrushData[key] = new Uint8Array(test_Heightmap_terrain.getHeightmapPixels1(texture0, 0));
-                    }
-                }
-            });
-            test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/brush_4_2.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
-                if (s.isfinish) {
-                    var texture0 = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("brush_4_2.png");
-                    if (texture0 == null)
-                        console.log("brush_4_2.png is null. FAIL");
-                    else {
-                        console.log("brush_4_2.png is not null. ok");
-                        var key = "2_4";
-                        test_Heightmap_terrain.dictBrushData[key] = new Uint8Array(test_Heightmap_terrain.getHeightmapPixels1(texture0, 0));
-                    }
-                }
-            });
-            test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/brush_4_3.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
-                if (s.isfinish) {
-                    var texture0 = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("brush_4_3.png");
-                    if (texture0 == null)
-                        console.log("brush_4_3.png is null. FAIL");
-                    else {
-                        console.log("brush_4_3.png is not null. ok");
-                        var key = "3_4";
-                        test_Heightmap_terrain.dictBrushData[key] = new Uint8Array(test_Heightmap_terrain.getHeightmapPixels1(texture0, 0));
-                    }
-                }
-            });
-            test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/brush_5_0.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
-                if (s.isfinish) {
-                    var texture0 = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("brush_5_0.png");
-                    if (texture0 == null)
-                        console.log("brush_5_0.png is null. FAIL");
-                    else {
-                        console.log("brush_5_0.png is not null. ok");
-                        var key = "0_5";
-                        test_Heightmap_terrain.dictBrushData[key] = new Uint8Array(test_Heightmap_terrain.getHeightmapPixels1(texture0, 0));
-                    }
-                }
-            });
-            test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/brush_5_1.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
-                if (s.isfinish) {
-                    var texture0 = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("brush_4_1.png");
-                    if (texture0 == null)
-                        console.log("brush_5_1.png is null. FAIL");
-                    else {
-                        console.log("brush_5_1.png is not null. ok");
-                        var key = "1_5";
-                        test_Heightmap_terrain.dictBrushData[key] = new Uint8Array(test_Heightmap_terrain.getHeightmapPixels1(texture0, 0));
-                    }
-                }
-            });
-            test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/brush_5_2.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
-                if (s.isfinish) {
-                    var texture0 = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("brush_5_2.png");
-                    if (texture0 == null)
-                        console.log("brush_5_2.png is null. FAIL");
-                    else {
-                        console.log("brush_5_2.png is not null. ok");
-                        var key = "2_5";
-                        test_Heightmap_terrain.dictBrushData[key] = new Uint8Array(test_Heightmap_terrain.getHeightmapPixels1(texture0, 0));
-                    }
-                }
-            });
-            test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/brush_5_3.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
-                if (s.isfinish) {
-                    var texture0 = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("brush_5_3.png");
-                    if (texture0 == null)
-                        console.log("brush_5_3.png is null. FAIL");
-                    else {
-                        console.log("brush_5_3.png is not null. ok");
-                        var key = "3_5";
-                        test_Heightmap_terrain.dictBrushData[key] = new Uint8Array(test_Heightmap_terrain.getHeightmapPixels1(texture0, 0));
-                    }
-                }
-            });
-            test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/brush_5_4.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
-                if (s.isfinish) {
-                    var texture0 = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("brush_5_4.png");
-                    if (texture0 == null)
-                        console.log("brush_5_4.png is null. FAIL");
-                    else {
-                        console.log("brush_5_4.png is not null. ok");
-                        var key = "4_5";
-                        test_Heightmap_terrain.dictBrushData[key] = new Uint8Array(test_Heightmap_terrain.getHeightmapPixels1(texture0, 0));
-                    }
-                    console.log("dictBrushData[\"0_0\"]");
-                    console.log(test_Heightmap_terrain.dictBrushData["0_0"]);
-                    console.log("dictBrushData[\"1_0\"]");
-                    console.log(test_Heightmap_terrain.dictBrushData["1_0"]);
-                    console.log("dictBrushData[\"2_0\"]");
-                    console.log(test_Heightmap_terrain.dictBrushData["2_0"]);
-                    console.log("dictBrushData[\"3_0\"]");
-                    console.log(test_Heightmap_terrain.dictBrushData["3_0"]);
-                    console.log("dictBrushData[\"0_1\"]");
-                    console.log(test_Heightmap_terrain.dictBrushData["0_1"]);
-                    console.log("dictBrushData[\"1_1\"]");
-                    console.log(test_Heightmap_terrain.dictBrushData["1_1"]);
-                    console.log("dictBrushData[\"2_1\"]");
-                    console.log(test_Heightmap_terrain.dictBrushData["2_1"]);
-                    console.log("dictBrushData[\"3_1\"]");
-                    console.log(test_Heightmap_terrain.dictBrushData["3_1"]);
-                    console.log("dictBrushData[\"0_2\"]");
-                    console.log(test_Heightmap_terrain.dictBrushData["0_2"]);
-                    console.log("dictBrushData[\"1_2\"]");
-                    console.log(test_Heightmap_terrain.dictBrushData["1_2"]);
-                    console.log("dictBrushData[\"2_2\"]");
-                    console.log(test_Heightmap_terrain.dictBrushData["2_2"]);
-                    console.log("dictBrushData[\"3_2\"]");
-                    console.log(test_Heightmap_terrain.dictBrushData["3_2"]);
-                    console.log("dictBrushData[\"0_3\"]");
-                    console.log(test_Heightmap_terrain.dictBrushData["0_3"]);
-                    console.log("dictBrushData[\"1_3\"]");
-                    console.log(test_Heightmap_terrain.dictBrushData["1_3"]);
-                    console.log("dictBrushData[\"2_3\"]");
-                    console.log(test_Heightmap_terrain.dictBrushData["2_3"]);
-                    console.log("dictBrushData[\"3_3\"]");
-                    console.log(test_Heightmap_terrain.dictBrushData["3_3"]);
-                    console.log("dictBrushData[\"0_4\"]");
-                    console.log(test_Heightmap_terrain.dictBrushData["0_4"]);
-                    console.log("dictBrushData[\"1_4\"]");
-                    console.log(test_Heightmap_terrain.dictBrushData["1_4"]);
-                    console.log("dictBrushData[\"2_4\"]");
-                    console.log(test_Heightmap_terrain.dictBrushData["2_4"]);
-                    console.log("dictBrushData[\"3_4\"]");
-                    console.log(test_Heightmap_terrain.dictBrushData["3_4"]);
-                    console.log("dictBrushData[\"0_5\"]");
-                    console.log(test_Heightmap_terrain.dictBrushData["0_5"]);
-                    console.log("dictBrushData[\"1_5\"]");
-                    console.log(test_Heightmap_terrain.dictBrushData["1_5"]);
-                    console.log("dictBrushData[\"2_5\"]");
-                    console.log(test_Heightmap_terrain.dictBrushData["2_5"]);
-                    console.log("dictBrushData[\"3_5\"]");
-                    console.log(test_Heightmap_terrain.dictBrushData["3_5"]);
-                }
-            });
-            //btn_b.pressedGraphic = new m4m.framework.sprite("brush0.jpg");;
-            btn_b.pressedColor = new m4m.math.color(1, 1, 1, 1);
-            btn_b.transition = m4m.framework.TransitionType.SpriteSwap;
         }
-        for (var i = 0; i < 11; i++) {
-            var btn_b = this.btn[i].getComponent("button");
-            console.log(btn_b);
-            if (i == 0) {
-                btn_b.addListener(m4m.event.UIEventEnum.PointerClick, function () {
-                    this.OnBrushBtnClick0(this.btn[i]);
-                }, this);
-            }
-            else if (i == 1) {
-                btn_b.addListener(m4m.event.UIEventEnum.PointerClick, function () {
-                    this.OnBrushBtnClick1(this.btn[i]);
-                }, this);
-            }
-            else if (i == 2) {
-                btn_b.addListener(m4m.event.UIEventEnum.PointerClick, function () {
-                    this.OnBrushBtnClick2(this.btn[i]);
-                }, this);
-            }
-            else if (i == 3) {
-                btn_b.addListener(m4m.event.UIEventEnum.PointerClick, function () {
-                    this.OnBrushBtnClick3(this.btn[i]);
-                }, this);
-            }
-            else if (i == 4) {
-                btn_b.addListener(m4m.event.UIEventEnum.PointerClick, function () {
-                    this.OnBrushBtnClick4(this.btn[i]);
-                }, this);
-            }
-            else if (i == 5) {
-                btn_b.addListener(m4m.event.UIEventEnum.PointerClick, function () {
-                    this.OnBrushBtnClick5(this.btn[i]);
-                }, this);
-            }
-            else if (i == 6) {
-                btn_b.addListener(m4m.event.UIEventEnum.PointerClick, function () {
-                    this.OnSetBrushSize0(this.btn[i]);
-                }, this);
-            }
-            else if (i == 7) {
-                btn_b.addListener(m4m.event.UIEventEnum.PointerClick, function () {
-                    this.OnSetBrushSize1(this.btn[i]);
-                }, this);
-            }
-            else if (i == 8) {
-                btn_b.addListener(m4m.event.UIEventEnum.PointerClick, function () {
-                    this.OnSetBrushSize2(this.btn[i]);
-                }, this);
-            }
-            else if (i == 9) {
-                btn_b.addListener(m4m.event.UIEventEnum.PointerClick, function () {
-                    this.OnSetBrushSize3(this.btn[i]);
-                }, this);
-            }
-            else if (i == 10) {
-                btn_b.addListener(m4m.event.UIEventEnum.PointerClick, function () {
-                    this.OnSetBrushSize4(this.btn[i]);
-                }, this);
+        var loadIndexRow = [0, 1, 2, 3, 4, 5];
+        var loadIndexColumn = [0, 1, 2, 3, 4];
+        for (var iiii = 0; iiii < 6; iiii++) {
+            var _loop_2 = function () {
+                _name = "atlas/1/brush_" + loadIndexRow[iiii] + "_" + loadIndexColumn[jjjj] + ".png";
+                texName = "".concat(resRootPath) + _name;
+                console.log("texName:" + texName);
+                var a = {
+                    i: iiii,
+                    j: jjjj,
+                };
+                test_Heightmap_terrain.app.getAssetMgr().load(texName, m4m.framework.AssetTypeEnum.Auto, function (s) {
+                    if (s.isfinish) {
+                        console.log(a, iiii, jjjj);
+                        test_Heightmap_terrain.BrushTextureLoadFinished(a.i, a.j);
+                    }
+                });
+            };
+            var _name, texName;
+            for (var jjjj = 0; jjjj < 5; jjjj++) {
+                _loop_2();
             }
         }
+        //root 
+        this.mtrlRoot.name = "MaterialRoot";
+        this.mtrlRoot.width = 1;
+        this.mtrlRoot.height = 1;
+        this.mtrlRoot.pivot.x = 0;
+        this.mtrlRoot.pivot.y = 0;
+        this.mtrlRoot.localTranslate.x = 0;
+        this.mtrlRoot.localTranslate.y = 0;
+        this.rooto2d.addChild(this.mtrlRoot);
+        // left text
+        this.heightScaleCtrl.width = 300;
+        this.heightScaleCtrl.height = 40;
+        this.heightScaleCtrl.pivot.x = 0;
+        this.heightScaleCtrl.pivot.y = 0;
+        this.heightScaleCtrl.localTranslate.x = 18;
+        this.heightScaleCtrl.localTranslate.y = 90;
+        //this.rooto2d.addChild(this.heightScaleCtrl);
+        this.mtrlRoot.addChild(this.heightScaleCtrl);
+        //this.heightScaleCtrl.layoutState = 0 | m4m.framework.layoutOption.H_CENTER | m4m.framework.layoutOption.BOTTOM;
+        //this.heightScaleCtrl.setLayoutValue(m4m.framework.layoutOption.H_CENTER, 0);
+        //this.heightScaleCtrl.setLayoutValue(m4m.framework.layoutOption.V_CENTER, 0);
+        var leftTextLabel = this.heightScaleCtrl.addComponent("label");
+        leftTextLabel.font = test_Heightmap_terrain.font_;
+        leftTextLabel.fontsize = 19;
+        leftTextLabel.color = new m4m.math.color(1, 0, 0, 1);
+        leftTextLabel.text = "高度比例";
+        //输入框
+        this.iptFrame_HeightScale[0].width = 190;
+        this.iptFrame_HeightScale[0].height = 40;
+        this.iptFrame_HeightScale[0].pivot.x = 0;
+        this.iptFrame_HeightScale[0].pivot.y = 0;
+        this.iptFrame_HeightScale[0].localTranslate.x = 300 - 190;
+        this.iptFrame_HeightScale[0].localTranslate.y = 0;
+        this.heightScaleCtrl.addChild(this.iptFrame_HeightScale[0]);
+        var ipt0 = this.iptFrame_HeightScale[0].addComponent("inputField");
+        ipt0.LineType = m4m.framework.lineType.SingleLine; //单行输入
+        ipt0.onTextSubmit = function (t) {
+            console.log("HeightScale.x:".concat(t));
+            var scale = Number(t);
+            _this.mtr[0].setVector4("_HeightScale", new m4m.math.vector4(scale, scale, scale, scale));
+        };
+        var img_t0 = new m4m.framework.transform2D;
+        img_t0.width = this.iptFrame_HeightScale[0].width;
+        img_t0.height = this.iptFrame_HeightScale[0].height;
+        this.iptFrame_HeightScale[0].addChild(img_t0);
+        ipt0.frameImage = img_t0.addComponent("image2D");
+        ipt0.frameImage.imageType = m4m.framework.ImageType.Sliced;
+        ipt0.frameImage.imageBorder.l = 10;
+        ipt0.frameImage.imageBorder.t = 2;
+        ipt0.frameImage.imageBorder.r = 10;
+        ipt0.frameImage.imageBorder.b = 2;
+        var text_t = new m4m.framework.transform2D;
+        text_t.width = this.iptFrame_HeightScale[0].width;
+        text_t.height = this.iptFrame_HeightScale[0].height;
+        this.iptFrame_HeightScale[0].addChild(text_t);
+        ipt0.TextLabel = text_t.addComponent("label");
+        ipt0.TextLabel.font = test_Heightmap_terrain.font_;
+        ipt0.TextLabel.fontsize = 19;
+        ipt0.TextLabel.color = new m4m.math.color(1, 1, 1, 1);
+        text_t.layoutState = 0 | m4m.framework.layoutOption.H_CENTER | m4m.framework.layoutOption.V_CENTER;
+        text_t.setLayoutValue(m4m.framework.layoutOption.H_CENTER, 0);
+        text_t.setLayoutValue(m4m.framework.layoutOption.V_CENTER, 0);
+        var p_t = new m4m.framework.transform2D;
+        p_t.width = this.iptFrame_HeightScale[0].width;
+        p_t.height = this.iptFrame_HeightScale[0].height;
+        this.iptFrame_HeightScale[0].addChild(p_t);
+        ipt0.PlaceholderLabel = p_t.addComponent("label");
+        ipt0.PlaceholderLabel.text = "SingleLine Enter text...";
+        ipt0.PlaceholderLabel.font = test_Heightmap_terrain.font_;
+        ipt0.PlaceholderLabel.fontsize = 19;
+        ipt0.PlaceholderLabel.color = new m4m.math.color(0.6, 0.6, 0.6, 1);
+        var inputSuit = [
+            [this.textureUVInputCtrls[0][0], this.textureUVInputCtrls[0][1]],
+            [this.textureUVInputCtrls[1][0], this.textureUVInputCtrls[1][1]],
+            [this.textureUVInputCtrls[2][0], this.textureUVInputCtrls[2][1]],
+            [this.textureUVInputCtrls[3][0], this.textureUVInputCtrls[3][1]],
+        ];
+        var yPos = 90 + 55;
+        for (var iRow = 0; iRow < 4; iRow++) {
+            ///textureUVScaleCtrl
+            this.textureUVScaleCtrl[iRow].width = 190;
+            this.textureUVScaleCtrl[iRow].height = 38;
+            this.textureUVScaleCtrl[iRow].pivot.x = 0;
+            this.textureUVScaleCtrl[iRow].pivot.y = 0;
+            this.textureUVScaleCtrl[iRow].localTranslate.x = 18;
+            this.textureUVScaleCtrl[iRow].localTranslate.y = yPos;
+            yPos += 40;
+            this.mtrlRoot.addChild(this.textureUVScaleCtrl[iRow]);
+            var labelTextureScale = this.textureUVScaleCtrl[iRow].addComponent("label");
+            labelTextureScale.font = test_Heightmap_terrain.font_;
+            labelTextureScale.fontsize = 19;
+            labelTextureScale.color = new m4m.math.color(1, 0, 0, 1);
+            var iUV = iRow + 1;
+            labelTextureScale.text = "UV" + iUV + "比例";
+            ///2个输入框
+            //输入框
+            this.textureUVInputCtrls[iRow][0].width = 90;
+            this.textureUVInputCtrls[iRow][0].height = 38;
+            this.textureUVInputCtrls[iRow][0].pivot.x = 0;
+            this.textureUVInputCtrls[iRow][0].pivot.y = 0;
+            this.textureUVInputCtrls[iRow][0].localTranslate.x = 90;
+            this.textureUVInputCtrls[iRow][0].localTranslate.y = 0;
+            this.textureUVInputCtrls[iRow][1].width = 90;
+            this.textureUVInputCtrls[iRow][1].height = 38;
+            this.textureUVInputCtrls[iRow][1].pivot.x = 0;
+            this.textureUVInputCtrls[iRow][1].pivot.y = 0;
+            this.textureUVInputCtrls[iRow][1].localTranslate.x = 180;
+            this.textureUVInputCtrls[iRow][1].localTranslate.y = 0;
+            this.textureUVScaleCtrl[iRow].addChild(this.textureUVInputCtrls[iRow][0]);
+            this.textureUVScaleCtrl[iRow].addChild(this.textureUVInputCtrls[iRow][1]);
+            var ipt00 = this.textureUVInputCtrls[iRow][0].addComponent("inputField");
+            ipt00.LineType = m4m.framework.lineType.SingleLine; //单行输入
+            ipt00.onTextSubmit = function (t) {
+                console.log("UV .x:".concat(t));
+                var scale = Number(t);
+                var input00 = inputSuit[0][0].getComponent("inputField");
+                var u0 = Number(input00.text);
+                var input01 = inputSuit[0][1].getComponent("inputField");
+                var v0 = Number(input01.text);
+                var input10 = inputSuit[1][0].getComponent("inputField");
+                var u1 = Number(input10.text);
+                var input11 = inputSuit[1][1].getComponent("inputField");
+                var v1 = Number(input11.text);
+                var input20 = inputSuit[2][0].getComponent("inputField");
+                var u2 = Number(input20.text);
+                var input21 = inputSuit[2][1].getComponent("inputField");
+                var v2 = Number(input21.text);
+                var input30 = inputSuit[3][0].getComponent("inputField");
+                var u3 = Number(input30.text);
+                var input31 = inputSuit[3][1].getComponent("inputField");
+                var v3 = Number(input30.text);
+                if (u0 == 0) {
+                    u0 = 1;
+                    input00.text = "1";
+                }
+                if (v0 == 0) {
+                    v0 = 1;
+                    input01.text = "1";
+                }
+                if (u1 == 0) {
+                    u1 = 1;
+                    input10.text = "1";
+                }
+                if (v1 == 0) {
+                    v1 = 1;
+                    input11.text = "1";
+                }
+                if (u2 == 0) {
+                    u2 = 1;
+                    input20.text = "1";
+                }
+                if (v2 == 0) {
+                    v2 = 1;
+                    input21.text = "1";
+                }
+                if (u3 == 0) {
+                    u3 = 1;
+                    input30.text = "1";
+                }
+                if (v3 == 0) {
+                    v3 = 1;
+                    input31.text = "1";
+                }
+                console.log(u0 + "," + v0);
+                console.log(u1 + "," + v1);
+                console.log(u2 + "," + v2);
+                console.log(u3 + "," + v3);
+                _this.mtr[0].setVector4("_Splat0_ST", new m4m.math.vector4(u0, v0, 0, 0));
+                _this.mtr[0].setVector4("_Splat1_ST", new m4m.math.vector4(u1, v1, 0, 0));
+                _this.mtr[0].setVector4("_Splat2_ST", new m4m.math.vector4(u2, v2, 0, 0));
+                _this.mtr[0].setVector4("_Splat3_ST", new m4m.math.vector4(u3, v3, 0, 0));
+            };
+            var ipt11 = this.textureUVInputCtrls[iRow][1].addComponent("inputField");
+            ipt11.LineType = m4m.framework.lineType.SingleLine; //单行输入
+            ipt11.onTextSubmit = function (t) {
+                console.log("UV .y:".concat(t));
+                var scale = Number(t);
+                var input00 = inputSuit[0][0].getComponent("inputField");
+                var u0 = Number(input00.text);
+                var input01 = inputSuit[0][1].getComponent("inputField");
+                var v0 = Number(input01.text);
+                var input10 = inputSuit[1][0].getComponent("inputField");
+                var u1 = Number(input10.text);
+                var input11 = inputSuit[1][1].getComponent("inputField");
+                var v1 = Number(input11.text);
+                var input20 = inputSuit[2][0].getComponent("inputField");
+                var u2 = Number(input20.text);
+                var input21 = inputSuit[2][1].getComponent("inputField");
+                var v2 = Number(input21.text);
+                var input30 = inputSuit[3][0].getComponent("inputField");
+                var u3 = Number(input30.text);
+                var input31 = inputSuit[3][1].getComponent("inputField");
+                var v3 = Number(input30.text);
+                if (u0 == 0) {
+                    u0 = 1;
+                    input00.text = "1";
+                }
+                if (v0 == 0) {
+                    v0 = 1;
+                    input01.text = "1";
+                }
+                if (u1 == 0) {
+                    u1 = 1;
+                    input10.text = "1";
+                }
+                if (v1 == 0) {
+                    v1 = 1;
+                    input11.text = "1";
+                }
+                if (u2 == 0) {
+                    u2 = 1;
+                    input20.text = "1";
+                }
+                if (v2 == 0) {
+                    v2 = 1;
+                    input21.text = "1";
+                }
+                if (u3 == 0) {
+                    u3 = 1;
+                    input30.text = "1";
+                }
+                if (v3 == 0) {
+                    v3 = 1;
+                    input31.text = "1";
+                }
+                console.log(u0 + "," + v0);
+                console.log(u1 + "," + v1);
+                console.log(u2 + "," + v2);
+                console.log(u3 + "," + v3);
+                _this.mtr[0].setVector4("_Splat0_ST", new m4m.math.vector4(u0, v0, 0, 0));
+                _this.mtr[0].setVector4("_Splat1_ST", new m4m.math.vector4(u1, v1, 0, 0));
+                _this.mtr[0].setVector4("_Splat2_ST", new m4m.math.vector4(u2, v2, 0, 0));
+                _this.mtr[0].setVector4("_Splat3_ST", new m4m.math.vector4(u3, v3, 0, 0));
+            };
+            var img_u = new m4m.framework.transform2D;
+            img_u.width = this.textureUVInputCtrls[iRow][0].width;
+            img_u.height = this.textureUVInputCtrls[iRow][0].height;
+            this.textureUVInputCtrls[iRow][0].addChild(img_u);
+            if (img_u.getComponent("image2D") == null)
+                ipt00.frameImage = img_u.addComponent("image2D");
+            //ipt00.frameImage.imageType = m4m.framework.ImageType.Sliced;
+            //ipt00.frameImage.imageBorder.l = 10;
+            //ipt00.frameImage.imageBorder.t = 2;
+            //ipt00.frameImage.imageBorder.r = 10;
+            //ipt00.frameImage.imageBorder.b = 2;
+            var img_v = new m4m.framework.transform2D;
+            img_v.width = this.textureUVInputCtrls[iRow][1].width;
+            img_v.height = this.textureUVInputCtrls[iRow][1].height;
+            this.textureUVInputCtrls[iRow][1].addChild(img_v);
+            if (img_v.getComponent("image2D") == null)
+                ipt11.frameImage = img_v.addComponent("image2D");
+            //ipt11.frameImage.imageType = m4m.framework.ImageType.Sliced;
+            //ipt11.frameImage.imageBorder.l = 10;
+            //ipt11.frameImage.imageBorder.t = 2;
+            //ipt11.frameImage.imageBorder.r = 10;
+            //ipt11.frameImage.imageBorder.b = 2;
+            var text_x = new m4m.framework.transform2D;
+            text_x.width = this.textureUVInputCtrls[iRow][0].width;
+            text_x.height = this.textureUVInputCtrls[iRow][0].height;
+            this.textureUVInputCtrls[iRow][0].addChild(text_x);
+            ipt00.TextLabel = text_x.addComponent("label");
+            ipt00.TextLabel.font = test_Heightmap_terrain.font_;
+            ipt00.TextLabel.fontsize = 24;
+            ipt00.TextLabel.color = new m4m.math.color(1, 1, 1, 1);
+            text_x.layoutState = 0 | m4m.framework.layoutOption.H_CENTER | m4m.framework.layoutOption.V_CENTER;
+            text_x.setLayoutValue(m4m.framework.layoutOption.H_CENTER, 0);
+            text_x.setLayoutValue(m4m.framework.layoutOption.V_CENTER, 0);
+            var text_y = new m4m.framework.transform2D;
+            text_y.width = this.textureUVInputCtrls[iRow][1].width;
+            text_y.height = this.textureUVInputCtrls[iRow][1].height;
+            this.textureUVInputCtrls[iRow][1].addChild(text_y);
+            ipt11.TextLabel = text_y.addComponent("label");
+            ipt11.TextLabel.font = test_Heightmap_terrain.font_;
+            ipt11.TextLabel.fontsize = 24;
+            ipt11.TextLabel.color = new m4m.math.color(1, 1, 1, 1);
+            text_y.layoutState = 0 | m4m.framework.layoutOption.H_CENTER | m4m.framework.layoutOption.V_CENTER;
+            text_y.setLayoutValue(m4m.framework.layoutOption.H_CENTER, 0);
+            text_y.setLayoutValue(m4m.framework.layoutOption.V_CENTER, 0);
+            var p_tx = new m4m.framework.transform2D;
+            p_tx.width = this.textureUVInputCtrls[iRow][0].width;
+            p_tx.height = this.textureUVInputCtrls[iRow][0].height;
+            this.textureUVInputCtrls[iRow][0].addChild(p_tx);
+            ipt00.PlaceholderLabel = p_tx.addComponent("label");
+            ipt00.PlaceholderLabel.text = "U scale ...";
+            ipt00.PlaceholderLabel.font = test_Heightmap_terrain.font_;
+            ipt00.PlaceholderLabel.fontsize = 24;
+            ipt00.PlaceholderLabel.color = new m4m.math.color(0.6, 0.6, 0.6, 1);
+            var p_t1 = new m4m.framework.transform2D;
+            p_t1.width = this.textureUVInputCtrls[iRow][1].width;
+            p_t1.height = this.textureUVInputCtrls[iRow][1].height;
+            this.textureUVInputCtrls[iRow][1].addChild(p_t1);
+            ipt11.PlaceholderLabel = p_t1.addComponent("label");
+            ipt11.PlaceholderLabel.text = "V scale ...";
+            ipt11.PlaceholderLabel.font = test_Heightmap_terrain.font_;
+            ipt11.PlaceholderLabel.fontsize = 24;
+            ipt11.PlaceholderLabel.color = new m4m.math.color(0.6, 0.6, 0.6, 1);
+        }
+        //root 
+        this.texRoot.name = "TextureLayerRoot";
+        this.texRoot.width = 1;
+        this.texRoot.height = 1;
+        this.texRoot.pivot.x = 0;
+        this.texRoot.pivot.y = 0;
+        this.texRoot.localTranslate.x = 0;
+        this.texRoot.localTranslate.y = 0;
+        this.rooto2d.addChild(this.texRoot);
+        var _loop_3 = function () {
+            this_2.textureLayer[iRow].width = 60;
+            this_2.textureLayer[iRow].height = 60;
+            this_2.textureLayer[iRow].pivot.x = 0;
+            this_2.textureLayer[iRow].pivot.y = 0;
+            this_2.textureLayer[iRow].localTranslate.x = 1;
+            this_2.textureLayer[iRow].localTranslate.y = this_2.page[2].height + 64 * (iRow % 5);
+            if (this_2.texRoot == null)
+                console.log("texRoot is nul, Fail");
+            else
+                console.log("texRoot is not null, OK");
+            this_2.texRoot.addChild(this_2.textureLayer[iRow]);
+            var imgTs = new m4m.framework.transform2D;
+            imgTs.width = this_2.textureLayer[iRow].width;
+            imgTs.height = this_2.textureLayer[iRow].height;
+            imgTs.pivot.x = 0;
+            imgTs.pivot.y = 0;
+            imgTs.localTranslate.x = 0;
+            imgTs.localTranslate.y = 0;
+            this_2.textureLayer[iRow].addChild(imgTs);
+            var img2D = imgTs.addComponent("rawImage2D");
+            var param0 = {
+                index: iRow,
+                img: img2D,
+            };
+            if (iRow < 4)
+                img2D.image = this_2.texs[iRow + 2];
+            else
+                img2D.image = this_2.texs[1];
+            var rightButton = imgTs.addComponent("button");
+            rightButton.addListener(m4m.event.UIEventEnum.PointerClick, function () {
+                this.OnReplaceTexture(param0.index, param0.img);
+            }, this_2);
+        };
+        var this_2 = this;
+        //left side 4 texture layer + 1 mix layer
+        for (var iRow = 0; iRow < 5; iRow++) {
+            _loop_3();
+        }
+        /// left bottom a button to select use blend texture or gradient
+        this.textureLayer[5].width = 100;
+        this.textureLayer[5].height = 35;
+        this.textureLayer[5].pivot.x = 0;
+        this.textureLayer[5].pivot.y = 0;
+        this.textureLayer[5].localTranslate.x = 1;
+        this.textureLayer[5].localTranslate.y = this.page[2].height + 64 * 5 + 30;
+        this.texRoot.addChild(this.textureLayer[5]);
+        var btnUseBlendTexture = this.textureLayer[5].addComponent("button");
+        var labelBlendTexture = this.textureLayer[5].addComponent("label");
+        btnUseBlendTexture.addListener(m4m.event.UIEventEnum.PointerClick, function () {
+            this.OnUseBlendTexture();
+        }, this);
+        labelBlendTexture.color = new m4m.math.color(1, 0, 0, 1);
+        labelBlendTexture.text = "Blend Texture";
+        labelBlendTexture.font = test_Heightmap_terrain.font_;
+        labelBlendTexture.fontsize = 16;
+        var imgLayer5Ts = new m4m.framework.transform2D;
+        imgLayer5Ts.width = this.textureLayer[5].width;
+        imgLayer5Ts.height = this.textureLayer[5].height;
+        imgLayer5Ts.pivot.x = 0;
+        imgLayer5Ts.pivot.y = 0;
+        imgLayer5Ts.localTranslate.x = 0;
+        imgLayer5Ts.localTranslate.y = 0;
+        this.textureLayer[5].addChild(imgLayer5Ts);
+        var imgTextureLayer5 = imgLayer5Ts.addComponent("rawImage2D");
+        imgTextureLayer5.image = this.texs[10];
+        imgTextureLayer5.color = new m4m.math.color(1.0, 1.0, 1.0, 0.5);
+        this.textureLayer[6].width = 100;
+        this.textureLayer[6].height = 35;
+        this.textureLayer[6].pivot.x = 0;
+        this.textureLayer[6].pivot.y = 0;
+        this.textureLayer[6].localTranslate.x = 1;
+        this.textureLayer[6].localTranslate.y = this.page[2].height + 64 * 5 + 30 + 35 + 5;
+        this.texRoot.addChild(this.textureLayer[6]);
+        var btnUseGPUBlend = this.textureLayer[6].addComponent("button");
+        var labelGPUBlend = this.textureLayer[6].addComponent("label");
+        btnUseGPUBlend.addListener(m4m.event.UIEventEnum.PointerClick, function () {
+            this.OnUseGPUMixTexture();
+        }, this);
+        labelGPUBlend.color = new m4m.math.color(1, 0, 0, 1);
+        labelGPUBlend.text = "GPU Blend";
+        labelGPUBlend.font = test_Heightmap_terrain.font_;
+        labelGPUBlend.fontsize = 16;
+        var imgLayer6Ts = new m4m.framework.transform2D;
+        imgLayer6Ts.width = this.textureLayer[6].width;
+        imgLayer6Ts.height = this.textureLayer[6].height;
+        imgLayer6Ts.pivot.x = 0;
+        imgLayer6Ts.pivot.y = 0;
+        imgLayer6Ts.localTranslate.x = 0;
+        imgLayer6Ts.localTranslate.y = 0;
+        this.textureLayer[6].addChild(imgLayer6Ts);
+        var imgTextureLayer6 = imgLayer6Ts.addComponent("rawImage2D");
+        imgTextureLayer6.image = this.texs[10];
+        imgTextureLayer6.color = new m4m.math.color(1.0, 1.0, 1.0, 0.5);
+        //滑动卷轴框
+        var scroll_t = new m4m.framework.transform2D;
+        scroll_t.width = 210;
+        scroll_t.height = 450;
+        this.texRoot.addChild(scroll_t);
+        scroll_t.localTranslate.x = 105;
+        scroll_t.localTranslate.y = 75;
+        var scroll_ = scroll_t.addComponent("scrollRect");
+        var ct = new m4m.framework.transform2D;
+        scroll_t.addChild(ct);
+        scroll_.inertia = true;
+        ct.width = 208;
+        ct.height = 208 * 10;
+        scroll_.decelerationRate = 0.135;
+        scroll_.content = ct;
+        scroll_t.isMask = true;
+        scroll_.horizontal = false;
+        scroll_.vertical = true;
+        var _loop_4 = function () {
+            var raw_t2 = new m4m.framework.transform2D;
+            sz = "texture_" + String(imgIndex_);
+            raw_t2.name = sz;
+            raw_t2.width = 200;
+            raw_t2.height = 200;
+            raw_t2.localTranslate.x = 8;
+            raw_t2.localTranslate.y = 208 * ((imgIndex_ - 1));
+            var raw_i2 = raw_t2.addComponent("rawImage2D");
+            raw_i2.image = this_3.texs[imgIndex_];
+            ct.addChild(raw_t2);
+            //卷轴框 label
+            var s_l_t = m4m.framework.TransformUtil.Create2DPrimitive(m4m.framework.Primitive2DType.Label);
+            s_l_t.width = 180;
+            var s_l = s_l_t.getComponent("label");
+            s_l.font = test_Heightmap_terrain.font_;
+            s_l.fontsize = 40;
+            s_l.color = new m4m.math.color(0.0, 0.0, 1.0, 0.3);
+            s_l.verticalOverflow = true;
+            s_l.verticalType = m4m.framework.VerticalType.Top;
+            s_l.text = "scrollRect \ntry drag \nto move";
+            ct.addChild(s_l_t);
+            var imgBtn = raw_t2.addComponent("button");
+            var param = {
+                btn: imgBtn,
+                index: imgIndex_,
+            };
+            imgBtn.addListener(m4m.event.UIEventEnum.PointerClick, function () {
+                this.OnClickTexture(param.index, param.btn);
+            }, this_3);
+        };
+        var this_3 = this, sz;
+        //卷轴框 raw png
+        for (var imgIndex_ = 1; imgIndex_ < 11; imgIndex_++) {
+            _loop_4();
+        }
+        /// selected texture
+        this.currentPickTexture = new m4m.framework.transform2D;
+        this.currentPickTexture.width = 60;
+        this.currentPickTexture.height = 60;
+        this.currentPickTexture.pivot.x = 0.5;
+        this.currentPickTexture.pivot.y = 0.5;
+        this.texRoot.addChild(this.currentPickTexture);
+        var _currentPick = this.currentPickTexture.addComponent("rawImage2D");
+        _currentPick.image = null;
+        //atlas
+        var imgIndex = [];
+        for (var ii = 0; ii < 11; ii++) {
+            imgIndex[ii] = this.btn[ii];
+        }
+        var abc = [
+            [this.textureUVInputCtrls[0][0], this.textureUVInputCtrls[0][1]],
+            [this.textureUVInputCtrls[1][0], this.textureUVInputCtrls[1][1]],
+            [this.textureUVInputCtrls[2][0], this.textureUVInputCtrls[2][1]],
+            [this.textureUVInputCtrls[3][0], this.textureUVInputCtrls[3][1]]
+        ];
+        test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/brush0.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
+            if (s.isfinish) {
+                test_Heightmap_terrain.app.getAssetMgr().load("".concat(resRootPath, "atlas/1/2.atlas.json"), m4m.framework.AssetTypeEnum.Auto, function (state) {
+                    if (state.isfinish) {
+                        var atlas = test_Heightmap_terrain.app.getAssetMgr().getAssetByName("2.atlas.json");
+                        console.log("atlas:" + atlas);
+                        console.log("sprites:" + atlas.sprites);
+                        for (var Index = 0; Index < 11; Index++) {
+                            var img2D = imgIndex[Index].getComponent("image2D");
+                            if (img2D == null) {
+                                console.log("Fool, null img2D:" + imgIndex);
+                            }
+                            else {
+                                var spriteName = "brush_" + (Index);
+                                console.log("OK, img2D attach sprite" + atlas.sprites[spriteName]);
+                                img2D.sprite = atlas.sprites[spriteName];
+                            }
+                        }
+                        ipt0.frameImage.sprite = atlas.sprites["input_0"];
+                        var img2Dx = abc[0][0].getComponentsInChildren("image2D");
+                        if (img2Dx == null)
+                            console.log(ii + " img2Dx is null FAIL");
+                        else
+                            console.log(ii + "img2Dx is not null OK");
+                        img2Dx[0].sprite = atlas.sprites["input_0"];
+                        var img2Dy = abc[0][1].getComponentsInChildren("image2D");
+                        img2Dy[0].sprite = atlas.sprites["input_0"];
+                        var img2Dx1 = abc[1][0].getComponentsInChildren("image2D");
+                        if (img2Dx1 == null)
+                            console.log(ii + " img2Dx1 is null FAIL");
+                        else
+                            console.log(ii + "img2Dx1 is not null OK");
+                        img2Dx1[0].sprite = atlas.sprites["input_0"];
+                        var img2Dy1 = abc[1][1].getComponentsInChildren("image2D");
+                        img2Dy1[0].sprite = atlas.sprites["input_0"];
+                        var img2Dx2 = abc[2][0].getComponentsInChildren("image2D");
+                        if (img2Dx2 == null)
+                            console.log(ii + " img2Dx2 is null FAIL");
+                        else
+                            console.log(ii + "img2Dx2 is not null OK");
+                        img2Dx2[0].sprite = atlas.sprites["input_0"];
+                        var img2Dy2 = abc[2][1].getComponentsInChildren("image2D");
+                        img2Dy2[0].sprite = atlas.sprites["input_0"];
+                        var img2Dx3 = abc[3][0].getComponentsInChildren("image2D");
+                        if (img2Dx3 == null)
+                            console.log(ii + " img2Dx3 is null FAIL");
+                        else
+                            console.log(ii + "img2Dx3 is not null OK");
+                        img2Dx3[0].sprite = atlas.sprites["input_0"];
+                        var img2Dy3 = abc[3][1].getComponentsInChildren("image2D");
+                        img2Dy3[0].sprite = atlas.sprites["input_0"];
+                    }
+                });
+            }
+        });
         return this.btn;
     };
-    test_Heightmap_terrain.prototype.OnSetBrushSize0 = function (obj) {
-        console.log("Brush size 0");
-        test_Heightmap_terrain.selectedBrushSize = 0;
+    test_Heightmap_terrain.prototype.afterAddButton = function () {
+        var btnIndex = [0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4];
+        var btn_b0 = this.btn[0].getComponent("button");
+        btn_b0.addListener(m4m.event.UIEventEnum.PointerClick, function () {
+            this.OnBrushBtnClick(btnIndex[0]);
+        }, this);
+        var btn_b1 = this.btn[1].getComponent("button");
+        btn_b1.addListener(m4m.event.UIEventEnum.PointerClick, function () {
+            this.OnBrushBtnClick(btnIndex[1]);
+        }, this);
+        var btn_b2 = this.btn[2].getComponent("button");
+        btn_b2.addListener(m4m.event.UIEventEnum.PointerClick, function () {
+            this.OnBrushBtnClick(btnIndex[2]);
+        }, this);
+        var btn_b3 = this.btn[3].getComponent("button");
+        btn_b3.addListener(m4m.event.UIEventEnum.PointerClick, function () {
+            this.OnBrushBtnClick(btnIndex[3]);
+        }, this);
+        var btn_b4 = this.btn[4].getComponent("button");
+        btn_b4.addListener(m4m.event.UIEventEnum.PointerClick, function () {
+            this.OnBrushBtnClick(btnIndex[4]);
+        }, this);
+        var btn_b5 = this.btn[5].getComponent("button");
+        btn_b5.addListener(m4m.event.UIEventEnum.PointerClick, function () {
+            this.OnBrushBtnClick(btnIndex[5]);
+        }, this);
+        var btn_b6 = this.btn[6].getComponent("button");
+        btn_b6.addListener(m4m.event.UIEventEnum.PointerClick, function () {
+            this.OnSetBrushSize(btnIndex[6]);
+        }, this);
+        var btn_b7 = this.btn[7].getComponent("button");
+        btn_b7.addListener(m4m.event.UIEventEnum.PointerClick, function () {
+            this.OnSetBrushSize(btnIndex[7]);
+        }, this);
+        var btn_b8 = this.btn[8].getComponent("button");
+        btn_b8.addListener(m4m.event.UIEventEnum.PointerClick, function () {
+            this.OnSetBrushSize(btnIndex[8]);
+        }, this);
+        var btn_b9 = this.btn[9].getComponent("button");
+        btn_b9.addListener(m4m.event.UIEventEnum.PointerClick, function () {
+            this.OnSetBrushSize(btnIndex[9]);
+        }, this);
+        var btn_b10 = this.btn[10].getComponent("button");
+        btn_b10.addListener(m4m.event.UIEventEnum.PointerClick, function () {
+            this.OnSetBrushSize(btnIndex[10]);
+        }, this);
     };
-    test_Heightmap_terrain.prototype.OnSetBrushSize1 = function (obj) {
-        console.log("Brush size 1");
-        test_Heightmap_terrain.selectedBrushSize = 1;
+    test_Heightmap_terrain.prototype.OnSetBrushSize = function (index) {
+        console.log("Brush size" + index);
+        test_Heightmap_terrain.selectedBrushSize = index;
     };
-    test_Heightmap_terrain.prototype.OnSetBrushSize2 = function (obj) {
-        console.log("Brush size 2");
-        test_Heightmap_terrain.selectedBrushSize = 2;
+    test_Heightmap_terrain.prototype.OnBrushBtnClick = function (index) {
+        console.log("btn" + index + " clicked");
+        test_Heightmap_terrain.selectedBrush = index;
     };
-    test_Heightmap_terrain.prototype.OnSetBrushSize3 = function (obj) {
-        console.log("Brush size 3");
-        test_Heightmap_terrain.selectedBrushSize = 3;
+    test_Heightmap_terrain.prototype.OnPage = function (btnNumber) {
+        console.log("page " + btnNumber + " clicked");
+        if (btnNumber == 0) {
+            for (var _i = 0, _a = this.btn; _i < _a.length; _i++) {
+                var item = _a[_i];
+                item.visible = true;
+            }
+            this.mtrlRoot.visible = false;
+            this.texRoot.visible = false;
+        }
+        else if (btnNumber == 1) {
+            for (var _b = 0, _c = this.btn; _b < _c.length; _b++) {
+                var item = _c[_b];
+                item.visible = false;
+            }
+            this.mtrlRoot.visible = true;
+            this.texRoot.visible = false;
+        }
+        else {
+            for (var _d = 0, _e = this.btn; _d < _e.length; _d++) {
+                var item = _e[_d];
+                item.visible = false;
+            }
+            this.mtrlRoot.visible = false;
+            this.texRoot.visible = true;
+        }
     };
-    test_Heightmap_terrain.prototype.OnSetBrushSize4 = function (obj) {
-        console.log("Brush size 4");
-        test_Heightmap_terrain.selectedBrushSize = 4;
+    test_Heightmap_terrain.prototype.OnUseBlendTexture = function () {
+        console.log("Use blend texture control 4 texture mix");
+        this.mtr[0].setVector4("v_useTextureOrGPU", new m4m.math.vector4(0.0, 0.0, 0.01, 0.0));
     };
-    test_Heightmap_terrain.prototype.OnBrushBtnClick0 = function (obj) {
-        console.log("btn 0 clicked");
-        //this.UpdateBrush(0, 2);
-        test_Heightmap_terrain.selectedBrush = 0;
+    test_Heightmap_terrain.prototype.OnUseGPUMixTexture = function () {
+        console.log("Use GPU control 4 texture with height factor");
+        this.mtr[0].setVector4("v_useTextureOrGPU", new m4m.math.vector4(1.0, 1.0, 0.01, 0.0));
     };
-    test_Heightmap_terrain.prototype.OnBrushBtnClick1 = function (obj) {
-        console.log("btn 1 clicked");
-        //this.UpdateBrush(1, 2);
-        test_Heightmap_terrain.selectedBrush = 1;
+    test_Heightmap_terrain.prototype.OnClickTexture = function (_index, _btn) {
+        console.log("texture btn:" + _index + " clicked");
+        //var tex:m4m.framework.texture = new m4m.framework.texture(this.texs[_index]);
+        var img2D = this.currentPickTexture.getComponent("rawImage2D");
+        if (img2D != null) {
+            img2D.image = this.texs[_index];
+            test_Heightmap_terrain.bUpdatePickedTexture = true;
+            test_Heightmap_terrain.currentPickIndex = _index;
+        }
     };
-    test_Heightmap_terrain.prototype.OnBrushBtnClick2 = function (obj) {
-        console.log("btn 2 clicked");
-        //this.UpdateBrush(2, 2);
-        test_Heightmap_terrain.selectedBrush = 2;
+    test_Heightmap_terrain.prototype.OnReplaceTexture = function (_index, _img2D) {
+        // texture layer, replace
+        if (test_Heightmap_terrain.currentPickIndex != -1) {
+            _img2D.image = this.texs[test_Heightmap_terrain.currentPickIndex];
+            if (_index == 0) {
+                this.mtr[0].setTexture("_Splat0", this.texs[test_Heightmap_terrain.currentPickIndex]);
+            }
+            else if (_index == 1) {
+                this.mtr[0].setTexture("_Splat1", this.texs[test_Heightmap_terrain.currentPickIndex]);
+            }
+            else if (_index == 2) {
+                this.mtr[0].setTexture("_Splat2", this.texs[test_Heightmap_terrain.currentPickIndex]);
+            }
+            else if (_index == 3) {
+                this.mtr[0].setTexture("_Splat3", this.texs[test_Heightmap_terrain.currentPickIndex]);
+            }
+            else {
+                this.mtr[0].setTexture("_Control", this.texs[test_Heightmap_terrain.currentPickIndex]);
+            }
+            test_Heightmap_terrain.currentPickIndex = -1;
+            test_Heightmap_terrain.bUpdatePickedTexture = false;
+            var img2D = this.currentPickTexture.getComponent("rawImage2D");
+            if (img2D != null) {
+                img2D.image = null;
+            }
+        }
     };
-    test_Heightmap_terrain.prototype.OnBrushBtnClick3 = function (obj) {
-        console.log("btn 3 clicked");
-        //this.UpdateBrush(3, 2);
-        test_Heightmap_terrain.selectedBrush = 3;
-    };
-    test_Heightmap_terrain.prototype.OnBrushBtnClick4 = function (obj) {
-        console.log("btn 4 clicked");
-        //this.UpdateBrush(4, 2);
-        test_Heightmap_terrain.selectedBrush = 4;
-    };
-    test_Heightmap_terrain.prototype.OnBrushBtnClick5 = function (obj) {
-        console.log("btn 5 clicked");
-        //this.UpdateBrush(5, 2);
-        test_Heightmap_terrain.selectedBrush = 5;
+    test_Heightmap_terrain.prototype.UpdatePickedTexturePosition = function () {
+        if (test_Heightmap_terrain.bUpdatePickedTexture) {
+            var pos = new m4m.math.vector2(test_Heightmap_terrain.app.getInputMgr().point.x, test_Heightmap_terrain.app.getInputMgr().point.y);
+            console.log("mouse:" + pos.x + ", " + pos.y);
+            /// out of UI area, disable attach to mouse
+            var img = this.currentPickTexture.getComponent("rawImage2D");
+            if (pos.x >= 105 * 3 || pos.x < 0 || pos.y >= 105 * 5 || pos.y < 0) {
+                test_Heightmap_terrain.bUpdatePickedTexture = false;
+                if (img != null)
+                    img.image = null;
+            }
+            /// top label area, disable attach to mouse
+            if (pos.x > 0 && pos.x < 105 * 3 && pos.y > 0 && pos.y < 75) {
+                test_Heightmap_terrain.bUpdatePickedTexture = false;
+                if (img != null)
+                    img.image = null;
+            }
+            if (img.image != null) {
+                this.currentPickTexture.localTranslate.x = pos.x;
+                this.currentPickTexture.localTranslate.y = pos.y;
+                this.currentPickTexture.localTranslate = pos;
+                this.currentPickTexture.markDirty();
+            }
+        }
     };
     test_Heightmap_terrain.prototype.update = function (delta) {
-        //console.log(this.nFrame);
-        if (this.nFrame == 0) {
-            console.log("addbtn called");
-            this.addbtn('0', '0', "Modify", this);
+        this._mousePos = new m4m.math.vector2(test_Heightmap_terrain.app.getInputMgr().point.x, test_Heightmap_terrain.app.getInputMgr().point.y);
+        this.UpdatePickedTexturePosition();
+        /// left top area is ui so do not handle
+        //console.log("Mouse:" + mousePos.x, mousePos.y);
+        if (this._mousePos.x < 105 * 3 && this._mousePos.y < 105 * 5) {
+            this.nFrame++;
+            return;
         }
-        // var screenPos = new m4m.math.vector2(test_Heightmap_terrain.app.getInputMgr().point.x, test_Heightmap_terrain.app.getInputMgr().point.y);
-        // if(this.btn != null)
-        // {
-        //     //console.log(screenPos);
-        //     screenPos.x -= 0.5*129;
-        //     screenPos.y -= 0.5*129;
-        // }
+        if (test_Heightmap_terrain.mouseDown == true) {
+            if (this.nFrame % 10 == 0) {
+                this.TestHit();
+                this.OnModify();
+                if (test_Heightmap_terrain.shifKey) {
+                    this.ApplayNewHeight(true);
+                }
+                else {
+                    this.ApplayNewHeight(false);
+                }
+            }
+        }
         this.nFrame++;
     };
     test_Heightmap_terrain.prototype.TestHit = function () {
@@ -7282,9 +7600,12 @@ var test_Heightmap_terrain = /** @class */ (function () {
         }
     };
     test_Heightmap_terrain._heights_ = null;
+    test_Heightmap_terrain.bUpdatePickedTexture = false;
+    test_Heightmap_terrain.currentPickIndex = -1;
+    test_Heightmap_terrain.mouseDown = false;
     test_Heightmap_terrain.dictBrushData = {};
     test_Heightmap_terrain.selectedBrush = 0; //选择的刷子
-    test_Heightmap_terrain.selectedBrushSize = 0; //brush size: 0:32; 1:64; 2:128; 3:256
+    test_Heightmap_terrain.selectedBrushSize = 0; //brush size: 0:16; 1:32; 2:64; 3:128; 4:256;
     return test_Heightmap_terrain;
 }());
 /**
@@ -7306,12 +7627,14 @@ function genElevationMesh(gl, heightmap, maxElevation, minElevation, heightScale
     if (minElevation === void 0) { minElevation = 0; }
     if (heightScale === void 0) { heightScale = 12.0; }
     var _heightdata = test_Heightmap_terrain.getHeightmapPixels(heightmap);
-    var w = heightmap.glTexture.width;
-    var h = heightmap.glTexture.height;
+    //const w = heightmap.glTexture.width;
+    //const h = heightmap.glTexture.height;
+    this.heightMapWidth = heightmap.glTexture.width;
+    this.heightMapHeight = heightmap.glTexture.height;
     function InBounds(i, j) {
         // True if ij are valid indices; false otherwise.
-        return i >= 0 && i < w &&
-            j >= 0 && j < h;
+        return i >= 0 && i < this.heightMapWidth &&
+            j >= 0 && j < this.heightMapHeight;
     }
     function Average(i, j) {
         // ----------
@@ -7326,7 +7649,7 @@ function genElevationMesh(gl, heightmap, maxElevation, minElevation, heightScale
         for (var m = i - 1; m <= i + 1; ++m) {
             for (var n = j - 1; n <= j + 1; ++n) {
                 if (InBounds(m, n)) {
-                    var index_ = m * w + n;
+                    var index_ = m * this.heightMapWidth + n;
                     avg += _heightdata[index_];
                     num += 1;
                 }
@@ -7335,10 +7658,10 @@ function genElevationMesh(gl, heightmap, maxElevation, minElevation, heightScale
         return avg / num;
     }
     if (test_Heightmap_terrain._heights_ == null)
-        test_Heightmap_terrain._heights_ = new Float32Array(w * h);
-    for (var i = 0; i < h; ++i) {
-        for (var j = 0; j < w; ++j) {
-            test_Heightmap_terrain._heights_[i * w + j] = Average(i, j);
+        test_Heightmap_terrain._heights_ = new Float32Array(this.heightMapWidth * this.heightMapHeight);
+    for (var i = 0; i < this.heightMapHeight; ++i) {
+        for (var j = 0; j < this.heightMapWidth; ++j) {
+            test_Heightmap_terrain._heights_[i * this.heightMapWidth + j] = Average(i, j);
         }
     }
     //gen meshData
@@ -7350,23 +7673,23 @@ function genElevationMesh(gl, heightmap, maxElevation, minElevation, heightScale
     data.color = [];
     data.uv = [];
     data.uv2 = [];
-    var segmentsW = w - 1;
-    var segmentsH = h - 1;
+    var segmentsW = this.heightMapWidth - 1;
+    var segmentsH = this.heightMapHeight - 1;
     var x, z, u, v, y, col, base, numInds = 0;
     var index_;
     var tw = segmentsW + 1;
     // let numVerts: number = (segmentsH + 1) * tw;
-    var uDiv = (w - 1) / segmentsW;
-    var vDiv = (h - 1) / segmentsH;
+    var uDiv = (this.heightMapWidth - 1) / segmentsW;
+    var vDiv = (this.heightMapHeight - 1) / segmentsH;
     var scaleU = 1;
     var scaleV = 1;
-    for (var zi = 0; zi < h; ++zi) {
-        for (var xi = 0; xi < w; ++xi) {
-            x = (xi / segmentsW - 0.5) * w;
-            z = (zi / segmentsH - 0.5) * h;
-            u = Math.floor(xi * uDiv) / w;
-            v = Math.floor((segmentsH - zi) * vDiv) / h;
-            index_ = zi * w + xi;
+    for (var zi = 0; zi < this.heightMapHeight; ++zi) {
+        for (var xi = 0; xi < this.heightMapWidth; ++xi) {
+            x = (xi / segmentsW - 0.5) * this.heightMapWidth;
+            z = (zi / segmentsH - 0.5) * this.heightMapHeight;
+            u = Math.floor(xi * uDiv) / this.heightMapWidth;
+            v = Math.floor((segmentsH - zi) * vDiv) / this.heightMapHeight;
+            index_ = zi * this.heightMapWidth + xi;
             //col = _heightdata[index_];
             col = test_Heightmap_terrain._heights_[index_];
             y = (col > maxElevation) ? (maxElevation / 0xff) * heightScale : ((col < minElevation) ? (minElevation / 0xff) * heightScale : (col / 0xff) * heightScale);
@@ -7439,13 +7762,13 @@ function UpdateElevationMesh(gl, maxElevation, minElevation, heightScale, addOrM
     var vDiv = (210 - 1) / segmentsH;
     var scaleU = 1;
     var scaleV = 1;
-    for (var zi = 0; zi < 210; ++zi) {
-        for (var xi = 0; xi < 210; ++xi) {
+    for (var zi = 0; zi < this.heightMapHeight; ++zi) {
+        for (var xi = 0; xi < this.heightMapWidth; ++xi) {
             x = (xi / segmentsW - 0.5) * 210;
             z = (zi / segmentsH - 0.5) * 210;
             u = Math.floor(xi * uDiv) / 210;
             v = Math.floor((segmentsH - zi) * vDiv) / 210;
-            index_ = zi * 210 + xi;
+            index_ = zi * this.heightMapWidth + xi;
             //col = _heightdata[index_];
             col = test_Heightmap_terrain._heights_[index_];
             y = (col > maxElevation) ? (maxElevation / 0xff) * heightScale : ((col < minElevation) ? (minElevation / 0xff) * heightScale : (col / 0xff) * heightScale);
@@ -8589,33 +8912,33 @@ var test_UI_Texture_Array = /** @class */ (function () {
         //随机创建 UI
         var count = this.makeUICount;
         var range = 800;
-        var _loop_2 = function (i) {
+        var _loop_5 = function (i) {
             //位置
             var x = Math.floor(range * Math.random());
             var y = Math.floor(range * Math.random());
             //旋转
             var angle = 360 * Math.random();
             //元素
-            var ele = this_2.UITempletes[Math.floor(this_2.UITempletes.length * Math.random())];
-            var atlas = this_2.atlasMap[ele.atlas];
+            var ele = this_4.UITempletes[Math.floor(this_4.UITempletes.length * Math.random())];
+            var atlas = this_4.atlasMap[ele.atlas];
             var sp = atlas.sprites[ele.spRes];
-            var texArrIndex = this_2.atlasNames.indexOf(ele.atlas);
+            var texArrIndex = this_4.atlasNames.indexOf(ele.atlas);
             //创建 UI
             //normal UI
-            var nUINode = this_2.makeUI(sp, ele.w, ele.h);
-            this_2.normalRoot.addChild(nUINode);
+            var nUINode = this_4.makeUI(sp, ele.w, ele.h);
+            this_4.normalRoot.addChild(nUINode);
             //textureArray UI
-            var tUINode = this_2.makeTexArrayUI(sp, ele.w, ele.h, texArrIndex);
-            this_2.textureArrayRoot.addChild(tUINode);
+            var tUINode = this_4.makeTexArrayUI(sp, ele.w, ele.h, texArrIndex);
+            this_4.textureArrayRoot.addChild(tUINode);
             //修改 RTS
             [nUINode, tUINode].forEach(function (n) {
                 m4m.math.vec2Set(n.localTranslate, x, y);
                 n.localRotate = angle;
             });
         };
-        var this_2 = this;
+        var this_4 = this;
         for (var i = 0; i < count; i++) {
-            _loop_2(i);
+            _loop_5(i);
         }
     };
     //创建普通UI
@@ -12791,7 +13114,7 @@ var test_spine_IK = /** @class */ (function () {
                     //初始化骨骼UI
                     var temptMat = _this._comp.getToCanvasMatrix();
                     var temptPos = new m4m.math.vector2();
-                    var _loop_3 = function (i) {
+                    var _loop_6 = function (i) {
                         // if(this.bonesPos[this.controlBones[i]]!=null)
                         var boneName = _this.controlBones[i];
                         var bone = _this._comp.skeleton.findBone(boneName);
@@ -12821,7 +13144,7 @@ var test_spine_IK = /** @class */ (function () {
                         ui.appendChild(boneUI);
                     };
                     for (var i = 0; i < _this.controlBones.length; i++) {
-                        _loop_3(i);
+                        _loop_6(i);
                     }
                 }
             };
@@ -13134,7 +13457,7 @@ var test_spine_stretchyMan = /** @class */ (function () {
                     // m4m.math.matrix3x2MakeTransformRTS(worldPos, worldScale, worldRot.v, this._temptMat);
                     var toCanvasMat = _this._comp.getToCanvasMatrix();
                     var temptPos = new m4m.math.vector2();
-                    var _loop_4 = function (i) {
+                    var _loop_7 = function (i) {
                         // if(this.bonesPos[this.controlBones[i]]!=null)
                         var boneName = _this.controlBones[i];
                         var bone = _this._comp.skeleton.findBone(boneName);
@@ -13164,7 +13487,7 @@ var test_spine_stretchyMan = /** @class */ (function () {
                         ui.appendChild(boneUI);
                     };
                     for (var i = 0; i < _this.controlBones.length; i++) {
-                        _loop_4(i);
+                        _loop_7(i);
                     }
                 }
             };
@@ -13378,7 +13701,7 @@ var test_spine_vin = /** @class */ (function () {
                     document.addEventListener("mouseup", function () { return _this._chooseBone = null; });
                     var temptMat = _this._comp.getToCanvasMatrix();
                     var temptPos = new m4m.math.vector2();
-                    var _loop_5 = function (i) {
+                    var _loop_8 = function (i) {
                         // if(this.bonesPos[this.controlBones[i]]!=null)
                         var boneName = _this.controlBones[i];
                         var bone = _this._comp.skeleton.findBone(boneName);
@@ -13408,7 +13731,7 @@ var test_spine_vin = /** @class */ (function () {
                         ui.appendChild(boneUI);
                     };
                     for (var i = 0; i < _this.controlBones.length; i++) {
-                        _loop_5(i);
+                        _loop_8(i);
                     }
                 }
             };
@@ -13515,7 +13838,7 @@ var test_spine_wheelTransform = /** @class */ (function () {
                     //初始化骨骼UI
                     var temptMat_5 = _this._comp.getToCanvasMatrix();
                     var temptPos_6 = new m4m.math.vector2();
-                    var _loop_6 = function (i) {
+                    var _loop_9 = function (i) {
                         // if(this.bonesPos[this.controlBones[i]]!=null)
                         var boneName = _this.controlBones[i];
                         var bone_2 = _this._comp.skeleton.findBone(boneName);
@@ -13545,7 +13868,7 @@ var test_spine_wheelTransform = /** @class */ (function () {
                         ui.appendChild(boneUI);
                     };
                     for (var i = 0; i < _this.controlBones.length; i++) {
-                        _loop_6(i);
+                        _loop_9(i);
                     }
                 }
                 //计算旋转骨骼的屏幕坐标
@@ -16000,12 +16323,12 @@ var test_effect = /** @class */ (function () {
             _this.app.getAssetMgr().savePrefab(_this.tr, name, function (data, resourses) {
                 console.log(data.files);
                 console.log(resourses.length);
-                var _loop_7 = function (key) {
+                var _loop_10 = function (key) {
                     var val = data.files[key];
                     var blob = localSave.Instance.file_str2blob(val);
                     var files = [];
                     var resPath = path + "/resources/";
-                    var _loop_8 = function (i) {
+                    var _loop_11 = function (i) {
                         var resourceUrl = resourses[i];
                         var resourceName = _this.getNameFromURL(resourceUrl);
                         var resourceLength = 0;
@@ -16025,7 +16348,7 @@ var test_effect = /** @class */ (function () {
                     };
                     //保存资源
                     for (var i = 0; i < resourses.length; i++) {
-                        _loop_8(i);
+                        _loop_11(i);
                     }
                     localSave.Instance.save(resPath + name + ".prefab.json", blob);
                     var fileInfo = { "name": "resources/" + name + ".prefab.json", "length": 100 };
@@ -16035,7 +16358,7 @@ var test_effect = /** @class */ (function () {
                     localSave.Instance.save(path + "/" + name + ".assetbundle.json", assetBundleBlob);
                 };
                 for (var key in data.files) {
-                    _loop_7(key);
+                    _loop_10(key);
                 }
             });
         };
@@ -20835,6 +21158,8 @@ var Test_CameraController = /** @class */ (function () {
     Test_CameraController.prototype.doMove = function (delta) {
         if (this.target == null)
             return;
+        if (!this.beRightClick)
+            return;
         //w
         if ((this.keyMap[m4m.framework.NumberUtil.KEY_W] != undefined && this.keyMap[m4m.framework.NumberUtil.KEY_W])
             || (this.keyMap[m4m.framework.NumberUtil.KEY_w] != undefined && this.keyMap[m4m.framework.NumberUtil.KEY_w])) {
@@ -23248,8 +23573,8 @@ var m4m;
                 // if (moveX <= 2 && moveX >= -2) moveX = 0;
                 // if (moveY <= 2 && moveY >= -1) moveY = 0;
                 if (this.inputMgr.isPressed(0)) {
-                    this.panAngle += moveX * 0.5;
-                    this.tiltAngle += moveY * 0.5;
+                    //this.panAngle += moveX * 0.5;
+                    //this.tiltAngle += moveY * 0.5;
                 }
                 else if (this.inputMgr.isPressed(1) || this.inputMgr.isPressed(2)) {
                     m4m.math.vec3Set(this.panDir, -moveX, moveY, 0);
