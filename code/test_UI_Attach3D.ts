@@ -2,6 +2,8 @@
 class test_UI_Attach3D implements IState {
     private debugBorderFrameImg: m4m.framework.texture;
     private isDebugDisplay = true;
+    private nodes: m4m.framework.transform[];
+    private aabbDisps: { node: m4m.framework.transform; setVisible: (v: boolean) => void; update: () => void; }[];
     /**
      * 创建3d节点
      * @param w UI容器宽
@@ -147,12 +149,56 @@ class test_UI_Attach3D implements IState {
         baseUINode.cameraTouch = cam;
         await this.createUIComps(baseUINode.canvas.getRoot());
         //创建 spine
-        const spineNode = this.makeUI3DNode(600, 400, 2, 1, 3);
+        // const spineNode = this.makeUI3DNode(600, 400, 2, 1, 3);
+        const spineNode = this.makeUI3DNode(640, 480, 2, 1, 3);
         // const spineNode = this.makeUI3DNode(600, 400);
         spineNode.cameraTouch = cam;
         await this.createSpines(spineNode.canvas.getRoot());
+
+        //添加 aabb 显示框 列表
+        this.nodes = [
+            baseUINode.gameObject.transform,
+            spineNode.gameObject.transform,
+            baseUINode.gameObject.transform.parent,
+            spineNode.gameObject.transform.parent
+        ];
+
+        //gui 设置
+        await this.setGUI();
+    }
+
+    private _enableAABBShow: boolean = false;
+    private get enableAABBShow() { return this._enableAABBShow; }
+    private set enableAABBShow(val) {
+        if (val == this._enableAABBShow) return;
+        this._enableAABBShow = val;
+        if (this.aabbDisps == null) {
+            this.aabbDisps = [];
+            this.nodes.forEach((val) => {
+                this.aabbDisps.push(util.makeAABBDisplayer(val));
+            });
+        }
+
+        this.aabbDisps.forEach((v) => {
+            v.setVisible(val);
+        });
+    };
+
+    private async setGUI() {
+        await datGui.init();
+        let gui = new dat.GUI();
+        const app = m4m.framework.sceneMgr.app;
+        gui.add(app, "showDrawCall");
+        gui.add(this, "enableAABBShow").name("显示AABB框");
     }
 
     update(delta: number) {
+        if (this.aabbDisps) {
+            for (let i = 0, len = this.aabbDisps.length; i < len; i++) {
+                const aabbDisp = this.aabbDisps[i];
+                if (!aabbDisp) continue;
+                aabbDisp.update();
+            }
+        }
     }
 }

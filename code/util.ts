@@ -107,4 +107,121 @@ namespace util {
         });
     }
 
+    /**
+     * 创建一个 aabb 显示框
+     * @param node 目标节点
+     * @param thickness 框体粗细值
+     * @returns 
+     */
+    export function makeAABBDisplayer(node: m4m.framework.transform, thickness = 0.05) {
+        if (!node) return;
+        const aabb = node.aabb;
+        const assetMgr = m4m.framework.sceneMgr.app.getAssetMgr();
+        const lastSize = new m4m.math.vector3();
+        const lastCenter = new m4m.math.vector3();
+        const frameColor = new m4m.math.vector4(1, 1, 0, 1);
+
+        //创建aabb框模型
+        const aabbNode = new m4m.framework.transform();
+        aabbNode.name = "aabbDisplay";
+        m4m.framework.sceneMgr.scene.addChild(aabbNode);
+        const boxs: m4m.framework.transform[] = [];
+        //
+        for (let i = 0; i < 12; i++) {
+            const box = m4m.framework.TransformUtil.CreatePrimitive(m4m.framework.PrimitiveType.Cube);
+            // box.gameObject.visible = false;
+            const mr = box.gameObject.getComponent("meshRenderer") as m4m.framework.meshRenderer;
+            mr.materials[0].setShader(assetMgr.getShader("shader/ulit"));
+            mr.materials[0].setVector4("_MainColor", frameColor);
+            boxs.push(box);
+            aabbNode.addChild(box);
+            m4m.math.vec3SetAll(box.localScale, thickness);
+        }
+
+        // boxs[2].gameObject.visible = true;
+
+        //
+        const syncSize = (sizeX: number, sizeY: number, sizeZ: number) => {
+            if (aabbNode.gameObject.visible == false) return;
+            const h_sizeX = sizeX / 2;
+            const h_sizeY = sizeY / 2;
+            const h_sizeZ = sizeZ / 2;
+
+            //顶部
+            //  前
+            m4m.math.vec3Set(boxs[0].localPosition, 0, h_sizeY, h_sizeZ);
+            boxs[0].localScale.x = sizeX;
+            //  后
+            m4m.math.vec3Set(boxs[1].localPosition, 0, h_sizeY, -h_sizeZ);
+            boxs[1].localScale.x = sizeX;
+            //  左
+            m4m.math.vec3Set(boxs[2].localPosition, -h_sizeX, h_sizeY, 0);
+            boxs[2].localScale.z = sizeZ;
+            //  右
+            m4m.math.vec3Set(boxs[3].localPosition, h_sizeX, h_sizeY, 0);
+            boxs[3].localScale.z = sizeZ;
+            //底部
+            //  前
+            m4m.math.vec3Set(boxs[4].localPosition, 0, -h_sizeY, h_sizeZ);
+            boxs[4].localScale.x = sizeX;
+            //  后
+            m4m.math.vec3Set(boxs[5].localPosition, 0, -h_sizeY, -h_sizeZ);
+            boxs[5].localScale.x = sizeX;
+            //  左
+            m4m.math.vec3Set(boxs[6].localPosition, -h_sizeX, -h_sizeY, 0);
+            boxs[6].localScale.z = sizeZ;
+            //  右
+            m4m.math.vec3Set(boxs[7].localPosition, h_sizeX, -h_sizeY, 0);
+            boxs[7].localScale.z = sizeZ;
+            //中间
+            //  o
+            m4m.math.vec3Set(boxs[8].localPosition, -h_sizeX, 0, h_sizeZ);
+            boxs[8].localScale.y = sizeY;
+            //  1
+            m4m.math.vec3Set(boxs[9].localPosition, h_sizeX, 0, h_sizeZ);
+            boxs[9].localScale.y = sizeY;
+            //  2
+            m4m.math.vec3Set(boxs[10].localPosition, h_sizeX, 0, -h_sizeZ);
+            boxs[10].localScale.y = sizeY;
+            //  3
+            m4m.math.vec3Set(boxs[11].localPosition, -h_sizeX, 0, -h_sizeZ);
+            boxs[11].localScale.y = sizeY;
+
+            boxs.forEach((n) => {
+                n.localPosition = n.localPosition;
+                n.localScale = n.localScale;
+            });
+        }
+
+
+        let displayer = {
+            node: aabbNode,
+            setVisible: (v: boolean) => {
+                aabbNode.gameObject.visible = v;
+            },
+            update: () => {
+                //位置同步
+                const center = aabb.center;
+                const sizeX = aabb.maximum.x - aabb.minimum.x;
+                const sizeY = aabb.maximum.y - aabb.minimum.y;
+                const sizeZ = aabb.maximum.z - aabb.minimum.z;
+                const sizeDirty = sizeX != lastSize.x || sizeY != lastSize.y || sizeZ != lastSize.z;
+                if (sizeDirty) {
+                    syncSize(sizeX, sizeY, sizeZ);
+                    m4m.math.vec3Set(lastSize, sizeX, sizeY, sizeZ);
+                }
+
+                const posDirty = !m4m.math.vec3Equal(lastCenter, center);
+                if (posDirty) {
+                    m4m.math.vec3Clone(center, aabbNode.localPosition);
+                    aabbNode.localPosition = aabbNode.localPosition;
+                    m4m.math.vec3Clone(center, lastCenter);
+                }
+            }
+        }
+
+        displayer.update();
+        return displayer;
+    }
+
 }
