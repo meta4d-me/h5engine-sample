@@ -2,6 +2,8 @@
 /** 资源更路径 */
 let resRootPath = "exampleResource/"
 
+let UseOldTerrain = 1;
+
 interface IState {
     start(app: m4m.framework.application);
     update(delta: number);
@@ -53,7 +55,13 @@ class main implements m4m.framework.IUserCode {
             demoList.addBtn("draco压缩网格格式加载", () => new test_load_draco());
             demoList.addBtn("骨骼动画", () => new test_animationClip());
             demoList.addBtn("GLTF_动画", () => new test_gltf_animation());
-            demoList.addBtn("地形", () => new test_Heightmap_terrain());
+            demoList.addBtn("地形", ()=>new test_Heightmap_terrain(0));
+            demoList.addBtn("旧地形1", ()=>new test_Heightmap_terrain(1));
+            demoList.addBtn("旧地形2", ()=>new test_Heightmap_terrain(2));
+
+            demoList.addBtn("PHP", ()=>new test_form());
+                
+           
             // demoList.addBtn("Android平台ETC1压缩纹理", () => new test_ETC1_KTX());
             return new demoList();
         });

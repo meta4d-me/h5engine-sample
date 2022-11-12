@@ -35,6 +35,8 @@ namespace m4m.framework{
         private damping = 0.08;
         private panSpeed = 0.01;
 
+        private F9DragRotate:boolean = false;
+
         public set panAngle(value:number) {
             this._panAngle = Math.max(this.minPanAngle, Math.min(this.maxPanAngle, value));
             this._panRad = this._panAngle * Math.PI / 180;
@@ -76,6 +78,7 @@ namespace m4m.framework{
             this.inputMgr.addHTMLElementListener('touchmove', this.onTouchMove, this);
 
             this.inputMgr.addKeyListener(m4m.event.KeyEventEnum.KeyDown, this.onKeyDown, this);
+            this.inputMgr.addKeyListener(m4m.event.KeyEventEnum.KeyUp, this.onKeyUp, this);
         }
 
         private cupTargetV3 = new m4m.math.vector3();
@@ -127,8 +130,19 @@ namespace m4m.framework{
                 this.lookAtPoint.z += 0.17;
                 this.cupTargetV3.z += 0.17;
             }
+            if(keyCode == m4m.event.KeyCode.F9)
+            {
+                this.F9DragRotate = true;
+            }
 
-
+        }
+        private onKeyUp(_a)
+        {
+            let keyCode = _a[0];
+            if(keyCode == m4m.event.KeyCode.F11)
+            {
+                this.F9DragRotate = false;
+            }
         }
 
         private onPointDown() {
@@ -143,14 +157,17 @@ namespace m4m.framework{
             if(!this._mouseDown)    return ;
             let moveX = this.inputMgr.point.x - this._lastMouseX;
             let moveY = this.inputMgr.point.y - this._lastMouseY;
-            // if (moveX <= 2 && moveX >= -2) moveX = 0;
-            // if (moveY <= 2 && moveY >= -1) moveY = 0;
+            if (moveX <= 2 && moveX >= -2) moveX = 0;
+            if (moveY <= 2 && moveY >= -1) moveY = 0;
             if (this.inputMgr.isPressed(0)) {
 
-                //this.panAngle += moveX * 0.5;
-                //this.tiltAngle += moveY * 0.5;
-
-            } else if(this.inputMgr.isPressed(1) || this.inputMgr.isPressed(2)) {
+                if(this.F9DragRotate)
+                {
+                    this.panAngle += moveX * 0.5;
+                    this.tiltAngle += moveY * 0.5;
+                }
+            }
+            else if(this.inputMgr.isPressed(1) || this.inputMgr.isPressed(2)) {
                 m4m.math.vec3Set(this.panDir, -moveX, moveY, 0);
                 m4m.math.vec3ScaleByNum(this.panDir, this.panSpeed, this.panDir);
                 m4m.math.quatTransformVector(this.gameObject.transform.localRotate, this.panDir, this.panDir);

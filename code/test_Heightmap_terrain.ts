@@ -2,9 +2,38 @@
  * 高度图地形样例
  */
 
-
+class TerrainWidthHeight
+{
+    constructor(w:number, h:number)
+    {
+        this.width = w;
+        this.height = h;
+    }
+    width:number = 1;
+    height:number = 1;
+}
 
 class test_Heightmap_terrain implements IState {
+    static nUseOldTerrain:number;
+    static genTerrainUseHeightScale:number;
+    constructor(useOldTerrain:number)
+    {
+        /// 这个以后要改为从服务端json或php，现在只是为了导入旧地图
+        test_Heightmap_terrain.nUseOldTerrain = useOldTerrain;
+        if(useOldTerrain == 0)
+        {
+            test_Heightmap_terrain.genTerrainUseHeightScale = 15.0;
+        }
+        else if(useOldTerrain == 1)
+        {
+            test_Heightmap_terrain.genTerrainUseHeightScale = 500.0;
+        }
+        else
+        {
+            test_Heightmap_terrain.genTerrainUseHeightScale = 200.0;
+        }
+    }
+
     heightData:Uint8Array;
     w:number;
     h:number;
@@ -15,7 +44,7 @@ class test_Heightmap_terrain implements IState {
     static _heights_ :Float32Array = null;
     heightMapWidth:number;
     heightMapHeight:number;
-    
+    static widthAndHeight:TerrainWidthHeight;    
     static gl:WebGL2RenderingContext;
     static planeMF:m4m.framework.meshFilter;
     mtrlRoot:m4m.framework.transform2D = new m4m.framework.transform2D;
@@ -23,6 +52,8 @@ class test_Heightmap_terrain implements IState {
     bk:m4m.framework.transform2D = new m4m.framework.transform2D;
     btn:m4m.framework.transform2D[] = [ new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D];
     page:m4m.framework.transform2D[] = [ new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D];
+    currentSelectPage:number;
+    
     heightScaleCtrl:m4m.framework.transform2D = new m4m.framework.transform2D;
     textureUVScaleCtrl:m4m.framework.transform2D[] = [new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D];
     textureUVInputCtrls:m4m.framework.transform2D[][] = [
@@ -31,7 +62,8 @@ class test_Heightmap_terrain implements IState {
         [new m4m.framework.transform2D, new m4m.framework.transform2D],
         [new m4m.framework.transform2D, new m4m.framework.transform2D]
     ];
-
+    saveToPHP:m4m.framework.transform2D = new m4m.framework.transform2D;
+    loadFromPHP:m4m.framework.transform2D = new m4m.framework.transform2D;
     
     iptFrame_HeightScale:m4m.framework.transform2D[] = [new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D];
     mtr:m4m.framework.material[] = [];
@@ -54,6 +86,7 @@ class test_Heightmap_terrain implements IState {
     brushSizeBtns:m4m.framework.transform2D[] = [ new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D];
     static cam : m4m.framework.camera;
     static shifKey:boolean;
+    static altKey:boolean;
     worldX : number;
     worldZ : number;
     static mouseDown:boolean=false;
@@ -122,10 +155,7 @@ class test_Heightmap_terrain implements IState {
 
 
     async start(app: m4m.framework.application) {
-        // return;
-        console.log("test_Heightmap_terrain start");
         
-
         test_Heightmap_terrain.app = app;
         test_Heightmap_terrain.mouseDown = false;
         const scene = app.getScene();
@@ -193,6 +223,11 @@ class test_Heightmap_terrain implements IState {
             if(e.code == "AltRight")
             {
                 console.log("Alt key down");
+                test_Heightmap_terrain.altKey = true;
+            }
+            if(e.code == "AltLeft")
+            {
+                test_Heightmap_terrain.altKey = true;
             }
 
             if(e.code == "KeyT")
@@ -227,6 +262,11 @@ class test_Heightmap_terrain implements IState {
             {
                 test_Heightmap_terrain.shifKey = false;
             }
+            if(e.code == "AltLeft" || e.code == "AltRight")
+            {
+                test_Heightmap_terrain.altKey = false;
+            }
+
         }, false);
 
         //2dUI root
@@ -239,8 +279,23 @@ class test_Heightmap_terrain implements IState {
         test_Heightmap_terrain.planeMF = planeNode.gameObject.getComponent("meshFilter") as m4m.framework.meshFilter;
         // planeNode.localScale = new m4m.math.vector3(10, 10, 10);
         //加载纹理
-        //const texNames = [`211.jpg`, `blendCtrl.png`, `splat_0Tex.png`, `splat_3Tex.png`, `splat_2Tex.png`, `splat_1Tex.png`, `rock1.png`, `grass2.png`, `dirt2.png`, `sand1.png`];
-        const texNames = [`211.jpg`, `blendMaskTexture.png`, `splat_0Tex.png`, `splat_3Tex.png`, `splat_2Tex.png`, `splat_1Tex.png`, `rock1.png`, `grass2.png`, `dirt2.png`, `sand1.png`, `mask.png`];
+        //const texNames = [`terrain255.jpg`, `blendMaskTexture.png`, `splat_0Tex.png`, `splat_3Tex.png`, `splat_2Tex.png`, `splat_1Tex.png`, `rock1.png`, `grass2.png`, `dirt2.png`, `sand1.png`, `mask.png`];
+        //const texNames = [`129_San.png`, `blendMaskTexture.png`, `splat_0Tex.png`, `splat_3Tex.png`, `splat_2Tex.png`, `splat_1Tex.png`, `rock1.png`, `grass2.png`, `dirt2.png`, `sand1.png`, `mask.png`];
+        //const texNames = [`1001qijizhisen1.png`, `San.png`, `Terrain1.png`, `splat_3Tex.png`, `splat_2Tex.png`, `splat_1Tex.png`, `rock1.png`, `grass2.png`, `dirt2.png`, `sand1.png`, `mask.png`];
+        //const texNames = [`129_San.png`, `San.png`, `t_terrain_forest_d.png`, `t_terrain_rock_d.png`, `t_terrain_rock02_d.png`, `t_terrain_tilefloor02_d.png`, `rock1.png`, `grass2.png`, `dirt2.png`, `sand1.png`, `mask.png`];
+        //const texNames = [`height_.jpg`, `SplatAlpha 0.jpg`, `t_terrain_forest_d.png`, `t_terrain_rock_d.png`, `t_terrain_rock02_d.png`, `t_terrain_tilefloor02_d.png`, `rock1.png`, `grass2.png`, `dirt2.png`, `sand1.png`, `mask.png`];
+        //const texNames = [`1002_xianzonglin_height_.jpg`, `1002_xianzonglin_SplatAlpha 0.jpg`, `t_terrain_forest_d.png`, `t_terrain_rock_d.png`, `t_terrain_rock02_d.png`, `t_terrain_tilefloor02_d.png`, `rock1.png`, `grass2.png`, `dirt2.png`, `sand1.png`, `mask.png`];
+        let texNames:string[] = [`1001qijizhisen 1_256.jpg`, `1001qijizhisen_SplatAlpha 0.jpg`, `t_terrain_forest_d.png`, `t_terrain_rock_d.png`, `t_terrain_rock02_d.png`, `t_terrain_tilefloor02_d.png`, `rock1.png`, `grass2.png`, `dirt2.png`, `sand1.png`, `mask.png`];
+        if(test_Heightmap_terrain.nUseOldTerrain == 0)
+        {
+            texNames = [`129_San.png`, `San.png`, `t_terrain_forest_d.png`, `t_terrain_rock_d.png`, `t_terrain_rock02_d.png`, `t_terrain_tilefloor02_d.png`, `rock1.png`, `grass2.png`, `dirt2.png`, `sand1.png`, `mask.png`];
+        }
+        else if(test_Heightmap_terrain.nUseOldTerrain == 1)
+        {
+            texNames = [`1028_zhuchengyewai_256.jpg`, `1028_zhuchengyewai_SplatAlpha 0.jpg`, `t_terrain_forest_d.png`, `t_terrain_rock_d.png`, `t_terrain_rock02_d.png`, `t_terrain_tilefloor02_d.png`, `rock1.png`, `grass2.png`, `dirt2.png`, `sand1.png`, `mask.png`];
+        }
+
+        
         const texUrl = [];
         texNames.forEach(n => {
             texUrl.push(`${resRootPath}texture/${n}`)
@@ -252,7 +307,21 @@ class test_Heightmap_terrain implements IState {
 
         //更换 mesh
 
-        const terrainMesh = genElevationMesh(gl, this.texs[0], 255, 0, 15);
+        let terrainMesh:any;
+        if(test_Heightmap_terrain.nUseOldTerrain == 0)
+        {
+            terrainMesh = genElevationMesh(gl, this.texs[0], 255, 0, 15);
+        }
+        else if(test_Heightmap_terrain.nUseOldTerrain == 1)
+        {
+            terrainMesh = genElevationMesh(gl, this.texs[0], 255, 0, 500);
+        }
+        else
+        {
+            terrainMesh = genElevationMesh(gl, this.texs[0], 255, 0, 200);
+        }
+
+
         test_Heightmap_terrain.planeMF.mesh = terrainMesh;
 
         //材质
@@ -274,15 +343,33 @@ class test_Heightmap_terrain implements IState {
         // mtr.setVector4(`_Splat1_ST`, new m4m.math.vector4(16, 16, 0, 0));
         // mtr.setVector4(`_Splat2_ST`, new m4m.math.vector4(26.7, 26.7, 0, 0));
         // mtr.setVector4(`_Splat3_ST`, new m4m.math.vector4(26.7, 26.7, 0, 0));
-        this.mtr[0].setVector4(`_Splat0_ST`, new m4m.math.vector4(4, 4, 0, 0));
-        this.mtr[0].setVector4(`_Splat1_ST`, new m4m.math.vector4(4, 4, 0, 0));
-        this.mtr[0].setVector4(`_Splat2_ST`, new m4m.math.vector4(4, 4, 0, 0));
-        this.mtr[0].setVector4(`_Splat3_ST`, new m4m.math.vector4(4, 4, 0, 0));
-        this.mtr[0].setVector4(`v_useTextureOrGPU`, new m4m.math.vector4(1.0, 1.0, 0.01, 0.0));
-
-    
-        this.mtr[0].setVector4(`_HeightScale`, new m4m.math.vector4(15.0, 15.0, 15.0, 15.0))
-
+        
+        if(test_Heightmap_terrain.nUseOldTerrain == 0)
+        {
+            this.mtr[0].setVector4(`_Splat0_ST`, new m4m.math.vector4(1.0, 1.0, 0.0, 0.0));
+            this.mtr[0].setVector4(`_Splat1_ST`, new m4m.math.vector4(1.0, 1.0, 0.0, 0.0));
+            this.mtr[0].setVector4(`_Splat2_ST`, new m4m.math.vector4(1.0, 1.0, 0.0, 0.0));
+            this.mtr[0].setVector4(`_Splat3_ST`, new m4m.math.vector4(1.0, 1.0, 0.0, 0.0));
+            this.mtr[0].setVector4(`v_useTextureOrGPU`, new m4m.math.vector4(1.0, 1.0, 0.01, 0.0));
+            this.mtr[0].setVector4(`_HeightScale`, new m4m.math.vector4(15.0, 15.0, 15.0, 15.0));
+        }
+        else if(test_Heightmap_terrain.nUseOldTerrain == 1)
+        {
+            this.mtr[0].setVector4(`_Splat0_ST`, new m4m.math.vector4(10.0, 10.0, 0.0, 0.0));
+            this.mtr[0].setVector4(`_Splat1_ST`, new m4m.math.vector4(4.0, 4.0, 0.0, 0.0));
+            this.mtr[0].setVector4(`_Splat2_ST`, new m4m.math.vector4(4.0, 4.0, 0.0, 0.0));
+            this.mtr[0].setVector4(`_Splat3_ST`, new m4m.math.vector4(3.0, 3.0, 0.0, 0.0));
+            this.mtr[0].setVector4(`v_useTextureOrGPU`, new m4m.math.vector4(0.0, 0.0, 0.01, 0.0));
+        }
+        else
+        {
+            this.mtr[0].setVector4(`_Splat0_ST`, new m4m.math.vector4(12, 12, 0.0, 0.0));
+            this.mtr[0].setVector4(`_Splat1_ST`, new m4m.math.vector4(7.2, 7.2, 0.0, 0.0));
+            this.mtr[0].setVector4(`_Splat2_ST`, new m4m.math.vector4(12, 12, 0.0, 0.0));
+            this.mtr[0].setVector4(`_Splat3_ST`, new m4m.math.vector4(12, 12, 0.0, 0.0));
+            this.mtr[0].setVector4(`v_useTextureOrGPU`, new m4m.math.vector4(0.0, 0.0, 0.01, 0.0));    
+        }
+        
         //添加到场景
         scene.addChild(planeNode);
     }
@@ -293,16 +380,16 @@ class test_Heightmap_terrain implements IState {
         console.log("Modify mesh");
         if(this.worldX < 10000 && this.worldZ < 10000)
         {
-            this.gridX = Math.floor(this.worldX - -0.5*210);
-            this.gridZ = Math.floor(this.worldZ - -0.5*210);
-            console.log("grid:" + this.gridX + ", " + this.gridZ);
+            this.gridX = Math.floor(this.worldX - -0.5*test_Heightmap_terrain.widthAndHeight.width);
+            this.gridZ = Math.floor(this.worldZ - -0.5*test_Heightmap_terrain.widthAndHeight.height);
+            //console.log("grid:" + this.gridX + ", " + this.gridZ);
         }
     }
     ApplayNewHeight(AddOrMinus:boolean):void
     {
-        console.log("ApplayNewHeight called grid:"+ this.gridX + ", " + this.gridZ);
-        console.log("selectedBrush" + test_Heightmap_terrain.selectedBrush);
-        console.log("selectedBrushSize" + test_Heightmap_terrain.selectedBrushSize);
+        //console.log("ApplayNewHeight called grid:"+ this.gridX + ", " + this.gridZ);
+        //console.log("selectedBrush" + test_Heightmap_terrain.selectedBrush);
+        //console.log("selectedBrushSize" + test_Heightmap_terrain.selectedBrushSize);
         var curSize:number = 32;
         if(test_Heightmap_terrain.selectedBrushSize == 0)
         {
@@ -325,50 +412,83 @@ class test_Heightmap_terrain implements IState {
             curSize = 256.0;
         }
 
-        for(var row = this.gridZ - curSize/2; row < this.gridZ - curSize/2 + curSize; row++)
+        let logArray = new Array(curSize);
+        for(var row = 0; row < curSize; row++)
         {
-            for(var column = this.gridX - curSize/2; column < this.gridX - curSize/2 + curSize; column++)
+            logArray[row] = new Array(curSize);
+        }
+        let logBrushArray = new Array(curSize);
+        for(var row = 0; row < curSize; row++)
+        {
+            logBrushArray[row] = new Array(curSize);
+        }
+        let logHeights_ = new Array(curSize);
+        for(var row = 0; row < curSize; row++)
+        {
+            logHeights_[row] = new Array(curSize);
+        }
+
+        console.log(test_Heightmap_terrain._heights_);
+        for(var row = 0; row < curSize; row++)
+        {
+            for(var column = 0; column < curSize; column++)
             {
-                if(row < 0 || row > 209)
+                var curY = Math.floor(this.gridZ - curSize/2) + row;
+                if(curY < 0)
                     continue;
-                if(column < 0 || column > 209)
+                if(curY >= test_Heightmap_terrain.widthAndHeight.height)
                     continue;
 
-                var index = row * 210 + column;
+                var curX = Math.floor(this.gridX - curSize/2) + column;
+                if(curX < 0)
+                    continue;
+                if(curX >= test_Heightmap_terrain.widthAndHeight.width)
+                    continue;
+                
+                var index = curY * test_Heightmap_terrain.widthAndHeight.width + curX;
+                logArray[row][column] = index;
+
+
                 if(AddOrMinus == false)
                 {
-                    let __index:number = (row - (this.gridZ - curSize/2)) * curSize + (column - (this.gridX - curSize/2));
-                    if(__index >= curSize * curSize)
-                        __index = curSize*curSize -1;
+                    let __index:number = row * curSize + column;
                     let delta:number = 0;
                     var key : string = test_Heightmap_terrain.selectedBrushSize + "_" + test_Heightmap_terrain.selectedBrush;
-                    console.log("Applay key" + key);
                     delta = 0.2 * test_Heightmap_terrain.dictBrushData[key][__index];
-                    
-                    var f = test_Heightmap_terrain._heights_[index] + delta;
-                    test_Heightmap_terrain._heights_[index] = f <= 255 ? f : 255;
+                    logBrushArray[row][column] = delta;
+                    logHeights_[row][column] = test_Heightmap_terrain._heights_[index];
+                    if(Math.abs(delta) > 0.0001)
+                    {
+                        //console.log("delta:" + delta);
+                        var f = test_Heightmap_terrain._heights_[index] + delta;
+                        test_Heightmap_terrain._heights_[index] = f <= 255 ? f : 255;
+                    }
                 }
                 else{
-                    let __index:number = (row - (this.gridZ - curSize/2)) * curSize + (column - (this.gridX - curSize/2));
-                    if(__index >= curSize * curSize)
-                        __index = curSize*curSize -1;
+                    let __index:number = row * curSize + column;
                     let delta:number = 0;
                     var key : string = test_Heightmap_terrain.selectedBrushSize + "_" + test_Heightmap_terrain.selectedBrush;
-                    console.log("Applay key" + key);
                     delta = 0.2 * test_Heightmap_terrain.dictBrushData[key][__index];
-                    
-                    var f = test_Heightmap_terrain._heights_[index] - delta;
-                    test_Heightmap_terrain._heights_[index] = f >= 0 ? f : 0;
+                    if(Math.abs(delta) > 0.0001)
+                    {
+                        var f = test_Heightmap_terrain._heights_[index] - delta;
+                        test_Heightmap_terrain._heights_[index] = f >= 0 ? f : 0;
+                    }
                 }
             }
         }
-        var newMesh = UpdateElevationMesh(test_Heightmap_terrain.gl, 255, 0, 15);
+        //console.log(logArray);
+        //console.log(logBrushArray);
+        //console.log(logHeights_);
+        //console.log(test_Heightmap_terrain._heights_);
+
+        var newMesh = UpdateElevationMesh(test_Heightmap_terrain.gl, 255, 0, test_Heightmap_terrain.genTerrainUseHeightScale);
         test_Heightmap_terrain.planeMF.mesh = newMesh;
     }
 
     static BrushTextureLoadFinished(brushIndex : number, brushSize:number)
     {
-        console.log("BrushTextureLoadFinished brushIndex:" + brushIndex + ", brushSize:" + brushSize );
+        //console.log("BrushTextureLoadFinished brushIndex:" + brushIndex + ", brushSize:" + brushSize );
         var _name = "brush_" + String(brushIndex) + "_" + String(brushSize) + ".png";
                         
         var texture0 = test_Heightmap_terrain.app.getAssetMgr().getAssetByName(_name) as m4m.framework.texture;
@@ -1252,6 +1372,7 @@ class test_Heightmap_terrain implements IState {
             }
             this.mtrlRoot.visible = false;
             this.texRoot.visible = false;
+            this.currentSelectPage = 0;
         }
         else if(btnNumber == 1)
         {
@@ -1261,6 +1382,7 @@ class test_Heightmap_terrain implements IState {
             }
             this.mtrlRoot.visible = true;
             this.texRoot.visible = false;
+            this.currentSelectPage = 1;
         }
         else{
             for(var item of this.btn)
@@ -1269,27 +1391,24 @@ class test_Heightmap_terrain implements IState {
             }
             this.mtrlRoot.visible = false;
             this.texRoot.visible = true;
+            this.currentSelectPage = 2;
         }
 
     }
     OnUseBlendTexture()
     {
-        console.log("Use blend texture control 4 texture mix");
-
+        //console.log("Use blend texture control 4 texture mix");
         this.mtr[0].setVector4(`v_useTextureOrGPU`, new m4m.math.vector4(0.0, 0.0, 0.01, 0.0));
-
-        
     }
     OnUseGPUMixTexture()
     {
-        console.log("Use GPU control 4 texture with height factor");
+        //console.log("Use GPU control 4 texture with height factor");
         this.mtr[0].setVector4(`v_useTextureOrGPU`, new m4m.math.vector4(1.0, 1.0, 0.01, 0.0));
     }
 
     OnClickTexture(_index:number, _btn:m4m.framework.button)
     {
-        console.log("texture btn:" + _index + " clicked");
-        //var tex:m4m.framework.texture = new m4m.framework.texture(this.texs[_index]);
+        //console.log("texture btn:" + _index + " clicked");
         var img2D = this.currentPickTexture.getComponent("rawImage2D") as m4m.framework.rawImage2D;
         if(img2D != null)
         {
@@ -1342,7 +1461,7 @@ class test_Heightmap_terrain implements IState {
             console.log("mouse:" + pos.x + ", " + pos.y);
             /// out of UI area, disable attach to mouse
             var img = this.currentPickTexture.getComponent("rawImage2D") as m4m.framework.rawImage2D;
-            if(pos.x >= 105*3 || pos.x < 0 || pos.y >= 105 * 5 || pos.y < 0)
+            if(pos.x >= 105*3 || pos.x < 0 || pos.y >= 105 * 6 || pos.y < 0)
             {
                 test_Heightmap_terrain.bUpdatePickedTexture = false;
                 if(img != null)
@@ -1374,28 +1493,37 @@ class test_Heightmap_terrain implements IState {
         this.UpdatePickedTexturePosition();
 
         /// left top area is ui so do not handle
-        //console.log("Mouse:" + mousePos.x, mousePos.y);
-        if(this._mousePos.x < 105*3 && this._mousePos.y < 105 * 5)
+        if(this._mousePos.x < 105*3 && this._mousePos.y < 105 * 6)
         {
             this.nFrame++;
             return;
         }
-        
-        
         if(test_Heightmap_terrain.mouseDown == true)
         {
-            if(this.nFrame % 10 == 0)
+            if(this.currentSelectPage != 0)
             {
-                this.TestHit();
-                this.OnModify();
-                
-                if(test_Heightmap_terrain.shifKey)
+                this.nFrame++;
+                return;
+            }
+            if(test_Heightmap_terrain.altKey == true)
+            {
+                this.nFrame++;
+                return;
+            }
+
+            if(this.nFrame % 9 == 0)
+            {
+                if(this.TestHit())
                 {
-                    this.ApplayNewHeight(true);
-                }
-                else
-                {
-                    this.ApplayNewHeight(false);
+                    this.OnModify();
+                    if(test_Heightmap_terrain.shifKey)
+                    {
+                        this.ApplayNewHeight(true);
+                    }
+                    else
+                    {
+                        this.ApplayNewHeight(false);
+                    }
                 }
             }
         }
@@ -1403,7 +1531,7 @@ class test_Heightmap_terrain implements IState {
 
         this.nFrame++;
     }
-    TestHit():void
+    TestHit():boolean
     {
         //创建射线
         let ray = test_Heightmap_terrain.cam.creatRayByScreen(new m4m.math.vector2(test_Heightmap_terrain.app.getInputMgr().point.x, test_Heightmap_terrain.app.getInputMgr().point.y), test_Heightmap_terrain.app);
@@ -1418,12 +1546,14 @@ class test_Heightmap_terrain implements IState {
             console.log("Hit:" + tempinfo.hitposition);
             this.worldX = tempinfo.hitposition.x;
             this.worldZ = tempinfo.hitposition.z;
+            return true;
         }
         else
         {
             console.log("NotHit");
             this.worldX = 10000;
             this.worldZ = 10000;
+            return false;
         }
     }
 
@@ -1443,15 +1573,15 @@ class test_Heightmap_terrain implements IState {
  * @returns 
  */
 
-
-
-//function genElevationMesh(gl: WebGL2RenderingContext, heightmap: m4m.framework.texture, width: number = 1000, height: number = 100, depth: number = 1000, segmentsW: number = 30, segmentsH: number = 30, maxElevation: number = 255, minElevation: number = 0): m4m.framework.mesh {
 function genElevationMesh(gl: WebGL2RenderingContext, heightmap: m4m.framework.texture, maxElevation: number = 255, minElevation: number = 0, heightScale: number = 12.0): m4m.framework.mesh {    
-    let _heightdata = test_Heightmap_terrain.getHeightmapPixels(heightmap);
+    let _heightdata = test_Heightmap_terrain.getHeightmapPixels1(heightmap, 0);
     //const w = heightmap.glTexture.width;
     //const h = heightmap.glTexture.height;
     this.heightMapWidth = heightmap.glTexture.width;
     this.heightMapHeight = heightmap.glTexture.height;
+    console.log("this.heightMapWidth:" + this.heightMapWidth);
+    console.log("this.heightMapHeight:" + this.heightMapHeight);
+    test_Heightmap_terrain.widthAndHeight = new TerrainWidthHeight(heightmap.glTexture.width, heightmap.glTexture.height);
 
     function InBounds(i : number, j : number): Boolean
     {
@@ -1592,23 +1722,23 @@ function UpdateElevationMesh(gl: WebGL2RenderingContext, maxElevation: number = 
     data.color = [];
     data.uv = [];
     data.uv2 = [];
-    var segmentsW = 210 - 1;
-    var segmentsH = 210 - 1;
+    var segmentsW = test_Heightmap_terrain.widthAndHeight.width - 1;
+    var segmentsH = test_Heightmap_terrain.widthAndHeight.height - 1;
     let x: number, z: number, u: number, v: number, y: number, col: number, base: number, numInds = 0;
     let index_:number;
     const tw: number = segmentsW + 1;
     // let numVerts: number = (segmentsH + 1) * tw;
-    const uDiv: number = (210 - 1) / segmentsW;
-    const vDiv: number = (210 - 1) / segmentsH;
+    const uDiv: number = 1.0;
+    const vDiv: number = 1.0;
     const scaleU = 1;
     const scaleV = 1;
 
     for (let zi: number = 0; zi < this.heightMapHeight; ++zi) {
         for (let xi: number = 0; xi < this.heightMapWidth; ++xi) {
-            x = (xi / segmentsW - 0.5) * 210;
-            z = (zi / segmentsH - 0.5) * 210;
-            u = Math.floor(xi * uDiv) / 210;
-            v = Math.floor((segmentsH - zi) * vDiv) / 210;
+            x = (xi / segmentsW - 0.5) * test_Heightmap_terrain.widthAndHeight.width;
+            z = (zi / segmentsH - 0.5) * test_Heightmap_terrain.widthAndHeight.height;
+            u = Math.floor(xi * uDiv) / test_Heightmap_terrain.widthAndHeight.width;
+            v = Math.floor((segmentsH - zi) * vDiv) / test_Heightmap_terrain.widthAndHeight.height;
 
             index_ = zi * this.heightMapWidth + xi;
             //col = _heightdata[index_];
