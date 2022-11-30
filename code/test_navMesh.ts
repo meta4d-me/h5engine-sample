@@ -51,6 +51,13 @@ class test_navMesh implements IState {
             // _root.localTranslate = new m4m.math.vector3(-60, -30, 26.23);
             _root.localEulerAngles = new m4m.math.vector3(0, 0, 0);
             _root.markDirty();
+
+            let trans = _root.find("MainCity_collider");
+            if (trans) {
+                let translate = trans.localTranslate;
+                translate.y -= 1;
+            }
+
             this.app.getScene().lightmaps = [];
             _scene.useLightMap(this.app.getScene());
             _scene.useFog(this.app.getScene());
@@ -102,6 +109,14 @@ class test_navMesh implements IState {
         if (this.pos.length > 1) {
             let arr = this.navmeshMgr.moveToPoints(this.pos.pop(), this.pos.pop());
             console.error(arr);
+
+            let ps: m4m.math.vector3[] = [];
+            for (let i = 0; i < arr.length - 1; i++) {
+                ps.push(arr[i]);
+                ps.push(arr[i + 1]);
+            }
+            arr = ps;
+
             this.pos.length = 0;
             let color = new m4m.math.color(1, 0, 0, 0.5);
             this.createAllPoint(arr.length);

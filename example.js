@@ -10163,6 +10163,11 @@ var test_navMesh = /** @class */ (function () {
             // _root.localTranslate = new m4m.math.vector3(-60, -30, 26.23);
             _root.localEulerAngles = new m4m.math.vector3(0, 0, 0);
             _root.markDirty();
+            var trans = _root.find("MainCity_collider");
+            if (trans) {
+                var translate = trans.localTranslate;
+                translate.y -= 1;
+            }
             _this.app.getScene().lightmaps = [];
             _scene.useLightMap(_this.app.getScene());
             _scene.useFog(_this.app.getScene());
@@ -10213,6 +10218,12 @@ var test_navMesh = /** @class */ (function () {
         if (this.pos.length > 1) {
             var arr = this.navmeshMgr.moveToPoints(this.pos.pop(), this.pos.pop());
             console.error(arr);
+            var ps = [];
+            for (var i_5 = 0; i_5 < arr.length - 1; i_5++) {
+                ps.push(arr[i_5]);
+                ps.push(arr[i_5 + 1]);
+            }
+            arr = ps;
             this.pos.length = 0;
             var color = new m4m.math.color(1, 0, 0, 0.5);
             this.createAllPoint(arr.length);
