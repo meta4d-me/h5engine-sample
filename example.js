@@ -8547,10 +8547,16 @@ var test_animationClip = /** @class */ (function () {
                         var prefabObj_1 = _prefab.getCloneTrans();
                         _this.scene.addChild(prefabObj_1);
                         _this.prefab = prefabObj_1;
+                        // let start = Date.now();
                         _this.app.getAssetMgr().load("./" + resRootPath + "prefab/elong_prefab/resources/Ready.FBAni.min.aniclip.bin", m4m.framework.AssetTypeEnum.Aniclip, function (s) {
                             if (s.isfinish) {
+                                var clip = s.resstateFirst.res;
                                 var aps = prefabObj_1.gameObject.getComponentsInChildren("aniplayer");
                                 var ap = aps[0];
+                                // let texStart = Date.now();
+                                //准备图片数据
+                                ap.prepareClipDataTex(clip);
+                                // console.log(`加载耗时${window["parse_start"] - start},解析耗时${texStart - window["parse_start"]},图片耗时${Date.now() - texStart}`,);
                                 ap.addClip(s.resstateFirst.res);
                                 ap.play("Ready.FBAni.min.aniclip.bin");
                                 document.addEventListener("keypress", function (ev) {

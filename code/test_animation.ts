@@ -17,10 +17,17 @@ class test_animationClip implements IState {
                         this.scene.addChild(prefabObj);
                         this.prefab = prefabObj;
 
+                        // let start = Date.now();
                         this.app.getAssetMgr().load(`./${resRootPath}prefab/elong_prefab/resources/Ready.FBAni.min.aniclip.bin`, m4m.framework.AssetTypeEnum.Aniclip, (s) => {
                             if (s.isfinish) {
+                                let clip = s.resstateFirst.res as m4m.framework.animationClip;
                                 var aps = prefabObj.gameObject.getComponentsInChildren("aniplayer") as m4m.framework.aniplayer[];
                                 var ap = aps[0];
+                                // let texStart = Date.now();
+                                //准备图片数据
+                                ap.prepareClipDataTex(clip);
+                                // console.log(`加载耗时${window["parse_start"] - start},解析耗时${texStart - window["parse_start"]},图片耗时${Date.now() - texStart}`,);
+
                                 ap.addClip(s.resstateFirst.res as m4m.framework.animationClip);
                                 ap.play("Ready.FBAni.min.aniclip.bin");
                                 document.addEventListener("keypress", (ev) => {
