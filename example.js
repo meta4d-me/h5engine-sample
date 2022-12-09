@@ -1320,6 +1320,7 @@ var main = /** @class */ (function () {
             demoList.addBtn("拖尾", function () { return new test_TrailRenderer(); });
             demoList.addBtn("粒子系統", function () { return new test_ParticleSystem(); });
             demoList.addBtn("GPU_Instancing 绘制", function () { return new test_GPU_instancing(); });
+            demoList.addBtn("LightMap", function () { return new test_LightMap(); });
             return new demoList();
         });
         //----------------------------------------------UI
@@ -6585,6 +6586,131 @@ function genElevationMesh(gl, heightmap, width, height, depth, segmentsW, segmen
     }
     return _mesh;
 }
+/**
+ * lightMap 光照贴图
+ */
+var test_LightMap = /** @class */ (function () {
+    function test_LightMap() {
+        this.resType = "FLOAT16";
+        this.resTypeFileMap = {
+            PNG: { f: "lightMapItem_png", type: "pfb" },
+            FLOAT16: { f: "lightMapItem_f16", type: "pfb" }
+        };
+    }
+    test_LightMap.prototype.start = function (app) {
+        return __awaiter(this, void 0, void 0, function () {
+            var assetMgr;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        console.log("i am here.");
+                        this.app = app;
+                        this.scene = this.app.getScene();
+                        assetMgr = this.app.getAssetMgr();
+                        return [4 /*yield*/, datGui.init()];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, util.loadShader(assetMgr)];
+                    case 2:
+                        _a.sent();
+                        //
+                        this.setGUI();
+                        //
+                        this.change();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    test_LightMap.prototype.addCam = function () {
+        //添加一个摄像机
+        //initCamera
+        var objCam = new m4m.framework.transform();
+        this.scene.addChild(objCam);
+        var cam = objCam.gameObject.addComponent("camera");
+        cam.near = 0.01;
+        cam.far = 120;
+        cam.fov = Math.PI * 0.3;
+        objCam.localTranslate = new m4m.math.vector3(0, 15, -15);
+        objCam.lookatPoint(new m4m.math.vector3(0, 0, 0));
+        //相机控制
+        var hoverc = cam.gameObject.addComponent("HoverCameraScript");
+        hoverc.panAngle = 180;
+        hoverc.tiltAngle = 45;
+        hoverc.distance = 30;
+        hoverc.scaleSpeed = 0.1;
+        hoverc.lookAtPoint = new m4m.math.vector3(0, 2.5, 0);
+    };
+    test_LightMap.prototype.setGUI = function () {
+        if (!dat)
+            return;
+        var gui = new dat.GUI();
+        var title = { str: "LightMap 光照贴图" };
+        gui.add(title, "str");
+        //force
+        gui.add(this, "resType", ["PNG", "FLOAT16"]).name("\u7C7B\u578B");
+        //方法
+        gui.add(this, "change").name("\u52A0\u8F7D\u66FF\u6362\u8D44\u6E90");
+    };
+    test_LightMap.prototype.change = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, f, type;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = this.resTypeFileMap[this.resType], f = _a.f, type = _a.type;
+                        if (!f)
+                            return [2 /*return*/];
+                        this.clearScene();
+                        this.addCam();
+                        return [4 /*yield*/, this.loadToScene(f, type)];
+                    case 1:
+                        _b.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    test_LightMap.prototype.loadToScene = function (fileName, type) {
+        return __awaiter(this, void 0, void 0, function () {
+            var assetMgr, _a, pfb, node, _scene, _root;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        assetMgr = this.app.getAssetMgr();
+                        _a = type;
+                        switch (_a) {
+                            case "pfb": return [3 /*break*/, 1];
+                            case "scene": return [3 /*break*/, 3];
+                        }
+                        return [3 /*break*/, 5];
+                    case 1: return [4 /*yield*/, util.loadModel(assetMgr, fileName)];
+                    case 2:
+                        pfb = _b.sent();
+                        node = pfb.getCloneTrans();
+                        this.scene.addChild(node);
+                        return [3 /*break*/, 5];
+                    case 3: return [4 /*yield*/, util.loadScnee(assetMgr, fileName)];
+                    case 4:
+                        _scene = _b.sent();
+                        _root = _scene.getSceneRoot();
+                        this.scene.addChild(_root);
+                        this.app.getScene().lightmaps = [];
+                        _scene.useLightMap(this.app.getScene());
+                        _scene.useFog(this.app.getScene());
+                        return [3 /*break*/, 5];
+                    case 5: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    test_LightMap.prototype.clearScene = function () {
+        this.scene.getRoot().removeAllChild();
+    };
+    test_LightMap.prototype.update = function (delta) {
+    };
+    return test_LightMap;
+}());
 /// <reference path="../lib/dat.gui.d.ts" />
 /**
  * 线条渲染组件示例
@@ -19429,6 +19555,17 @@ var util;
         });
     }
     util.loadModel = loadModel;
+    function loadScnee(assetMgr, resName) {
+        return new Promise(function (resolve, reject) {
+            assetMgr.load("".concat(resRootPath, "prefab/").concat(resName, "/").concat(resName, ".assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
+                if (s.isfinish) {
+                    var s_1 = assetMgr.getAssetByName(resName + ".scene.json", "".concat(resName, ".assetbundle.json"));
+                    resolve(s_1);
+                }
+            });
+        });
+    }
+    util.loadScnee = loadScnee;
     function addCamera(scene) {
         //添加一个摄像机
         var objCam = new m4m.framework.transform();

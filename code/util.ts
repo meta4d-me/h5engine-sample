@@ -35,6 +35,17 @@ namespace util {
         })
     }
 
+    export function loadScnee(assetMgr: m4m.framework.assetMgr, resName: string) {
+        return new Promise<m4m.framework.rawscene>((resolve, reject) => {
+            assetMgr.load(`${resRootPath}prefab/${resName}/${resName}.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (s) => {
+                if (s.isfinish) {
+                    let s = assetMgr.getAssetByName(resName + ".scene.json", `${resName}.assetbundle.json`) as m4m.framework.rawscene;
+                    resolve(s);
+                }
+            });
+        })
+    }
+
     export function addCamera(scene: m4m.framework.scene) {
         //添加一个摄像机
         var objCam = new m4m.framework.transform();

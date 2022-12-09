@@ -76,6 +76,7 @@ class main implements m4m.framework.IUserCode {
             demoList.addBtn("拖尾", () => new test_TrailRenderer());
             demoList.addBtn("粒子系統", () => new test_ParticleSystem());
             demoList.addBtn("GPU_Instancing 绘制", () => new test_GPU_instancing());
+            demoList.addBtn("LightMap", () => new test_LightMap());
 
             return new demoList();
         });
