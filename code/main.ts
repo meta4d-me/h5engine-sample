@@ -77,6 +77,7 @@ class main implements m4m.framework.IUserCode {
             demoList.addBtn("粒子系統", () => new test_ParticleSystem());
             demoList.addBtn("GPU_Instancing 绘制", () => new test_GPU_instancing());
             demoList.addBtn("LightMap", () => new test_LightMap());
+            demoList.addBtn("shaderToy播放器", () => new test_ShaderToy_Player());
 
             return new demoList();
         });

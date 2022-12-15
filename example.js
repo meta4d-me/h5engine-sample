@@ -1321,6 +1321,7 @@ var main = /** @class */ (function () {
             demoList.addBtn("粒子系統", function () { return new test_ParticleSystem(); });
             demoList.addBtn("GPU_Instancing 绘制", function () { return new test_GPU_instancing(); });
             demoList.addBtn("LightMap", function () { return new test_LightMap(); });
+            demoList.addBtn("shaderToy播放器", function () { return new test_ShaderToy_Player(); });
             return new demoList();
         });
         //----------------------------------------------UI
@@ -7210,6 +7211,369 @@ var test_Rvo2 = /** @class */ (function () {
         }
     };
     return test_Rvo2;
+}());
+var test_ShaderToy_Player = /** @class */ (function () {
+    function test_ShaderToy_Player() {
+        this.res = "happyJumping";
+        this.resList = [
+            "happyJumping",
+            "PlanetShadertoy",
+            "ProteanClouds",
+            "raymarchingPrimitives"
+        ];
+    }
+    test_ShaderToy_Player.prototype.start = function (app) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, datGui.init()];
+                    case 1:
+                        _a.sent();
+                        // //加载 数据
+                        // // const resName = `happyJumping`;
+                        // // const resName = `PlanetShadertoy`;
+                        // // const resName = `ProteanClouds`;
+                        // const resName = `raymarchingPrimitives`;
+                        // const url = `${resRootPath}sToy/${resName}/`;
+                        // const sToyData = await shaderToyData.Load(url);
+                        // const sToyNode = new m4m.framework.transform();
+                        // sToyNode.name = `sToyNode`;
+                        // const sToyPlayer = sToyNode.gameObject.addComponent("shaderToyPlayer") as shaderToyPlayer;
+                        // sToyPlayer.stoyData = sToyData;
+                        // m4m.framework.sceneMgr.scene.addChild(sToyNode);
+                        //gui
+                        this.setGUI();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    test_ShaderToy_Player.prototype.setGUI = function () {
+        if (!dat)
+            return;
+        var gui = new dat.GUI();
+        var title = { str: "shaderToy" };
+        gui.add(title, "str");
+        //force
+        gui.add(this, "res", this.resList).name("\u8D44\u6E90");
+        //方法
+        gui.add(this, "change").name("\u52A0\u8F7D\u66FF\u6362\u8D44\u6E90");
+    };
+    test_ShaderToy_Player.prototype.change = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        this.clearScene();
+                        this.addCam();
+                        return [4 /*yield*/, this.loadToScene(this.res)];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    test_ShaderToy_Player.prototype.loadToScene = function (fileName) {
+        return __awaiter(this, void 0, void 0, function () {
+            var url, sToyData, sToyNode, sToyPlayer;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        url = "".concat(resRootPath, "sToy/").concat(fileName, "/");
+                        return [4 /*yield*/, shaderToyData.Load(url)];
+                    case 1:
+                        sToyData = _a.sent();
+                        sToyNode = new m4m.framework.transform();
+                        sToyNode.name = "sToyNode";
+                        sToyPlayer = sToyNode.gameObject.addComponent("shaderToyPlayer");
+                        sToyPlayer.stoyData = sToyData;
+                        m4m.framework.sceneMgr.scene.addChild(sToyNode);
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    test_ShaderToy_Player.prototype.addCam = function () {
+        var scene = m4m.framework.sceneMgr.scene;
+        //添加一个摄像机
+        //initCamera
+        var objCam = new m4m.framework.transform();
+        scene.addChild(objCam);
+        var cam = objCam.gameObject.addComponent("camera");
+        cam.near = 0.01;
+        cam.far = 120;
+        cam.fov = Math.PI * 0.3;
+        objCam.localTranslate = new m4m.math.vector3(0, 15, -15);
+        objCam.lookatPoint(new m4m.math.vector3(0, 0, 0));
+        //相机控制
+        var hoverc = cam.gameObject.addComponent("HoverCameraScript");
+        hoverc.panAngle = 180;
+        hoverc.tiltAngle = 45;
+        hoverc.distance = 30;
+        hoverc.scaleSpeed = 0.1;
+        hoverc.lookAtPoint = new m4m.math.vector3(0, 2.5, 0);
+    };
+    test_ShaderToy_Player.prototype.clearScene = function () {
+        var scene = m4m.framework.sceneMgr.scene;
+        scene.getRoot().removeAllChild();
+    };
+    test_ShaderToy_Player.prototype.update = function (delta) {
+    };
+    return test_ShaderToy_Player;
+}());
+/**
+ * shaderToy 数据
+ */
+var shaderToyData = /** @class */ (function () {
+    function shaderToyData() {
+        this.Image = { code: "" };
+        shaderToyData.init();
+        this._instanceID = shaderToyData._instanceCount++;
+    }
+    Object.defineProperty(shaderToyData, "stoyMesh", {
+        /** stoy mesh */
+        get: function () { return this._stoyMesh; },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(shaderToyData.prototype, "instanceID", {
+        /** 对象实例ID */
+        get: function () { return this._instanceID; },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(shaderToyData.prototype, "shader", {
+        /** 着色器 */
+        get: function () { return this._shader; },
+        enumerable: false,
+        configurable: true
+    });
+    shaderToyData.init = function () {
+        if (this._inited)
+            return;
+        this._inited = true;
+        var app = m4m.framework.sceneMgr.app;
+        var gl = app.webgl;
+        var pool = app.getAssetMgr().shaderPool;
+        pool.compileVS(gl, this.STOY_VS_KEY, this.baseVS);
+        //
+        this._stoyMesh = this.genSToyMesh();
+    };
+    shaderToyData.Load = function (resUrl) {
+        return __awaiter(this, void 0, void 0, function () {
+            var loadRes, text, jsonObj, files, data, texts, textAssets, _textPs, textUrls, i, len, url, _p, result, Image, Common, CubeA, BufferA, BufferB, BufferC, BufferD, d_image, code;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        loadRes = function (url, _type) {
+                            if (_type === void 0) { _type = m4m.framework.AssetTypeEnum.Auto; }
+                            var mgr = m4m.framework.sceneMgr.app.getAssetMgr();
+                            return new Promise(function (res) {
+                                mgr.load(url, _type, function () {
+                                    res(mgr.getAssetByName(url.split('/').pop()));
+                                });
+                            });
+                        };
+                        return [4 /*yield*/, loadRes("".concat(resUrl, "stoyconfig.json"), m4m.framework.AssetTypeEnum.TextAsset)];
+                    case 1:
+                        text = _a.sent();
+                        if (!text)
+                            return [2 /*return*/];
+                        jsonObj = JSON.parse(text.content);
+                        files = jsonObj.files, data = jsonObj.data;
+                        texts = files.texts;
+                        textAssets = [];
+                        if (!texts) return [3 /*break*/, 3];
+                        _textPs = [];
+                        textUrls = texts;
+                        for (i = 0, len = textUrls.length; i < len; i++) {
+                            url = textUrls[i];
+                            _p = loadRes("".concat(resUrl).concat(url), m4m.framework.AssetTypeEnum.TextAsset);
+                            _textPs.push(_p);
+                        }
+                        return [4 /*yield*/, Promise.all(_textPs)];
+                    case 2:
+                        textAssets = _a.sent();
+                        _a.label = 3;
+                    case 3:
+                        result = new shaderToyData();
+                        Image = data.Image, Common = data.Common, CubeA = data.CubeA, BufferA = data.BufferA, BufferB = data.BufferB, BufferC = data.BufferC, BufferD = data.BufferD;
+                        if (Image) {
+                            d_image = result.Image;
+                            code = Image.code;
+                            if (code != null && textAssets[code]) {
+                                d_image.code = textAssets[code].content;
+                            }
+                        }
+                        //构建着色器
+                        this.makeShader(result);
+                        return [2 /*return*/, result];
+                }
+            });
+        });
+    };
+    /** 构建着色器 */
+    shaderToyData.makeShader = function (data) {
+        var app = m4m.framework.sceneMgr.app;
+        var gl = app.webgl;
+        var assetMgr = app.getAssetMgr();
+        var pool = assetMgr.shaderPool;
+        var key = "stoy_".concat(data.instanceID);
+        //
+        var insertCode = "";
+        insertCode += data.Image.code;
+        //拼接shader , 组装 glProgram
+        // let vs_code: string = shaderToyData.baseVS;
+        var fs_code = shaderToyData.baseFS.replace(shaderToyData.INSERT_TAG, insertCode);
+        // let fs_code: string = shaderToyData.baseFS.replace(shaderToyData.INSERT_TAG, this.sToyTest);
+        pool.compileFS(gl, key, fs_code);
+        //program
+        var program = pool.linkProgram(gl, this.STOY_VS_KEY, key);
+        //shader 处理
+        var sh = new m4m.framework.shader(key);
+        sh.passes["base"] = [];
+        var p = new m4m.render.glDrawPass();
+        sh.passes["base"].push(p);
+        p.setProgram(program);
+        sh.fillUnDefUniform(p);
+        p.state_ztest = false;
+        p.state_zwrite = true;
+        p.state_showface = m4m.render.ShowFaceStateEnum.ALL;
+        sh.layer = m4m.framework.RenderLayerEnum.Overlay;
+        assetMgr.mapShader[sh.getName()] = sh;
+        //
+        data._shader = sh;
+    };
+    /** 生成 stoyMesh */
+    shaderToyData.genSToyMesh = function () {
+        var data = new m4m.render.meshData();
+        data.pos = [];
+        data.trisindex = [];
+        //准备顶点数据
+        //什么只有一个三角形? 我们只需像素渲染覆盖全屏（一个大三角形足以），只需要使用 gl_FragCoord + iResolution 来算定位像素UV。
+        //        0
+        //      /   \
+        //     /     \
+        //   2 ------- 1
+        //
+        data.pos.push(new m4m.math.vector3(0, 3, 0));
+        data.pos.push(new m4m.math.vector3(2, -1, 0));
+        data.pos.push(new m4m.math.vector3(-2, -1, 0));
+        var gl = m4m.framework.sceneMgr.app.webgl;
+        var _mesh = new m4m.framework.mesh("stoyMesh");
+        _mesh.data = data;
+        var vf = m4m.render.VertexFormatMask.Position;
+        _mesh.data.originVF = vf;
+        var v32 = _mesh.data.genVertexDataArray(vf);
+        // var i16 = _mesh.data.genIndexDataArray();
+        _mesh.glMesh = new m4m.render.glMesh();
+        _mesh.glMesh.initBuffer(gl, vf, _mesh.data.getVertexCount());
+        _mesh.glMesh.uploadVertexData(gl, v32);
+        // _mesh.glMesh.addIndex(gl, i16.length);
+        // _mesh.glMesh.uploadIndexData(gl, 0, i16);
+        _mesh.glMesh.initVAO();
+        _mesh.submesh = [];
+        {
+            var sm = new m4m.framework.subMeshInfo();
+            sm.matIndex = 0;
+            sm.useVertexIndex = -1;
+            sm.start = 0;
+            sm.size = 3;
+            sm.line = false;
+            _mesh.submesh.push(sm);
+        }
+        return _mesh;
+    };
+    shaderToyData._instanceCount = 0;
+    shaderToyData.INSERT_TAG = "//=#*INSERT_LOCATION*#=";
+    shaderToyData.STOY_VS_KEY = "stoy_base_vs";
+    shaderToyData._inited = false;
+    //基础的 VS
+    shaderToyData.baseVS = "#version 300 es\n        #ifdef GL_ES\n            precision highp float;\n            precision highp int;\n            precision mediump sampler3D;\n        #endif\n        // in vec2 a_Position; //\u9876\u70B9 \u4F4D\u7F6E \u662F\u6709\u9ED8\u8BA4\u503C\u7684 (0,0,0,1)\n        layout(location = 0) in highp vec3 _glesVertex;\n        void main() {\n            gl_Position = vec4(_glesVertex.xy, 0.0 , 1.0);\n        }\n    ";
+    //基础的FS
+    shaderToyData.baseFS = "#version 300 es\n        #ifdef GL_ES\n            precision highp float;\n            precision highp int;\n            precision mediump sampler3D;\n        #endif\n        #define HW_PERFORMANCE 1\n\n        out vec4 color;\n        //uniforms\n        uniform vec4      iResolution;\n        uniform float     iTime;\n        //uniform float     iChannelTime[4];\n        uniform vec4      iMouse;\n        //uniform vec4      iDate;\n        //uniform float     iSampleRate;\n        //uniform vec3      iChannelResolution[4];\n        uniform int       iFrame;\n        uniform float     iTimeDelta;\n\n        //=#*INSERT_LOCATION*#=\n\n        void main(){\n            // color = vec4(0.0 , 1.0 , 0.0 , 1.0);\n            vec4 col = vec4(0.0 , 0.0 , 0.0 , 1.0);\n            mainImage(col , gl_FragCoord.xy);\n            color = col;\n        }\n    ";
+    shaderToyData.sToyTest = "\n    void mainImage( out vec4 fragColor, in vec2 fragCoord )\n    {\n        // Normalized pixel coordinates (from 0 to 1)\n        vec2 uv = fragCoord/iResolution.xy;\n    \n        // Time varying pixel color\n        vec3 col = 0.5 + 0.5*cos(iTime+uv.xyx+vec3(0,2,4));\n    \n        // Output to screen\n        fragColor = vec4(col,1.0);\n    }\n    ";
+    return shaderToyData;
+}());
+/**
+ * ShaderToy 播放器
+ */
+var shaderToyPlayer = /** @class */ (function () {
+    function shaderToyPlayer() {
+        this.layer = m4m.framework.RenderLayerEnum.Overlay;
+        this.queue = 0;
+        this._stoyMaterial = new m4m.framework.material("stoyMaterial");
+        this._iResolution = new m4m.math.vector4();
+        this._totalTimeSec = 0;
+        this._frame = 0;
+        this._iMouse = new m4m.math.vector4();
+    }
+    Object.defineProperty(shaderToyPlayer.prototype, "renderLayer", {
+        get: function () { return this.gameObject.layer; },
+        set: function (layer) {
+            this.gameObject.layer = layer;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(shaderToyPlayer.prototype, "renderTarget", {
+        /** renderTarget */
+        get: function () { return this._renderTarget; },
+        enumerable: false,
+        configurable: true
+    });
+    ;
+    Object.defineProperty(shaderToyPlayer.prototype, "stoyData", {
+        /** shaderToy 数据 */
+        get: function () { return this._stoyData; },
+        set: function (val) {
+            if (this._stoyData == val)
+                return;
+            this._stoyData = val;
+            if (this._stoyMaterial.getShader() != val.shader) {
+                this._stoyMaterial.setShader(val.shader);
+            }
+        },
+        enumerable: false,
+        configurable: true
+    });
+    shaderToyPlayer.prototype.render = function (context, assetmgr, camera) {
+        if (!this._stoyData)
+            return;
+        var gl = context.webgl;
+        var app = m4m.framework.sceneMgr.app;
+        var dt = app.deltaTime;
+        var sh = this._stoyData.shader;
+        var mesh = shaderToyData.stoyMesh;
+        var mtr = this._stoyMaterial;
+        //gl 状态
+        gl.hint(gl.FRAGMENT_SHADER_DERIVATIVE_HINT, gl.NICEST);
+        //更新 材质参数
+        m4m.math.vec4Set(this._iResolution, gl.canvas.width, gl.canvas.width, 1, 0);
+        mtr.setVector4("iResolution", this._iResolution);
+        this._totalTimeSec += dt;
+        mtr.setFloat("iTime", this._totalTimeSec);
+        mtr.setFloat("iTimeDelta", dt);
+        mtr.setInt("iFrame", this._frame);
+        mtr.setVector4("iMouse", this._iMouse);
+        this._frame++;
+        //启用FBO
+        //渲染提交
+        mtr.draw(context, mesh, mesh.submesh[0], "base");
+        //关闭FBO
+    };
+    shaderToyPlayer.prototype.onPlay = function () { };
+    shaderToyPlayer.prototype.start = function () { };
+    shaderToyPlayer.prototype.update = function (delta) {
+    };
+    shaderToyPlayer.prototype.remove = function () {
+    };
+    shaderToyPlayer = __decorate([
+        m4m.reflect.nodeRender,
+        m4m.reflect.nodeComponent
+    ], shaderToyPlayer);
+    return shaderToyPlayer;
 }());
 /// <reference path="../lib/dat.gui.d.ts" />
 /**
