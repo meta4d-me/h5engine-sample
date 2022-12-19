@@ -132,15 +132,15 @@ class shaderToyData {
 
         out vec4 color;
         //uniforms
-        uniform vec4      iResolution;
-        uniform float     iTime;
-        //uniform float     iChannelTime[4];
-        uniform vec4      iMouse;
-        //uniform vec4      iDate;
-        //uniform float     iSampleRate;
-        //uniform vec3      iChannelResolution[4];
-        uniform int       iFrame;
-        uniform float     iTimeDelta;
+        uniform vec4      iResolution;                  //视口分辨率 (in pixels)
+        uniform float     iTime;                        //播放时间 (in seconds)
+        //uniform float     iChannelTime[4];            //通道的播放时间 (in seconds)
+        uniform vec4      iMouse;                       //鼠标像素坐标. xy: 当前 (按下状态), zw:
+        uniform vec4      iDate;                        //日期数据 (year, month, day, time in seconds)
+        //uniform float     iSampleRate;                //声音采样率 sound sample rate (i.e., 44100)
+        //uniform vec3      iChannelResolution[4];      //通道的分辨率 (in pixels)
+        uniform int       iFrame;                       //播放的帧数
+        uniform float     iTimeDelta;                   //帧间隔变化时间 (in seconds)
 
         //=#*INSERT_LOCATION*#=
 
@@ -157,10 +157,10 @@ class shaderToyData {
     {
         // Normalized pixel coordinates (from 0 to 1)
         vec2 uv = fragCoord/iResolution.xy;
-    
+
         // Time varying pixel color
         vec3 col = 0.5 + 0.5*cos(iTime+uv.xyx+vec3(0,2,4));
-    
+
         // Output to screen
         fragColor = vec4(col,1.0);
     }
@@ -336,6 +336,7 @@ class shaderToyPlayer implements m4m.framework.IRenderer {
     private _totalTimeSec = 0;
     private _frame = 0;
     private _iMouse = new m4m.math.vector4();
+    private _iDate = new m4m.math.vector4();
 
     get renderLayer() { return this.gameObject.layer; }
     set renderLayer(layer: number) {
@@ -353,6 +354,18 @@ class shaderToyPlayer implements m4m.framework.IRenderer {
         if (this._stoyMaterial.getShader() != val.shader) {
             this._stoyMaterial.setShader(val.shader);
         }
+    }
+
+    private setDate(_data: m4m.math.vector4) {
+        let date = new Date();
+        let year = date.getFullYear() // 年
+        let month = date.getMonth() + 1; // 月
+        let day = date.getDate(); // 日
+        let hour = date.getHours(); // 时
+        let minutes = date.getMinutes(); // 分
+        let seconds = date.getSeconds() //秒
+        // return year + "-" + month + "-" + day + " " + hour + sign2 + minutes + sign2 + seconds;
+        m4m.math.vec4Set(_data, year, month, day, hour * 3600 + minutes * 60 + seconds);
     }
 
     render(context: m4m.framework.renderContext, assetmgr: m4m.framework.assetMgr, camera: m4m.framework.camera) {
@@ -375,6 +388,8 @@ class shaderToyPlayer implements m4m.framework.IRenderer {
         mtr.setFloat(`iTimeDelta`, dt);
         mtr.setInt(`iFrame`, this._frame);
         mtr.setVector4(`iMouse`, this._iMouse);
+        this.setDate(this._iDate);
+        mtr.setVector4(`iDate`, this._iDate);
 
         this._frame++;
         //启用FBO
