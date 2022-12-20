@@ -134,11 +134,11 @@ class shaderToyData {
         //uniforms
         uniform vec4      iResolution;                  //视口分辨率 (in pixels)
         uniform float     iTime;                        //播放时间 (in seconds)
-        //uniform float     iChannelTime[4];            //通道的播放时间 (in seconds)
+        uniform float     iChannelTime[4];              //通道的播放时间，例如 视频 或 音频 (in seconds)
         uniform vec4      iMouse;                       //鼠标像素坐标. xy: 当前 (按下状态), zw:
         uniform vec4      iDate;                        //日期数据 (year, month, day, time in seconds)
-        //uniform float     iSampleRate;                //声音采样率 sound sample rate (i.e., 44100)
-        //uniform vec3      iChannelResolution[4];      //通道的分辨率 (in pixels)
+        uniform float     iSampleRate;                  //声音采样率 sound sample rate (i.e., 44100)
+        uniform vec4      iChannelResolution[4];        //通道的分辨率 (in pixels)
         uniform int       iFrame;                       //播放的帧数
         uniform float     iTimeDelta;                   //帧间隔变化时间 (in seconds)
 
@@ -337,6 +337,11 @@ class shaderToyPlayer implements m4m.framework.IRenderer {
     private _frame = 0;
     private _iMouse = new m4m.math.vector4();
     private _iDate = new m4m.math.vector4();
+    private _iSampleRate = 44100;
+    private _iChannelTime = new Float32Array(4);
+    private _iChannelResolution = new Float32Array(4);
+    private _pointIsDown = false;
+    private _pointIsClick = false;
 
     get renderLayer() { return this.gameObject.layer; }
     set renderLayer(layer: number) {
@@ -356,6 +361,38 @@ class shaderToyPlayer implements m4m.framework.IRenderer {
         }
     }
 
+    private onPointDown([x, y]) {
+        const h = m4m.framework.sceneMgr.app.height;
+        y = h - y;
+        m4m.math.vec4Set(this._iMouse, x, y, x, -y);
+        this._pointIsDown = true;
+    }
+
+    private onPointMove([x, y]) {
+        this._pointIsDown = true;
+        const h = m4m.framework.sceneMgr.app.height;
+        y = h - y;
+        this._iMouse.x = x;
+        this._iMouse.y = y;
+    }
+
+    private onPointClick([x, y]) {
+        const h = m4m.framework.sceneMgr.app.height;
+        y = h - y;
+        m4m.math.vec4Set(this._iMouse, x, y, x, y);
+        this._pointIsClick = true;
+    }
+
+    private setMouseClick(_mouse: m4m.math.vector4) {
+        //
+        const mzSign = Math.sign(_mouse.z);
+        const mwSign = Math.sign(_mouse.w);
+        _mouse.z *= (this._pointIsDown && mzSign == -1) || (!this._pointIsDown && mzSign != -1) ? -1 : 1;
+        _mouse.w *= (this._pointIsClick && mwSign == -1) || (!this._pointIsClick && mwSign != -1) ? -1 : 1;
+        this._pointIsDown = false;
+        this._pointIsClick = false;
+    }
+
     private setDate(_data: m4m.math.vector4) {
         let date = new Date();
         let year = date.getFullYear() // 年
@@ -368,29 +405,46 @@ class shaderToyPlayer implements m4m.framework.IRenderer {
         m4m.math.vec4Set(_data, year, month, day, hour * 3600 + minutes * 60 + seconds);
     }
 
+    private setChannelPlayTime(cPlayTime: Float32Array) {
+        cPlayTime[0] = 0;
+        cPlayTime[1] = 0;
+        cPlayTime[2] = 0;
+        cPlayTime[3] = 0;
+    }
+
+    private setChannelResolution(cRs: Float32Array) {
+        cRs.forEach((v, i) => { cRs[i] = i });
+    }
+
     render(context: m4m.framework.renderContext, assetmgr: m4m.framework.assetMgr, camera: m4m.framework.camera) {
         if (!this._stoyData) return;
-        const gl = context.webgl;
+        // const gl = context.webgl;
         const app = m4m.framework.sceneMgr.app;
         const dt = app.deltaTime;
         const sh = this._stoyData.shader;
         const mesh = shaderToyData.stoyMesh;
         const mtr: m4m.framework.material = this._stoyMaterial;
-        //gl 状态
-        gl.hint(gl.FRAGMENT_SHADER_DERIVATIVE_HINT, gl.NICEST);
+        // //gl 状态
+        // gl.hint(gl.FRAGMENT_SHADER_DERIVATIVE_HINT, gl.NICEST);
 
         //更新 材质参数
 
-        m4m.math.vec4Set(this._iResolution, gl.canvas.width, gl.canvas.width, 1, 0);
+        m4m.math.vec4Set(this._iResolution, app.width, app.height, 1, 0);
         mtr.setVector4(`iResolution`, this._iResolution);
         this._totalTimeSec += dt;
         mtr.setFloat(`iTime`, this._totalTimeSec);
         mtr.setFloat(`iTimeDelta`, dt);
         mtr.setInt(`iFrame`, this._frame);
+        this.setMouseClick(this._iMouse);
         mtr.setVector4(`iMouse`, this._iMouse);
         this.setDate(this._iDate);
         mtr.setVector4(`iDate`, this._iDate);
-
+        mtr.setFloat(`iSampleRate`, this._iSampleRate);
+        this.setChannelPlayTime(this._iChannelTime);
+        mtr.setFloatv(`iChannelTime`, this._iChannelTime);
+        this.setChannelResolution(this._iChannelResolution);
+        mtr.setVector4v(`iChannelResolution`, this._iChannelResolution);
+        console.log(`iMouse :  ${this._iMouse.x} , ${this._iMouse.y} , ${this._iMouse.z} , ${this._iMouse.w}`);
         this._frame++;
         //启用FBO
 
@@ -402,12 +456,22 @@ class shaderToyPlayer implements m4m.framework.IRenderer {
 
     onPlay() { }
 
-    start() { }
+    start() {
+        const ipt = m4m.framework.sceneMgr.app.getInputMgr();
+        ipt.addPointListener(m4m.event.PointEventEnum.PointDown, this.onPointDown, this);
+        ipt.addPointListener(m4m.event.PointEventEnum.PointClick, this.onPointClick, this);
+        ipt.addPointListener(m4m.event.PointEventEnum.PointHold, this.onPointMove, this);
+    }
 
     update(delta: number) {
     }
 
     remove() {
 
+        //unreg event
+        const ipt = m4m.framework.sceneMgr.app.getInputMgr();
+        ipt.removePointListener(m4m.event.PointEventEnum.PointDown, this.onPointDown, this);
+        ipt.removePointListener(m4m.event.PointEventEnum.PointClick, this.onPointClick, this);
+        ipt.removePointListener(m4m.event.PointEventEnum.PointHold, this.onPointMove, this);
     }
 }

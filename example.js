@@ -7492,7 +7492,7 @@ var shaderToyData = /** @class */ (function () {
     //基础的 VS
     shaderToyData.baseVS = "#version 300 es\n        #ifdef GL_ES\n            precision highp float;\n            precision highp int;\n            precision mediump sampler3D;\n        #endif\n        // in vec2 a_Position; //\u9876\u70B9 \u4F4D\u7F6E \u662F\u6709\u9ED8\u8BA4\u503C\u7684 (0,0,0,1)\n        layout(location = 0) in highp vec3 _glesVertex;\n        void main() {\n            gl_Position = vec4(_glesVertex.xy, 0.0 , 1.0);\n        }\n    ";
     //基础的FS
-    shaderToyData.baseFS = "#version 300 es\n        #ifdef GL_ES\n            precision highp float;\n            precision highp int;\n            precision mediump sampler3D;\n        #endif\n        #define HW_PERFORMANCE 1\n\n        out vec4 color;\n        //uniforms\n        uniform vec4      iResolution;                  //\u89C6\u53E3\u5206\u8FA8\u7387 (in pixels)\n        uniform float     iTime;                        //\u64AD\u653E\u65F6\u95F4 (in seconds)\n        //uniform float     iChannelTime[4];            //\u901A\u9053\u7684\u64AD\u653E\u65F6\u95F4 (in seconds)\n        uniform vec4      iMouse;                       //\u9F20\u6807\u50CF\u7D20\u5750\u6807. xy: \u5F53\u524D (\u6309\u4E0B\u72B6\u6001), zw:\n        uniform vec4      iDate;                        //\u65E5\u671F\u6570\u636E (year, month, day, time in seconds)\n        //uniform float     iSampleRate;                //\u58F0\u97F3\u91C7\u6837\u7387 sound sample rate (i.e., 44100)\n        //uniform vec3      iChannelResolution[4];      //\u901A\u9053\u7684\u5206\u8FA8\u7387 (in pixels)\n        uniform int       iFrame;                       //\u64AD\u653E\u7684\u5E27\u6570\n        uniform float     iTimeDelta;                   //\u5E27\u95F4\u9694\u53D8\u5316\u65F6\u95F4 (in seconds)\n\n        //=#*INSERT_LOCATION*#=\n\n        void main(){\n            // color = vec4(0.0 , 1.0 , 0.0 , 1.0);\n            vec4 col = vec4(0.0 , 0.0 , 0.0 , 1.0);\n            mainImage(col , gl_FragCoord.xy);\n            color = col;\n        }\n    ";
+    shaderToyData.baseFS = "#version 300 es\n        #ifdef GL_ES\n            precision highp float;\n            precision highp int;\n            precision mediump sampler3D;\n        #endif\n        #define HW_PERFORMANCE 1\n\n        out vec4 color;\n        //uniforms\n        uniform vec4      iResolution;                  //\u89C6\u53E3\u5206\u8FA8\u7387 (in pixels)\n        uniform float     iTime;                        //\u64AD\u653E\u65F6\u95F4 (in seconds)\n        uniform float     iChannelTime[4];              //\u901A\u9053\u7684\u64AD\u653E\u65F6\u95F4\uFF0C\u4F8B\u5982 \u89C6\u9891 \u6216 \u97F3\u9891 (in seconds)\n        uniform vec4      iMouse;                       //\u9F20\u6807\u50CF\u7D20\u5750\u6807. xy: \u5F53\u524D (\u6309\u4E0B\u72B6\u6001), zw:\n        uniform vec4      iDate;                        //\u65E5\u671F\u6570\u636E (year, month, day, time in seconds)\n        uniform float     iSampleRate;                  //\u58F0\u97F3\u91C7\u6837\u7387 sound sample rate (i.e., 44100)\n        uniform vec4      iChannelResolution[4];        //\u901A\u9053\u7684\u5206\u8FA8\u7387 (in pixels)\n        uniform int       iFrame;                       //\u64AD\u653E\u7684\u5E27\u6570\n        uniform float     iTimeDelta;                   //\u5E27\u95F4\u9694\u53D8\u5316\u65F6\u95F4 (in seconds)\n\n        //=#*INSERT_LOCATION*#=\n\n        void main(){\n            // color = vec4(0.0 , 1.0 , 0.0 , 1.0);\n            vec4 col = vec4(0.0 , 0.0 , 0.0 , 1.0);\n            mainImage(col , gl_FragCoord.xy);\n            color = col;\n        }\n    ";
     shaderToyData.sToyTest = "\n    void mainImage( out vec4 fragColor, in vec2 fragCoord )\n    {\n        // Normalized pixel coordinates (from 0 to 1)\n        vec2 uv = fragCoord/iResolution.xy;\n\n        // Time varying pixel color\n        vec3 col = 0.5 + 0.5*cos(iTime+uv.xyx+vec3(0,2,4));\n\n        // Output to screen\n        fragColor = vec4(col,1.0);\n    }\n    ";
     return shaderToyData;
 }());
@@ -7509,6 +7509,11 @@ var shaderToyPlayer = /** @class */ (function () {
         this._frame = 0;
         this._iMouse = new m4m.math.vector4();
         this._iDate = new m4m.math.vector4();
+        this._iSampleRate = 44100;
+        this._iChannelTime = new Float32Array(4);
+        this._iChannelResolution = new Float32Array(4);
+        this._pointIsDown = false;
+        this._pointIsClick = false;
     }
     Object.defineProperty(shaderToyPlayer.prototype, "renderLayer", {
         get: function () { return this.gameObject.layer; },
@@ -7539,6 +7544,37 @@ var shaderToyPlayer = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    shaderToyPlayer.prototype.onPointDown = function (_a) {
+        var x = _a[0], y = _a[1];
+        var h = m4m.framework.sceneMgr.app.height;
+        y = h - y;
+        m4m.math.vec4Set(this._iMouse, x, y, x, -y);
+        this._pointIsDown = true;
+    };
+    shaderToyPlayer.prototype.onPointMove = function (_a) {
+        var x = _a[0], y = _a[1];
+        this._pointIsDown = true;
+        var h = m4m.framework.sceneMgr.app.height;
+        y = h - y;
+        this._iMouse.x = x;
+        this._iMouse.y = y;
+    };
+    shaderToyPlayer.prototype.onPointClick = function (_a) {
+        var x = _a[0], y = _a[1];
+        var h = m4m.framework.sceneMgr.app.height;
+        y = h - y;
+        m4m.math.vec4Set(this._iMouse, x, y, x, y);
+        this._pointIsClick = true;
+    };
+    shaderToyPlayer.prototype.setMouseClick = function (_mouse) {
+        //
+        var mzSign = Math.sign(_mouse.z);
+        var mwSign = Math.sign(_mouse.w);
+        _mouse.z *= (this._pointIsDown && mzSign == -1) || (!this._pointIsDown && mzSign != -1) ? -1 : 1;
+        _mouse.w *= (this._pointIsClick && mwSign == -1) || (!this._pointIsClick && mwSign != -1) ? -1 : 1;
+        this._pointIsDown = false;
+        this._pointIsClick = false;
+    };
     shaderToyPlayer.prototype.setDate = function (_data) {
         var date = new Date();
         var year = date.getFullYear(); // 年
@@ -7550,27 +7586,43 @@ var shaderToyPlayer = /** @class */ (function () {
         // return year + "-" + month + "-" + day + " " + hour + sign2 + minutes + sign2 + seconds;
         m4m.math.vec4Set(_data, year, month, day, hour * 3600 + minutes * 60 + seconds);
     };
+    shaderToyPlayer.prototype.setChannelPlayTime = function (cPlayTime) {
+        cPlayTime[0] = 0;
+        cPlayTime[1] = 0;
+        cPlayTime[2] = 0;
+        cPlayTime[3] = 0;
+    };
+    shaderToyPlayer.prototype.setChannelResolution = function (cRs) {
+        cRs.forEach(function (v, i) { cRs[i] = i; });
+    };
     shaderToyPlayer.prototype.render = function (context, assetmgr, camera) {
         if (!this._stoyData)
             return;
-        var gl = context.webgl;
+        // const gl = context.webgl;
         var app = m4m.framework.sceneMgr.app;
         var dt = app.deltaTime;
         var sh = this._stoyData.shader;
         var mesh = shaderToyData.stoyMesh;
         var mtr = this._stoyMaterial;
-        //gl 状态
-        gl.hint(gl.FRAGMENT_SHADER_DERIVATIVE_HINT, gl.NICEST);
+        // //gl 状态
+        // gl.hint(gl.FRAGMENT_SHADER_DERIVATIVE_HINT, gl.NICEST);
         //更新 材质参数
-        m4m.math.vec4Set(this._iResolution, gl.canvas.width, gl.canvas.width, 1, 0);
+        m4m.math.vec4Set(this._iResolution, app.width, app.height, 1, 0);
         mtr.setVector4("iResolution", this._iResolution);
         this._totalTimeSec += dt;
         mtr.setFloat("iTime", this._totalTimeSec);
         mtr.setFloat("iTimeDelta", dt);
         mtr.setInt("iFrame", this._frame);
+        this.setMouseClick(this._iMouse);
         mtr.setVector4("iMouse", this._iMouse);
         this.setDate(this._iDate);
         mtr.setVector4("iDate", this._iDate);
+        mtr.setFloat("iSampleRate", this._iSampleRate);
+        this.setChannelPlayTime(this._iChannelTime);
+        mtr.setFloatv("iChannelTime", this._iChannelTime);
+        this.setChannelResolution(this._iChannelResolution);
+        mtr.setVector4v("iChannelResolution", this._iChannelResolution);
+        console.log("iMouse :  ".concat(this._iMouse.x, " , ").concat(this._iMouse.y, " , ").concat(this._iMouse.z, " , ").concat(this._iMouse.w));
         this._frame++;
         //启用FBO
         //渲染提交
@@ -7578,10 +7630,20 @@ var shaderToyPlayer = /** @class */ (function () {
         //关闭FBO
     };
     shaderToyPlayer.prototype.onPlay = function () { };
-    shaderToyPlayer.prototype.start = function () { };
+    shaderToyPlayer.prototype.start = function () {
+        var ipt = m4m.framework.sceneMgr.app.getInputMgr();
+        ipt.addPointListener(m4m.event.PointEventEnum.PointDown, this.onPointDown, this);
+        ipt.addPointListener(m4m.event.PointEventEnum.PointClick, this.onPointClick, this);
+        ipt.addPointListener(m4m.event.PointEventEnum.PointHold, this.onPointMove, this);
+    };
     shaderToyPlayer.prototype.update = function (delta) {
     };
     shaderToyPlayer.prototype.remove = function () {
+        //unreg event
+        var ipt = m4m.framework.sceneMgr.app.getInputMgr();
+        ipt.removePointListener(m4m.event.PointEventEnum.PointDown, this.onPointDown, this);
+        ipt.removePointListener(m4m.event.PointEventEnum.PointClick, this.onPointClick, this);
+        ipt.removePointListener(m4m.event.PointEventEnum.PointHold, this.onPointMove, this);
     };
     shaderToyPlayer = __decorate([
         m4m.reflect.nodeRender,
