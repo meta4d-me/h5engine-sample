@@ -7219,7 +7219,8 @@ var test_ShaderToy_Player = /** @class */ (function () {
             "happyJumping",
             "PlanetShadertoy",
             "ProteanClouds",
-            "raymarchingPrimitives"
+            "raymarchingPrimitives",
+            "seascape"
         ];
     }
     test_ShaderToy_Player.prototype.start = function (app) {

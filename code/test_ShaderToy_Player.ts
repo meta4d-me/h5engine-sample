@@ -4,7 +4,8 @@ class test_ShaderToy_Player implements IState {
         `happyJumping`,
         `PlanetShadertoy`,
         `ProteanClouds`,
-        `raymarchingPrimitives`
+        `raymarchingPrimitives`,
+        `seascape`
     ];
     async start(app: m4m.framework.application) {
         await datGui.init();
