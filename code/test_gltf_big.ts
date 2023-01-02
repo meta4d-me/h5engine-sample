@@ -18,7 +18,7 @@ class test_gltf_big implements IState {
     private loadLongPrefab(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
      
         // let settring = ["MutantWalking", "001"];
-        let assetpath =`${resRootPath}biggltf/saomiao400w/`;
+        let assetpath =`${resRootPath}biggltf/saomiao800w/`;
         this.app.getAssetMgr().load(`${assetpath}saomiao.gltf`, m4m.framework.AssetTypeEnum.Auto, (s) => {
             if (s.isfinish) {
                 var _prefab = this.app.getAssetMgr().getAssetByName(`saomiao.gltf`) as m4m.framework.gltf;
@@ -40,9 +40,9 @@ class test_gltf_big implements IState {
         this.scene.addChild(objCam);
         this.camera = objCam.gameObject.addComponent("camera") as m4m.framework.camera;
         this.camera.near = 0.01;
-        this.camera.far = 10000;
+        this.camera.far = 100000;
         this.camera.backgroundColor = new m4m.math.color(0.11, 0.11, 0.11, 1.0);
-        objCam.localTranslate = new m4m.math.vector3(0, 0, -30);
+        objCam.localTranslate = new m4m.math.vector3(100, 100, -100);
         // CameraController.instance().init(this.app, this.camera);
         objCam.markDirty();//标记为需要刷新
 
@@ -50,7 +50,7 @@ class test_gltf_big implements IState {
         let hoverc = this.camera.gameObject.addComponent("HoverCameraScript") as m4m.framework.HoverCameraScript;
         hoverc.panAngle = 180;
         hoverc.tiltAngle = 45;
-        hoverc.distance = 30;
+        hoverc.distance = 5000;
 
         hoverc.scaleSpeed = 0.1;
         hoverc.lookAtPoint = new m4m.math.vector3(0, 0, 0);

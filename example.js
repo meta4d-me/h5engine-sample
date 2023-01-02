@@ -9379,7 +9379,7 @@ var test_gltf_big = /** @class */ (function () {
     test_gltf_big.prototype.loadLongPrefab = function (laststate, state) {
         var _this = this;
         // let settring = ["MutantWalking", "001"];
-        var assetpath = "".concat(resRootPath, "biggltf/saomiao400w/");
+        var assetpath = "".concat(resRootPath, "biggltf/saomiao800w/");
         this.app.getAssetMgr().load("".concat(assetpath, "saomiao.gltf"), m4m.framework.AssetTypeEnum.Auto, function (s) {
             if (s.isfinish) {
                 var _prefab = _this.app.getAssetMgr().getAssetByName("saomiao.gltf");
@@ -9398,16 +9398,16 @@ var test_gltf_big = /** @class */ (function () {
         this.scene.addChild(objCam);
         this.camera = objCam.gameObject.addComponent("camera");
         this.camera.near = 0.01;
-        this.camera.far = 10000;
+        this.camera.far = 100000;
         this.camera.backgroundColor = new m4m.math.color(0.11, 0.11, 0.11, 1.0);
-        objCam.localTranslate = new m4m.math.vector3(0, 0, -30);
+        objCam.localTranslate = new m4m.math.vector3(100, 100, -100);
         // CameraController.instance().init(this.app, this.camera);
         objCam.markDirty(); //标记为需要刷新
         //相机控制
         var hoverc = this.camera.gameObject.addComponent("HoverCameraScript");
         hoverc.panAngle = 180;
         hoverc.tiltAngle = 45;
-        hoverc.distance = 30;
+        hoverc.distance = 5000;
         hoverc.scaleSpeed = 0.1;
         hoverc.lookAtPoint = new m4m.math.vector3(0, 0, 0);
         var tranLight = new m4m.framework.transform();
