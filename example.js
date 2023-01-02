@@ -19,7 +19,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
             if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
             if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
@@ -1298,6 +1298,7 @@ var main = /** @class */ (function () {
             demoList.addBtn("draco压缩网格格式加载", function () { return new test_load_draco(); });
             demoList.addBtn("骨骼动画", function () { return new test_animationClip(); });
             demoList.addBtn("GLTF_动画", function () { return new test_gltf_animation(); });
+            demoList.addBtn("GLTF_BigScene", function () { return new test_gltf_big(); });
             demoList.addBtn("地形", function () { return new test_Heightmap_terrain(); });
             // demoList.addBtn("Android平台ETC1压缩纹理", () => new test_ETC1_KTX());
             return new demoList();
@@ -9362,6 +9363,77 @@ var test_gltf_animation = /** @class */ (function () {
         this.taskmgr.move(delta);
     };
     return test_gltf_animation;
+}());
+//特大gltf 加载例子
+var test_gltf_big = /** @class */ (function () {
+    function test_gltf_big() {
+        this.taskmgr = new m4m.framework.taskMgr();
+    }
+    test_gltf_big.prototype.loadShader = function (laststate, state) {
+        this.app.getAssetMgr().load("".concat(resRootPath, "shader/shader.assetbundle.json"), m4m.framework.AssetTypeEnum.Auto, function (s) {
+            if (s.isfinish) {
+                state.finish = true;
+            }
+        });
+    };
+    test_gltf_big.prototype.loadLongPrefab = function (laststate, state) {
+        var _this = this;
+        // let settring = ["MutantWalking", "001"];
+        var assetpath = "".concat(resRootPath, "biggltf/saomiao400w/");
+        this.app.getAssetMgr().load("".concat(assetpath, "saomiao.gltf"), m4m.framework.AssetTypeEnum.Auto, function (s) {
+            if (s.isfinish) {
+                var _prefab = _this.app.getAssetMgr().getAssetByName("saomiao.gltf");
+                _prefab.load(_this.app.getAssetMgr(), _this.app.webgl, assetpath, null, null, null)
+                    .then(function (res) {
+                    _this.scene.addChild(res);
+                    state.finish = true;
+                });
+            }
+        });
+    };
+    test_gltf_big.prototype.addCamera = function (laststate, state) {
+        //添加一个摄像机
+        var objCam = new m4m.framework.transform();
+        objCam.name = "sth.";
+        this.scene.addChild(objCam);
+        this.camera = objCam.gameObject.addComponent("camera");
+        this.camera.near = 0.01;
+        this.camera.far = 10000;
+        this.camera.backgroundColor = new m4m.math.color(0.11, 0.11, 0.11, 1.0);
+        objCam.localTranslate = new m4m.math.vector3(0, 0, -30);
+        // CameraController.instance().init(this.app, this.camera);
+        objCam.markDirty(); //标记为需要刷新
+        //相机控制
+        var hoverc = this.camera.gameObject.addComponent("HoverCameraScript");
+        hoverc.panAngle = 180;
+        hoverc.tiltAngle = 45;
+        hoverc.distance = 30;
+        hoverc.scaleSpeed = 0.1;
+        hoverc.lookAtPoint = new m4m.math.vector3(0, 0, 0);
+        var tranLight = new m4m.framework.transform();
+        tranLight.name = "light";
+        this.scene.addChild(tranLight);
+        this.light = tranLight.gameObject.addComponent("light");
+        this.light.type = m4m.framework.LightTypeEnum.Direction;
+        tranLight.localTranslate.x = 5;
+        tranLight.localTranslate.y = 5;
+        tranLight.localTranslate.z = -5;
+        tranLight.lookatPoint(new m4m.math.vector3(0, 0, 0));
+        tranLight.markDirty();
+        state.finish = true;
+    };
+    test_gltf_big.prototype.start = function (app) {
+        this.app = app;
+        this.scene = app.getScene();
+        this.taskmgr.addTaskCall(this.loadShader.bind(this));
+        this.taskmgr.addTaskCall(this.loadLongPrefab.bind(this));
+        // this.taskmgr.addTaskCall(this.loadScene.bind(this));
+        this.taskmgr.addTaskCall(this.addCamera.bind(this));
+    };
+    test_gltf_big.prototype.update = function (delta) {
+        this.taskmgr.move(delta);
+    };
+    return test_gltf_big;
 }());
 var test_keyFrameAni = /** @class */ (function () {
     function test_keyFrameAni() {
