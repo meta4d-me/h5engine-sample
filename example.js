@@ -1249,6 +1249,7 @@ var localSave = /** @class */ (function () {
 //样例全局字段
 /** 资源更路径 */
 var resRootPath = "exampleResource/";
+var UseOldTerrain = 1;
 //需加上这个反射标记，引擎才能通过名字找到这个类，并自动创建他
 var main = /** @class */ (function () {
     function main() {
@@ -1298,7 +1299,10 @@ var main = /** @class */ (function () {
             demoList.addBtn("draco压缩网格格式加载", function () { return new test_load_draco(); });
             demoList.addBtn("骨骼动画", function () { return new test_animationClip(); });
             demoList.addBtn("GLTF_动画", function () { return new test_gltf_animation(); });
-            demoList.addBtn("地形", function () { return new test_Heightmap_terrain(); });
+            demoList.addBtn("地形", function () { return new test_Heightmap_terrain(0); });
+            demoList.addBtn("旧地形1", function () { return new test_Heightmap_terrain(1); });
+            demoList.addBtn("旧地形2", function () { return new test_Heightmap_terrain(2); });
+            demoList.addBtn("PHP", function () { return new test_form(); });
             // demoList.addBtn("Android平台ETC1压缩纹理", () => new test_ETC1_KTX());
             return new demoList();
         });
@@ -6423,8 +6427,17 @@ var HDR_sample = /** @class */ (function () {
 /**
  * 高度图地形样例
  */
+var TerrainWidthHeight = /** @class */ (function () {
+    function TerrainWidthHeight(w, h) {
+        this.width = 1;
+        this.height = 1;
+        this.width = w;
+        this.height = h;
+    }
+    return TerrainWidthHeight;
+}());
 var test_Heightmap_terrain = /** @class */ (function () {
-    function test_Heightmap_terrain() {
+    function test_Heightmap_terrain(useOldTerrain) {
         this.nFrame = 0;
         this.mtrlRoot = new m4m.framework.transform2D;
         this.texRoot = new m4m.framework.transform2D;
@@ -6439,6 +6452,8 @@ var test_Heightmap_terrain = /** @class */ (function () {
             [new m4m.framework.transform2D, new m4m.framework.transform2D],
             [new m4m.framework.transform2D, new m4m.framework.transform2D]
         ];
+        this.saveToPHP = new m4m.framework.transform2D;
+        this.loadFromPHP = new m4m.framework.transform2D;
         this.iptFrame_HeightScale = [new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D];
         this.mtr = [];
         this.texs = [];
@@ -6452,6 +6467,17 @@ var test_Heightmap_terrain = /** @class */ (function () {
             new m4m.framework.transform2D
         ];
         this.brushSizeBtns = [new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D, new m4m.framework.transform2D];
+        /// 这个以后要改为从服务端json或php，现在只是为了导入旧地图
+        test_Heightmap_terrain.nUseOldTerrain = useOldTerrain;
+        if (useOldTerrain == 0) {
+            test_Heightmap_terrain.genTerrainUseHeightScale = 15.0;
+        }
+        else if (useOldTerrain == 1) {
+            test_Heightmap_terrain.genTerrainUseHeightScale = 500.0;
+        }
+        else {
+            test_Heightmap_terrain.genTerrainUseHeightScale = 200.0;
+        }
     }
     test_Heightmap_terrain.getHeightmapPixels = function (heightmap) {
         var pixelReader = heightmap.glTexture.getReader(true); //只读灰度信息
@@ -6502,8 +6528,6 @@ var test_Heightmap_terrain = /** @class */ (function () {
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        // return;
-                        console.log("test_Heightmap_terrain start");
                         test_Heightmap_terrain.app = app;
                         test_Heightmap_terrain.mouseDown = false;
                         scene = app.getScene();
@@ -6558,6 +6582,10 @@ var test_Heightmap_terrain = /** @class */ (function () {
                             }
                             if (e.code == "AltRight") {
                                 console.log("Alt key down");
+                                test_Heightmap_terrain.altKey = true;
+                            }
+                            if (e.code == "AltLeft") {
+                                test_Heightmap_terrain.altKey = true;
                             }
                             if (e.code == "KeyT") {
                                 console.log(test_Heightmap_terrain.dictBrushData["1_0"]);
@@ -6583,6 +6611,9 @@ var test_Heightmap_terrain = /** @class */ (function () {
                             if (e.code == "ShiftLeft" || e.code == "ShiftRight") {
                                 test_Heightmap_terrain.shifKey = false;
                             }
+                            if (e.code == "AltLeft" || e.code == "AltRight") {
+                                test_Heightmap_terrain.altKey = false;
+                            }
                         }, false);
                         //2dUI root
                         this.rooto2d = new m4m.framework.overlay2D();
@@ -6590,7 +6621,13 @@ var test_Heightmap_terrain = /** @class */ (function () {
                         planeNode = m4m.framework.TransformUtil.CreatePrimitive(m4m.framework.PrimitiveType.Plane);
                         planeMR = planeNode.gameObject.getComponent("meshRenderer");
                         test_Heightmap_terrain.planeMF = planeNode.gameObject.getComponent("meshFilter");
-                        texNames = ["211.jpg", "blendMaskTexture.png", "splat_0Tex.png", "splat_3Tex.png", "splat_2Tex.png", "splat_1Tex.png", "rock1.png", "grass2.png", "dirt2.png", "sand1.png", "mask.png"];
+                        texNames = ["1001qijizhisen 1_256.jpg", "1001qijizhisen_SplatAlpha 0.jpg", "t_terrain_forest_d.png", "t_terrain_rock_d.png", "t_terrain_rock02_d.png", "t_terrain_tilefloor02_d.png", "rock1.png", "grass2.png", "dirt2.png", "sand1.png", "mask.png"];
+                        if (test_Heightmap_terrain.nUseOldTerrain == 0) {
+                            texNames = ["129_San.png", "San.png", "t_terrain_forest_d.png", "t_terrain_rock_d.png", "t_terrain_rock02_d.png", "t_terrain_tilefloor02_d.png", "rock1.png", "grass2.png", "dirt2.png", "sand1.png", "mask.png"];
+                        }
+                        else if (test_Heightmap_terrain.nUseOldTerrain == 1) {
+                            texNames = ["1028_zhuchengyewai_256.jpg", "1028_zhuchengyewai_SplatAlpha 0.jpg", "t_terrain_forest_d.png", "t_terrain_rock_d.png", "t_terrain_rock02_d.png", "t_terrain_tilefloor02_d.png", "rock1.png", "grass2.png", "dirt2.png", "sand1.png", "mask.png"];
+                        }
                         texUrl = [];
                         texNames.forEach(function (n) {
                             texUrl.push("".concat(resRootPath, "texture/").concat(n));
@@ -6601,7 +6638,15 @@ var test_Heightmap_terrain = /** @class */ (function () {
                         _a.texs = _b.sent();
                         //this.heightData = test_Heightmap_terrain.getHeightmapPixels(texs[0]);
                         console.log(this.heightData);
-                        terrainMesh = genElevationMesh(gl, this.texs[0], 255, 0, 15);
+                        if (test_Heightmap_terrain.nUseOldTerrain == 0) {
+                            terrainMesh = genElevationMesh(gl, this.texs[0], 255, 0, 15);
+                        }
+                        else if (test_Heightmap_terrain.nUseOldTerrain == 1) {
+                            terrainMesh = genElevationMesh(gl, this.texs[0], 255, 0, 500);
+                        }
+                        else {
+                            terrainMesh = genElevationMesh(gl, this.texs[0], 255, 0, 200);
+                        }
                         test_Heightmap_terrain.planeMF.mesh = terrainMesh;
                         //材质
                         this.mtr[0] = planeMR.materials[0];
@@ -6623,12 +6668,28 @@ var test_Heightmap_terrain = /** @class */ (function () {
                         // mtr.setVector4(`_Splat1_ST`, new m4m.math.vector4(16, 16, 0, 0));
                         // mtr.setVector4(`_Splat2_ST`, new m4m.math.vector4(26.7, 26.7, 0, 0));
                         // mtr.setVector4(`_Splat3_ST`, new m4m.math.vector4(26.7, 26.7, 0, 0));
-                        this.mtr[0].setVector4("_Splat0_ST", new m4m.math.vector4(4, 4, 0, 0));
-                        this.mtr[0].setVector4("_Splat1_ST", new m4m.math.vector4(4, 4, 0, 0));
-                        this.mtr[0].setVector4("_Splat2_ST", new m4m.math.vector4(4, 4, 0, 0));
-                        this.mtr[0].setVector4("_Splat3_ST", new m4m.math.vector4(4, 4, 0, 0));
-                        this.mtr[0].setVector4("v_useTextureOrGPU", new m4m.math.vector4(1.0, 1.0, 0.01, 0.0));
-                        this.mtr[0].setVector4("_HeightScale", new m4m.math.vector4(15.0, 15.0, 15.0, 15.0));
+                        if (test_Heightmap_terrain.nUseOldTerrain == 0) {
+                            this.mtr[0].setVector4("_Splat0_ST", new m4m.math.vector4(1.0, 1.0, 0.0, 0.0));
+                            this.mtr[0].setVector4("_Splat1_ST", new m4m.math.vector4(1.0, 1.0, 0.0, 0.0));
+                            this.mtr[0].setVector4("_Splat2_ST", new m4m.math.vector4(1.0, 1.0, 0.0, 0.0));
+                            this.mtr[0].setVector4("_Splat3_ST", new m4m.math.vector4(1.0, 1.0, 0.0, 0.0));
+                            this.mtr[0].setVector4("v_useTextureOrGPU", new m4m.math.vector4(1.0, 1.0, 0.01, 0.0));
+                            this.mtr[0].setVector4("_HeightScale", new m4m.math.vector4(15.0, 15.0, 15.0, 15.0));
+                        }
+                        else if (test_Heightmap_terrain.nUseOldTerrain == 1) {
+                            this.mtr[0].setVector4("_Splat0_ST", new m4m.math.vector4(10.0, 10.0, 0.0, 0.0));
+                            this.mtr[0].setVector4("_Splat1_ST", new m4m.math.vector4(4.0, 4.0, 0.0, 0.0));
+                            this.mtr[0].setVector4("_Splat2_ST", new m4m.math.vector4(4.0, 4.0, 0.0, 0.0));
+                            this.mtr[0].setVector4("_Splat3_ST", new m4m.math.vector4(3.0, 3.0, 0.0, 0.0));
+                            this.mtr[0].setVector4("v_useTextureOrGPU", new m4m.math.vector4(0.0, 0.0, 0.01, 0.0));
+                        }
+                        else {
+                            this.mtr[0].setVector4("_Splat0_ST", new m4m.math.vector4(12, 12, 0.0, 0.0));
+                            this.mtr[0].setVector4("_Splat1_ST", new m4m.math.vector4(7.2, 7.2, 0.0, 0.0));
+                            this.mtr[0].setVector4("_Splat2_ST", new m4m.math.vector4(12, 12, 0.0, 0.0));
+                            this.mtr[0].setVector4("_Splat3_ST", new m4m.math.vector4(12, 12, 0.0, 0.0));
+                            this.mtr[0].setVector4("v_useTextureOrGPU", new m4m.math.vector4(0.0, 0.0, 0.01, 0.0));
+                        }
                         //添加到场景
                         scene.addChild(planeNode);
                         return [2 /*return*/];
@@ -6639,15 +6700,15 @@ var test_Heightmap_terrain = /** @class */ (function () {
     test_Heightmap_terrain.prototype.OnModify = function () {
         console.log("Modify mesh");
         if (this.worldX < 10000 && this.worldZ < 10000) {
-            this.gridX = Math.floor(this.worldX - -0.5 * 210);
-            this.gridZ = Math.floor(this.worldZ - -0.5 * 210);
-            console.log("grid:" + this.gridX + ", " + this.gridZ);
+            this.gridX = Math.floor(this.worldX - -0.5 * test_Heightmap_terrain.widthAndHeight.width);
+            this.gridZ = Math.floor(this.worldZ - -0.5 * test_Heightmap_terrain.widthAndHeight.height);
+            //console.log("grid:" + this.gridX + ", " + this.gridZ);
         }
     };
     test_Heightmap_terrain.prototype.ApplayNewHeight = function (AddOrMinus) {
-        console.log("ApplayNewHeight called grid:" + this.gridX + ", " + this.gridZ);
-        console.log("selectedBrush" + test_Heightmap_terrain.selectedBrush);
-        console.log("selectedBrushSize" + test_Heightmap_terrain.selectedBrushSize);
+        //console.log("ApplayNewHeight called grid:"+ this.gridX + ", " + this.gridZ);
+        //console.log("selectedBrush" + test_Heightmap_terrain.selectedBrush);
+        //console.log("selectedBrushSize" + test_Heightmap_terrain.selectedBrushSize);
         var curSize = 32;
         if (test_Heightmap_terrain.selectedBrushSize == 0) {
             curSize = 16.0;
@@ -6664,42 +6725,67 @@ var test_Heightmap_terrain = /** @class */ (function () {
         else if (test_Heightmap_terrain.selectedBrushSize == 4) {
             curSize = 256.0;
         }
-        for (var row = this.gridZ - curSize / 2; row < this.gridZ - curSize / 2 + curSize; row++) {
-            for (var column = this.gridX - curSize / 2; column < this.gridX - curSize / 2 + curSize; column++) {
-                if (row < 0 || row > 209)
+        var logArray = new Array(curSize);
+        for (var row = 0; row < curSize; row++) {
+            logArray[row] = new Array(curSize);
+        }
+        var logBrushArray = new Array(curSize);
+        for (var row = 0; row < curSize; row++) {
+            logBrushArray[row] = new Array(curSize);
+        }
+        var logHeights_ = new Array(curSize);
+        for (var row = 0; row < curSize; row++) {
+            logHeights_[row] = new Array(curSize);
+        }
+        console.log(test_Heightmap_terrain._heights_);
+        for (var row = 0; row < curSize; row++) {
+            for (var column = 0; column < curSize; column++) {
+                var curY = Math.floor(this.gridZ - curSize / 2) + row;
+                if (curY < 0)
                     continue;
-                if (column < 0 || column > 209)
+                if (curY >= test_Heightmap_terrain.widthAndHeight.height)
                     continue;
-                var index = row * 210 + column;
+                var curX = Math.floor(this.gridX - curSize / 2) + column;
+                if (curX < 0)
+                    continue;
+                if (curX >= test_Heightmap_terrain.widthAndHeight.width)
+                    continue;
+                var index = curY * test_Heightmap_terrain.widthAndHeight.width + curX;
+                logArray[row][column] = index;
                 if (AddOrMinus == false) {
-                    var __index = (row - (this.gridZ - curSize / 2)) * curSize + (column - (this.gridX - curSize / 2));
-                    if (__index >= curSize * curSize)
-                        __index = curSize * curSize - 1;
+                    var __index = row * curSize + column;
                     var delta = 0;
                     var key = test_Heightmap_terrain.selectedBrushSize + "_" + test_Heightmap_terrain.selectedBrush;
-                    console.log("Applay key" + key);
                     delta = 0.2 * test_Heightmap_terrain.dictBrushData[key][__index];
-                    var f = test_Heightmap_terrain._heights_[index] + delta;
-                    test_Heightmap_terrain._heights_[index] = f <= 255 ? f : 255;
+                    logBrushArray[row][column] = delta;
+                    logHeights_[row][column] = test_Heightmap_terrain._heights_[index];
+                    if (Math.abs(delta) > 0.0001) {
+                        //console.log("delta:" + delta);
+                        var f = test_Heightmap_terrain._heights_[index] + delta;
+                        test_Heightmap_terrain._heights_[index] = f <= 255 ? f : 255;
+                    }
                 }
                 else {
-                    var __index = (row - (this.gridZ - curSize / 2)) * curSize + (column - (this.gridX - curSize / 2));
-                    if (__index >= curSize * curSize)
-                        __index = curSize * curSize - 1;
+                    var __index = row * curSize + column;
                     var delta = 0;
                     var key = test_Heightmap_terrain.selectedBrushSize + "_" + test_Heightmap_terrain.selectedBrush;
-                    console.log("Applay key" + key);
                     delta = 0.2 * test_Heightmap_terrain.dictBrushData[key][__index];
-                    var f = test_Heightmap_terrain._heights_[index] - delta;
-                    test_Heightmap_terrain._heights_[index] = f >= 0 ? f : 0;
+                    if (Math.abs(delta) > 0.0001) {
+                        var f = test_Heightmap_terrain._heights_[index] - delta;
+                        test_Heightmap_terrain._heights_[index] = f >= 0 ? f : 0;
+                    }
                 }
             }
         }
-        var newMesh = UpdateElevationMesh(test_Heightmap_terrain.gl, 255, 0, 15);
+        //console.log(logArray);
+        //console.log(logBrushArray);
+        //console.log(logHeights_);
+        //console.log(test_Heightmap_terrain._heights_);
+        var newMesh = UpdateElevationMesh(test_Heightmap_terrain.gl, 255, 0, test_Heightmap_terrain.genTerrainUseHeightScale);
         test_Heightmap_terrain.planeMF.mesh = newMesh;
     };
     test_Heightmap_terrain.BrushTextureLoadFinished = function (brushIndex, brushSize) {
-        console.log("BrushTextureLoadFinished brushIndex:" + brushIndex + ", brushSize:" + brushSize);
+        //console.log("BrushTextureLoadFinished brushIndex:" + brushIndex + ", brushSize:" + brushSize );
         var _name = "brush_" + String(brushIndex) + "_" + String(brushSize) + ".png";
         var texture0 = test_Heightmap_terrain.app.getAssetMgr().getAssetByName(_name);
         if (texture0 == null)
@@ -7470,6 +7556,7 @@ var test_Heightmap_terrain = /** @class */ (function () {
             }
             this.mtrlRoot.visible = false;
             this.texRoot.visible = false;
+            this.currentSelectPage = 0;
         }
         else if (btnNumber == 1) {
             for (var _b = 0, _c = this.btn; _b < _c.length; _b++) {
@@ -7478,6 +7565,7 @@ var test_Heightmap_terrain = /** @class */ (function () {
             }
             this.mtrlRoot.visible = true;
             this.texRoot.visible = false;
+            this.currentSelectPage = 1;
         }
         else {
             for (var _d = 0, _e = this.btn; _d < _e.length; _d++) {
@@ -7486,19 +7574,19 @@ var test_Heightmap_terrain = /** @class */ (function () {
             }
             this.mtrlRoot.visible = false;
             this.texRoot.visible = true;
+            this.currentSelectPage = 2;
         }
     };
     test_Heightmap_terrain.prototype.OnUseBlendTexture = function () {
-        console.log("Use blend texture control 4 texture mix");
+        //console.log("Use blend texture control 4 texture mix");
         this.mtr[0].setVector4("v_useTextureOrGPU", new m4m.math.vector4(0.0, 0.0, 0.01, 0.0));
     };
     test_Heightmap_terrain.prototype.OnUseGPUMixTexture = function () {
-        console.log("Use GPU control 4 texture with height factor");
+        //console.log("Use GPU control 4 texture with height factor");
         this.mtr[0].setVector4("v_useTextureOrGPU", new m4m.math.vector4(1.0, 1.0, 0.01, 0.0));
     };
     test_Heightmap_terrain.prototype.OnClickTexture = function (_index, _btn) {
-        console.log("texture btn:" + _index + " clicked");
-        //var tex:m4m.framework.texture = new m4m.framework.texture(this.texs[_index]);
+        //console.log("texture btn:" + _index + " clicked");
         var img2D = this.currentPickTexture.getComponent("rawImage2D");
         if (img2D != null) {
             img2D.image = this.texs[_index];
@@ -7539,7 +7627,7 @@ var test_Heightmap_terrain = /** @class */ (function () {
             console.log("mouse:" + pos.x + ", " + pos.y);
             /// out of UI area, disable attach to mouse
             var img = this.currentPickTexture.getComponent("rawImage2D");
-            if (pos.x >= 105 * 3 || pos.x < 0 || pos.y >= 105 * 5 || pos.y < 0) {
+            if (pos.x >= 105 * 3 || pos.x < 0 || pos.y >= 105 * 6 || pos.y < 0) {
                 test_Heightmap_terrain.bUpdatePickedTexture = false;
                 if (img != null)
                     img.image = null;
@@ -7562,20 +7650,28 @@ var test_Heightmap_terrain = /** @class */ (function () {
         this._mousePos = new m4m.math.vector2(test_Heightmap_terrain.app.getInputMgr().point.x, test_Heightmap_terrain.app.getInputMgr().point.y);
         this.UpdatePickedTexturePosition();
         /// left top area is ui so do not handle
-        //console.log("Mouse:" + mousePos.x, mousePos.y);
-        if (this._mousePos.x < 105 * 3 && this._mousePos.y < 105 * 5) {
+        if (this._mousePos.x < 105 * 3 && this._mousePos.y < 105 * 6) {
             this.nFrame++;
             return;
         }
         if (test_Heightmap_terrain.mouseDown == true) {
-            if (this.nFrame % 10 == 0) {
-                this.TestHit();
-                this.OnModify();
-                if (test_Heightmap_terrain.shifKey) {
-                    this.ApplayNewHeight(true);
-                }
-                else {
-                    this.ApplayNewHeight(false);
+            if (this.currentSelectPage != 0) {
+                this.nFrame++;
+                return;
+            }
+            if (test_Heightmap_terrain.altKey == true) {
+                this.nFrame++;
+                return;
+            }
+            if (this.nFrame % 9 == 0) {
+                if (this.TestHit()) {
+                    this.OnModify();
+                    if (test_Heightmap_terrain.shifKey) {
+                        this.ApplayNewHeight(true);
+                    }
+                    else {
+                        this.ApplayNewHeight(false);
+                    }
                 }
             }
         }
@@ -7594,11 +7690,13 @@ var test_Heightmap_terrain = /** @class */ (function () {
             console.log("Hit:" + tempinfo.hitposition);
             this.worldX = tempinfo.hitposition.x;
             this.worldZ = tempinfo.hitposition.z;
+            return true;
         }
         else {
             console.log("NotHit");
             this.worldX = 10000;
             this.worldZ = 10000;
+            return false;
         }
     };
     test_Heightmap_terrain._heights_ = null;
@@ -7623,16 +7721,18 @@ var test_Heightmap_terrain = /** @class */ (function () {
  * @param minElevation 最小高度
  * @returns
  */
-//function genElevationMesh(gl: WebGL2RenderingContext, heightmap: m4m.framework.texture, width: number = 1000, height: number = 100, depth: number = 1000, segmentsW: number = 30, segmentsH: number = 30, maxElevation: number = 255, minElevation: number = 0): m4m.framework.mesh {
 function genElevationMesh(gl, heightmap, maxElevation, minElevation, heightScale) {
     if (maxElevation === void 0) { maxElevation = 255; }
     if (minElevation === void 0) { minElevation = 0; }
     if (heightScale === void 0) { heightScale = 12.0; }
-    var _heightdata = test_Heightmap_terrain.getHeightmapPixels(heightmap);
+    var _heightdata = test_Heightmap_terrain.getHeightmapPixels1(heightmap, 0);
     //const w = heightmap.glTexture.width;
     //const h = heightmap.glTexture.height;
     this.heightMapWidth = heightmap.glTexture.width;
     this.heightMapHeight = heightmap.glTexture.height;
+    console.log("this.heightMapWidth:" + this.heightMapWidth);
+    console.log("this.heightMapHeight:" + this.heightMapHeight);
+    test_Heightmap_terrain.widthAndHeight = new TerrainWidthHeight(heightmap.glTexture.width, heightmap.glTexture.height);
     function InBounds(i, j) {
         // True if ij are valid indices; false otherwise.
         return i >= 0 && i < this.heightMapWidth &&
@@ -7754,22 +7854,22 @@ function UpdateElevationMesh(gl, maxElevation, minElevation, heightScale, addOrM
     data.color = [];
     data.uv = [];
     data.uv2 = [];
-    var segmentsW = 210 - 1;
-    var segmentsH = 210 - 1;
+    var segmentsW = test_Heightmap_terrain.widthAndHeight.width - 1;
+    var segmentsH = test_Heightmap_terrain.widthAndHeight.height - 1;
     var x, z, u, v, y, col, base, numInds = 0;
     var index_;
     var tw = segmentsW + 1;
     // let numVerts: number = (segmentsH + 1) * tw;
-    var uDiv = (210 - 1) / segmentsW;
-    var vDiv = (210 - 1) / segmentsH;
+    var uDiv = 1.0;
+    var vDiv = 1.0;
     var scaleU = 1;
     var scaleV = 1;
     for (var zi = 0; zi < this.heightMapHeight; ++zi) {
         for (var xi = 0; xi < this.heightMapWidth; ++xi) {
-            x = (xi / segmentsW - 0.5) * 210;
-            z = (zi / segmentsH - 0.5) * 210;
-            u = Math.floor(xi * uDiv) / 210;
-            v = Math.floor((segmentsH - zi) * vDiv) / 210;
+            x = (xi / segmentsW - 0.5) * test_Heightmap_terrain.widthAndHeight.width;
+            z = (zi / segmentsH - 0.5) * test_Heightmap_terrain.widthAndHeight.height;
+            u = Math.floor(xi * uDiv) / test_Heightmap_terrain.widthAndHeight.width;
+            v = Math.floor((segmentsH - zi) * vDiv) / test_Heightmap_terrain.widthAndHeight.height;
             index_ = zi * this.heightMapWidth + xi;
             //col = _heightdata[index_];
             col = test_Heightmap_terrain._heights_[index_];
@@ -10459,6 +10559,38 @@ var test_fakepbr = /** @class */ (function () {
         }
     };
     return test_fakepbr;
+}());
+var test_form = /** @class */ (function () {
+    function test_form() {
+    }
+    test_form.prototype.start = function (app) {
+        console.log("test_form onStart");
+        if (!test_form.instance)
+            test_form.instance = this;
+        console.log("test_form onStart");
+        //this.app = app;  
+        var request = new XMLHttpRequest(); //建立request请求
+        request.open('post', 'http://127.0.0.1:81/examples/engineExample/server.php'); //发送对象是server.php 发送post
+        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); //请求头 默认即可
+        var width = 4;
+        var height = 210;
+        var name = "210.data";
+        var data = [1.0, 2.0, 3.0, 4.0];
+        var szParam = "width=" + width + "&height=" + height + "&name=" + name + "&data=" + data;
+        request.send(szParam);
+        //确认接收消息
+        request.onreadystatechange = function () {
+            // readyState=4为php收到并返回值 status为返回字段为200火304
+            if (request.readyState == 4 && (request.status == 200 || request.status == 304)) {
+                //弹出窗口显示php返回的值
+                alert(request.responseText);
+            }
+            ;
+        };
+    };
+    test_form.prototype.update = function (delta) {
+    };
+    return test_form;
 }());
 var test_gltf_animation = /** @class */ (function () {
     function test_gltf_animation() {
@@ -23720,6 +23852,7 @@ var m4m;
                 _this._cur_panRad = 0;
                 _this.damping = 0.08;
                 _this.panSpeed = 0.01;
+                _this.F9DragRotate = false;
                 _this._tiltAngle = 0;
                 _this._tiltRad = 0;
                 _this._cur_tiltRad = 0;
@@ -23766,6 +23899,7 @@ var m4m;
                 this.inputMgr.addHTMLElementListener('touchstart', this.onTouch, this);
                 this.inputMgr.addHTMLElementListener('touchmove', this.onTouchMove, this);
                 this.inputMgr.addKeyListener(m4m.event.KeyEventEnum.KeyDown, this.onKeyDown, this);
+                this.inputMgr.addKeyListener(m4m.event.KeyEventEnum.KeyUp, this.onKeyUp, this);
             };
             HoverCameraScript.prototype.update = function (delta) {
                 var tiltRad = this._cur_tiltRad = m4m.math.numberLerp(this._cur_tiltRad, this._tiltRad, this.damping);
@@ -23804,6 +23938,15 @@ var m4m;
                     this.lookAtPoint.z += 0.17;
                     this.cupTargetV3.z += 0.17;
                 }
+                if (keyCode == m4m.event.KeyCode.F9) {
+                    this.F9DragRotate = true;
+                }
+            };
+            HoverCameraScript.prototype.onKeyUp = function (_a) {
+                var keyCode = _a[0];
+                if (keyCode == m4m.event.KeyCode.F11) {
+                    this.F9DragRotate = false;
+                }
             };
             HoverCameraScript.prototype.onPointDown = function () {
                 this._mouseDown = true;
@@ -23818,11 +23961,15 @@ var m4m;
                     return;
                 var moveX = this.inputMgr.point.x - this._lastMouseX;
                 var moveY = this.inputMgr.point.y - this._lastMouseY;
-                // if (moveX <= 2 && moveX >= -2) moveX = 0;
-                // if (moveY <= 2 && moveY >= -1) moveY = 0;
+                if (moveX <= 2 && moveX >= -2)
+                    moveX = 0;
+                if (moveY <= 2 && moveY >= -1)
+                    moveY = 0;
                 if (this.inputMgr.isPressed(0)) {
-                    //this.panAngle += moveX * 0.5;
-                    //this.tiltAngle += moveY * 0.5;
+                    if (this.F9DragRotate) {
+                        this.panAngle += moveX * 0.5;
+                        this.tiltAngle += moveY * 0.5;
+                    }
                 }
                 else if (this.inputMgr.isPressed(1) || this.inputMgr.isPressed(2)) {
                     m4m.math.vec3Set(this.panDir, -moveX, moveY, 0);
