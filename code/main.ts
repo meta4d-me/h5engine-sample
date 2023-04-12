@@ -54,6 +54,7 @@ class main implements m4m.framework.IUserCode {
             demoList.addBtn("骨骼动画", () => new test_animationClip());
             demoList.addBtn("GLTF_动画", () => new test_gltf_animation());
             demoList.addBtn("地形", () => new test_Heightmap_terrain());
+            demoList.addBtn("地形V2", () => new test_Heightmap_terrain_v2());
             // demoList.addBtn("Android平台ETC1压缩纹理", () => new test_ETC1_KTX());
             return new demoList();
         });
