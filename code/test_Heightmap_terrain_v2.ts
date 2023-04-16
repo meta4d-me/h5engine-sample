@@ -1,11 +1,16 @@
+type texture = m4m.framework.texture;
 /**
  * 高度图地形样例
  */
 class test_Heightmap_terrain_v2 implements IState {
+
+    private texs: m4m.framework.texture[];
+    private terrainMR: m4m.framework.meshRenderer;
     async start(app: m4m.framework.application) {
         const scene = app.getScene();
         const assetMgr = app.getAssetMgr();
         const gl = app.webgl;
+        await datGui.init();
         //initCamera
         let objCam = new m4m.framework.transform();
         scene.addChild(objCam);
@@ -25,7 +30,7 @@ class test_Heightmap_terrain_v2 implements IState {
 
         //模型 
         const planeNode = m4m.framework.TransformUtil.CreatePrimitive(m4m.framework.PrimitiveType.Plane);
-        const planeMR = planeNode.gameObject.getComponent("meshRenderer") as m4m.framework.meshRenderer;
+        const planeMR = this.terrainMR = planeNode.gameObject.getComponent("meshRenderer") as m4m.framework.meshRenderer;
         const planeMF = planeNode.gameObject.getComponent("meshFilter") as m4m.framework.meshFilter;
         // planeNode.localScale = new m4m.math.vector3(10, 10, 10);
         //加载纹理
@@ -34,7 +39,10 @@ class test_Heightmap_terrain_v2 implements IState {
         texNames.forEach(n => {
             texUrl.push(`${resRootPath}texture/${n}`)
         });
-        const texs = await util.loadTextures(texUrl, assetMgr);
+        //加载纹理
+        const texs = this.texs = await util.loadTextures(texUrl, assetMgr);
+        //加载 shader 包
+        await util.loadShader(assetMgr);
 
         //更换 mesh
         const terrainMesh = test_Heightmap_terrain_v2.genMesh(gl, texs[0], 1000, 1000, 200, 200);
@@ -42,20 +50,30 @@ class test_Heightmap_terrain_v2 implements IState {
 
         //材质
         const mtr = planeMR.materials[0];
-        //加载 shader 包
-        await util.loadShader(assetMgr);
+        //设置terrain材质参数
+        // this.setTerrainMaterial(mtr, 200, texs[0], texs[1], texs[2], texs[3], texs[4], texs[5]);
+
+        //添加到场景
+        scene.addChild(planeNode);
+
+        //
+        this.setGUI();
+    }
+
+    setTerrainMaterial(mtr: m4m.framework.material, heightMax: number, heightMap: texture, splatCtr: texture, splat0: texture, splat1: texture, splat2: texture, splat3: texture) {
+        let assetMgr = m4m.framework.sceneMgr.app.getAssetMgr();
         //获取 高度图shader
         const tSH = assetMgr.getShader(`terrain_gpu.shader.json`);
         mtr.setShader(tSH);
         //纹理
-        mtr.setTexture("_Control", texs[1]);
-        mtr.setTexture("_Splat0", texs[2]);
-        mtr.setTexture("_Splat1", texs[3]);
-        mtr.setTexture("_Splat2", texs[4]);
-        mtr.setTexture("_Splat3", texs[5]);
+        mtr.setTexture("_Control", splatCtr);
+        mtr.setTexture("_Splat0", splat0);
+        mtr.setTexture("_Splat1", splat1);
+        mtr.setTexture("_Splat2", splat2);
+        mtr.setTexture("_Splat3", splat3);
         //
-        mtr.setTexture("_HeightMap", texs[0]);
-        mtr.setFloat("_HeightMax", 200);
+        mtr.setTexture("_HeightMap", heightMap);
+        mtr.setFloat("_HeightMax", heightMax);
 
 
         //缩放和平铺
@@ -63,9 +81,31 @@ class test_Heightmap_terrain_v2 implements IState {
         mtr.setVector4(`_Splat1_ST`, new m4m.math.vector4(16, 16, 0, 0));
         mtr.setVector4(`_Splat2_ST`, new m4m.math.vector4(26.7, 26.7, 0, 0));
         mtr.setVector4(`_Splat3_ST`, new m4m.math.vector4(26.7, 26.7, 0, 0));
+    }
 
-        //添加到场景
-        scene.addChild(planeNode);
+    saveData() {
+        const texs = this.texs;
+        const dataCfg: ITerrainConfig = { version: "1.0" };
+        const dataCfgStr = JSON.stringify(dataCfg);
+        const hImg: m4m.framework.texture = texs[0];
+        const sImg: m4m.framework.texture = texs[1];
+        const hImgR = (hImg.glTexture as m4m.render.glTexture2D).getReader(true);
+        const sImgR = (sImg.glTexture as m4m.render.glTexture2D).getReader();
+        const tDataBin = test_Heightmap_terrain_v2.genTerrainData(dataCfgStr, hImgR.data, sImgR.data);
+
+        //test readData
+        const rTd = test_Heightmap_terrain_v2.parseTerrainData(tDataBin);
+        const tMR = this.terrainMR;
+        const mtr = tMR.materials[0];
+        //设置terrain材质参数
+        this.setTerrainMaterial(mtr, 200, rTd.heightMap, rTd.splatMap, texs[2], texs[3], texs[4], texs[5]);
+        // this.setTerrainMaterial(mtr, 200, texs[0], texs[1], texs[2], texs[3], texs[4], texs[5]);
+    }
+
+    setGUI() {
+        if (!dat) return;
+        let gui = new dat.GUI();
+        gui.add(this, "saveData").name("保存terrain数据");
     }
 
     update(delta: number) {
@@ -131,7 +171,7 @@ class test_Heightmap_terrain_v2 implements IState {
             wInfoFun(jsonBin.byteLength, CHUNK_TYPES_JSON);
 
             ui8View.set(jsonBin, buoy);
-            buoy += heightMap.byteLength;
+            buoy += jsonBin.byteLength;
         }
 
         //高度图块数据
@@ -176,7 +216,7 @@ class test_Heightmap_terrain_v2 implements IState {
         const CHUNK_TYPES_BIN_SPLATMAP = 2;
         const vertion = vd.getUint32(0);
         const totalByteLength = vd.getUint32(4);
-        let buoy = 0;
+        let buoy = HEADER_LENGTH;
         let result: terrainResult = {};
         let gl = m4m.framework.sceneMgr.app.webgl;
         //生成 图
@@ -219,7 +259,7 @@ class test_Heightmap_terrain_v2 implements IState {
                 case CHUNK_TYPES_BIN_SPLATMAP:
                     //处理成纹理（RGBA）
                     let sTex = result.splatMap = new m4m.framework.texture(`splatMap`);
-                    let sSize = Math.sqrt(byteLen) / 4;
+                    let sSize = Math.sqrt(byteLen / 4);
                     // 初始化纹理
                     let sT2d = genImg(sSize, binData, m4m.render.TextureFormatEnum.RGBA);
                     sTex.glTexture = sT2d;
@@ -412,5 +452,15 @@ class test_Heightmap_terrain_v2 implements IState {
         return _mesh;
     }
 
+}
+
+/**
+ * terrain 配置接口
+ */
+interface ITerrainConfig {
+    version: string;
+    images?: { uri: string, name: string }[];
+    heightmap?: { image: number, size: number, format: number };
+    splatmap?: { image: number, size: number, format: number };
 }
 
