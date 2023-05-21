@@ -90,6 +90,7 @@ class main implements m4m.framework.IUserCode {
             demoList.addBtn("UI 新手引导mask", () => new test_UIGuideMask());
             demoList.addBtn("UI 使用 纹理数组模式(webgl2 优化)", () => new test_UI_Texture_Array());
             demoList.addBtn("UI 贴到3D空间", () => new test_UI_Attach3D());
+            demoList.addBtn("波函数坍缩 WFC 2D 生成背景", () => new test_WFC2D_base());
             return new demoList();
         });
 

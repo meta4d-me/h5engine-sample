@@ -18,19 +18,20 @@ class datGui
     private static loadJs()
     {
         let datUrl = `./lib/dat.gui.js`;
-        let p = new m4m.threading.gdPromise<any>((resolve, reason) =>
-        {
-            m4m.io.loadText(datUrl, (txt) =>
-            {
-                let isok = eval(txt);
-                setTimeout(() =>
-                {
-                    resolve();
-                    console.warn(dat);
-                }, 0);
-            });
-        });
-        return p;
+        return util.loadJSLib(datUrl);
+        // let p = new m4m.threading.gdPromise<any>((resolve, reason) =>
+        // {
+        //     m4m.io.loadText(datUrl, (txt) =>
+        //     {
+        //         let isok = eval(txt);
+        //         setTimeout(() =>
+        //         {
+        //             resolve();
+        //             console.warn(dat);
+        //         }, 0);
+        //     });
+        // });
+        // return p;
     }
 
     /** 使用样例 */
