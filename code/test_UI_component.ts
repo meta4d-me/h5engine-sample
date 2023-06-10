@@ -275,7 +275,7 @@ class test_UI_Component implements IState {
 
         m4m["he"] = ipt;
 
-        //多行输入框
+        //多行输入框 (回车换行)
         let ipt_mul_t = m4m.framework.TransformUtil.Create2DPrimitive(m4m.framework.Primitive2DType.InputField);
         bg_t.addChild(ipt_mul_t);
         ipt_mul_t.width = 300;
@@ -286,7 +286,7 @@ class test_UI_Component implements IState {
         // ipt_mul.LineType = m4m.framework.lineType.MultiLine;                                        //设置多行输入
         ipt_mul.LineType = m4m.framework.lineType.MultiLine_NewLine;                                   //设置多行输入 ，回车换行
         ipt_mul.PlaceholderLabel.text = "MultiLine Enter text...";                                      //占位文本设置
-        ipt_mul.text = `多行文本输入框\n<color=#ff00aa>支持</color><color=#00ffaa><i>富文本</i></color>: [happy][cool][like]`;
+        ipt_mul.text = `多行文本输入框\n<color=#ff00aa>支持</color><color=#00ffaa><i>富文本</i></color>: [happy][cool][like]\nMultiLine_NewLine模式,输入回车直接换行`;
         //监听 文本提交回调
         ipt_mul.onTextSubmit = (t) => {
             console.log(`提交文本:${t}`);
@@ -298,13 +298,35 @@ class test_UI_Component implements IState {
         ipt_mul.TextLabel.richText = true;                  //让 textLable 使用富文本
         ipt_mul.TextLabel.imageTextAtlas = emojiAtlas;      //设置 textLable 富文本中的图片字符
 
+        //多行输入框 (回车换行)
+        let ipt_mul_t_1 = m4m.framework.TransformUtil.Create2DPrimitive(m4m.framework.Primitive2DType.InputField);
+        bg_t.addChild(ipt_mul_t_1);
+        ipt_mul_t_1.width = 200;
+        ipt_mul_t_1.height = 120;
+        ipt_mul_t_1.localTranslate.x = 500;
+        ipt_mul_t_1.localTranslate.y = 40;
+        let ipt_mul_1 = ipt_mul_t_1.getComponent("inputField") as m4m.framework.inputField;
+        ipt_mul_1.LineType = m4m.framework.lineType.MultiLine;                                              //设置多行输入 ，回车提交
+        ipt_mul_1.PlaceholderLabel.text = "MultiLine Enter text...";                                        //占位文本设置
+        ipt_mul_1.text = `多行文本输入框\n<color=#ff00aa>支持</color><color=#00ffaa><i>富文本Text</i></color>: [cool][cool][like][cool]\nMultiLine模式,输入回车直接提交`;
+        //监听 文本提交回调
+        ipt_mul_1.onTextSubmit = (t) => {
+            console.log(`提交文本:${t}`);
+        }
+        m4m.math.colorSet(ipt_mul_1.frameImage.color, 0.9, 0.9, 0.9, 1);
+        //lable set font 
+        let ls_1 = ipt_mul_t_1.getComponentsInChildren("label") as m4m.framework.label[];
+        ls_1.forEach((l) => { l.font = _font; });
+        ipt_mul_1.TextLabel.richText = true;                  //让 textLable 使用富文本
+        ipt_mul_1.TextLabel.imageTextAtlas = emojiAtlas;      //设置 textLable 富文本中的图片字符
+
 
         //滑动卷轴框
         let scroll_t = new m4m.framework.transform2D;
         scroll_t.width = 200;
         scroll_t.height = 130;
         bg_t.addChild(scroll_t);
-        scroll_t.localTranslate.x = 500;
+        scroll_t.localTranslate.x = 800;
         scroll_t.localTranslate.y = 30;
         let scroll_ = scroll_t.addComponent("scrollRect") as m4m.framework.scrollRect;
         let ct = new m4m.framework.transform2D;

@@ -9791,7 +9791,7 @@ var test_UI_Component = /** @class */ (function () {
         ipt.PlaceholderLabel.fontsize = 24;
         ipt.PlaceholderLabel.color = new m4m.math.color(0.6, 0.6, 0.6, 1);
         m4m["he"] = ipt;
-        //多行输入框
+        //多行输入框 (回车换行)
         var ipt_mul_t = m4m.framework.TransformUtil.Create2DPrimitive(m4m.framework.Primitive2DType.InputField);
         bg_t.addChild(ipt_mul_t);
         ipt_mul_t.width = 300;
@@ -9802,7 +9802,7 @@ var test_UI_Component = /** @class */ (function () {
         // ipt_mul.LineType = m4m.framework.lineType.MultiLine;                                        //设置多行输入
         ipt_mul.LineType = m4m.framework.lineType.MultiLine_NewLine; //设置多行输入 ，回车换行
         ipt_mul.PlaceholderLabel.text = "MultiLine Enter text..."; //占位文本设置
-        ipt_mul.text = "\u591A\u884C\u6587\u672C\u8F93\u5165\u6846\n<color=#ff00aa>\u652F\u6301</color><color=#00ffaa><i>\u5BCC\u6587\u672C</i></color>: [happy][cool][like]";
+        ipt_mul.text = "\u591A\u884C\u6587\u672C\u8F93\u5165\u6846\n<color=#ff00aa>\u652F\u6301</color><color=#00ffaa><i>\u5BCC\u6587\u672C</i></color>: [happy][cool][like]\nMultiLine_NewLine\u6A21\u5F0F,\u8F93\u5165\u56DE\u8F66\u76F4\u63A5\u6362\u884C";
         //监听 文本提交回调
         ipt_mul.onTextSubmit = function (t) {
             console.log("\u63D0\u4EA4\u6587\u672C:".concat(t));
@@ -9813,12 +9813,33 @@ var test_UI_Component = /** @class */ (function () {
         ls.forEach(function (l) { l.font = _font; });
         ipt_mul.TextLabel.richText = true; //让 textLable 使用富文本
         ipt_mul.TextLabel.imageTextAtlas = emojiAtlas; //设置 textLable 富文本中的图片字符
+        //多行输入框 (回车换行)
+        var ipt_mul_t_1 = m4m.framework.TransformUtil.Create2DPrimitive(m4m.framework.Primitive2DType.InputField);
+        bg_t.addChild(ipt_mul_t_1);
+        ipt_mul_t_1.width = 200;
+        ipt_mul_t_1.height = 120;
+        ipt_mul_t_1.localTranslate.x = 500;
+        ipt_mul_t_1.localTranslate.y = 40;
+        var ipt_mul_1 = ipt_mul_t_1.getComponent("inputField");
+        ipt_mul_1.LineType = m4m.framework.lineType.MultiLine; //设置多行输入 ，回车提交
+        ipt_mul_1.PlaceholderLabel.text = "MultiLine Enter text..."; //占位文本设置
+        ipt_mul_1.text = "\u591A\u884C\u6587\u672C\u8F93\u5165\u6846\n<color=#ff00aa>\u652F\u6301</color><color=#00ffaa><i>\u5BCC\u6587\u672CText</i></color>: [cool][cool][like][cool]\nMultiLine\u6A21\u5F0F,\u8F93\u5165\u56DE\u8F66\u76F4\u63A5\u63D0\u4EA4";
+        //监听 文本提交回调
+        ipt_mul_1.onTextSubmit = function (t) {
+            console.log("\u63D0\u4EA4\u6587\u672C:".concat(t));
+        };
+        m4m.math.colorSet(ipt_mul_1.frameImage.color, 0.9, 0.9, 0.9, 1);
+        //lable set font 
+        var ls_1 = ipt_mul_t_1.getComponentsInChildren("label");
+        ls_1.forEach(function (l) { l.font = _font; });
+        ipt_mul_1.TextLabel.richText = true; //让 textLable 使用富文本
+        ipt_mul_1.TextLabel.imageTextAtlas = emojiAtlas; //设置 textLable 富文本中的图片字符
         //滑动卷轴框
         var scroll_t = new m4m.framework.transform2D;
         scroll_t.width = 200;
         scroll_t.height = 130;
         bg_t.addChild(scroll_t);
-        scroll_t.localTranslate.x = 500;
+        scroll_t.localTranslate.x = 800;
         scroll_t.localTranslate.y = 30;
         var scroll_ = scroll_t.addComponent("scrollRect");
         var ct = new m4m.framework.transform2D;
