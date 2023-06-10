@@ -11,7 +11,6 @@
       "es2015.core"
     ],
     "experimentalDecorators": true,
-    "noImplicitUseStrict": true,
     "declaration": false,
     "sourceMap": false,
     "removeComments": false,
@@ -20,7 +19,8 @@
     "outFile": "../example.js",
     "types": [
       "../../../lib/m4m",
-      "../lib/webxr"
+      "../lib/webxr",
+      "../lib/wfc2D",
     ]
   }
 }

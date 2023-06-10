@@ -1,5 +1,4 @@
 namespace util {
-
     /**
      * 异步加载 any 资源
      * @param url 资源url
@@ -233,6 +232,106 @@ namespace util {
 
         displayer.update();
         return displayer;
+    }
+
+    /**
+     * 根据输入的 图列表 合并成一个图集
+     * @param imgUrls 图url列表 
+     * @param middleGap 中间的间隔 
+     * @returns 图集
+     */
+    export async function imageMergeToAtlas(imgUrls: string[], middleGap: number = 1) {
+        if (!imgUrls || imgUrls.length < 1) return;
+        let app = m4m.framework.sceneMgr.app;
+        //保证 依赖的js被加载了
+        if (!globalThis.GrowingPacker) {
+            await loadJSLib(`./lib/packer.growing.js`);
+        }
+        const gapSize = middleGap * 2;
+
+        //加载所有的img 
+        let imgs: HTMLImageElement[] = [];
+        let imgNames: string[] = [];
+        let ps: Promise<any>[] = [];
+        for (let i = 0, len = imgUrls.length; i < len; i++) {
+            let url = imgUrls[i];
+            let img = new Image();
+            let tempStr = url.split("/").pop();
+            let urlSp = tempStr.split(".");
+            urlSp.pop();
+            imgNames.push(urlSp.pop());
+            img.src = url;
+            imgs.push(img);
+
+            let p = new Promise((res, rej) => {
+                img.onload = res;
+                img.onerror = rej;
+            });
+            ps.push(p);
+        }
+        await Promise.all(ps);  //等待所有 image 资源加载完
+
+        //计算装箱
+        let blocks: { w: number, h: number, idx: number }[] = [];
+        for (let i = 0, len = imgs.length; i < len; i++) {
+            let img = imgs[i];
+            let w = img.width + gapSize;
+            let h = img.height + gapSize;
+            let idx = i;
+            blocks.push({ w, h, idx });
+        }
+
+        blocks.sort((a, b) => { return (b.h - a.h); }); // sort inputs for best results
+        let packer = new globalThis.GrowingPacker();
+        packer.fit(blocks);
+
+        //获取 图集纹理 size
+        let atlasW = 0;
+        let atlasH = 0;
+        for (let i = 0, len = blocks.length; i < len; i++) {
+            let b = blocks[i];
+            let _w = (b as any).fit.x + (b as any).fit.w;
+            let _h = (b as any).fit.y + (b as any).fit.h;
+            if (_w > atlasW) atlasW = _w;
+            if (_h > atlasH) atlasH = _h;
+        }
+
+        //绘制到一张纹理上
+        //  创建一个canvas
+        let _canvas = document.createElement("canvas");
+        _canvas.width = atlasW;
+        _canvas.height = atlasH;
+        //图集设置
+        let atlasName = `imageMergeAtlas`;
+        let atlasTex = new m4m.framework.texture(`${atlasName}_Tex`);
+        let result: m4m.framework.atlas = new m4m.framework.atlas(atlasName);
+        result.texturewidth = atlasW;
+        result.textureheight = atlasH;
+        //遍历图
+        let _ctx2d = _canvas.getContext("2d", { alpha: true });
+        for (let i = 0, len = blocks.length; i < len; i++) {
+            let b = blocks[i];
+            let idx = b.idx;
+            let x = (b as any).fit.x - middleGap;
+            let y = (b as any).fit.y - middleGap;
+            let imgName = imgNames[idx];
+            let img = imgs[idx];
+            //  逐图绘制到canvas
+            _ctx2d.drawImage(img, x, y);
+            //  构建Atlas 
+            let _sp = new m4m.framework.sprite(`${atlasName}_${imgName}`);
+            _sp.texture = atlasTex;
+            result.sprites[imgName] = _sp;
+            _sp.rect = new m4m.math.rect(x, y, img.width, img.height);
+        }
+
+        //  创建纹理
+        let glTex = atlasTex.glTexture = new m4m.render.glTexture2D(app.webgl, m4m.render.TextureFormatEnum.RGBA);
+        glTex.uploadImage((_canvas as any), false, true);
+        //  构建Atlas 
+        result.texture = atlasTex;
+        //
+        return result;
     }
 
 }

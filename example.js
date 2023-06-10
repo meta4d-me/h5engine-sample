@@ -1333,6 +1333,7 @@ var main = /** @class */ (function () {
             demoList.addBtn("UI 新手引导mask", function () { return new test_UIGuideMask(); });
             demoList.addBtn("UI 使用 纹理数组模式(webgl2 优化)", function () { return new test_UI_Texture_Array(); });
             demoList.addBtn("UI 贴到3D空间", function () { return new test_UI_Attach3D(); });
+            demoList.addBtn("波函数坍缩 WFC 2D 生成背景", function () { return new test_WFC2D_base(); });
             return new demoList();
         });
         //-------------------------------------------物理
@@ -9932,6 +9933,310 @@ var test_UI_Component = /** @class */ (function () {
         console.error("end:".concat(temp.toString()));
     };
     return test_UI_Component;
+}());
+/**
+ * 波函数坍缩2d 生成基础
+ * WFC2d库链接：https://github.com/anseyuyin/wfc2D
+ */
+var test_WFC2D_base = /** @class */ (function () {
+    function test_WFC2D_base() {
+        /** 资源方到 examples/engineExample/exampleResource/wfc2d/  路径下 */
+        this.WFC2DResList = ["Carcassonne", "Circuit", "Summer", "test", "Village"];
+        this._selectWFC2DRes = "Circuit";
+        this.currWFC2DRes = this._selectWFC2DRes;
+        this.autoTileSize = true;
+        this.imgToAtlas = true;
+        /** 尝试最大回退次数 */
+        this.backOffMaxNum = 300;
+        /** 回退缓存数 */
+        this.capQueueMaxLen = 3;
+        /** 缓存率 */
+        this.capRate = 0.02;
+        //设定地图尺寸
+        this._mapWidth = 30;
+        this._mapHeigth = 30;
+        this._tileSize = 14;
+    }
+    Object.defineProperty(test_WFC2D_base.prototype, "selectWFC2DRes", {
+        get: function () { return this._selectWFC2DRes; },
+        set: function (val) { this._selectWFC2DRes = this.currWFC2DRes = val; },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(test_WFC2D_base.prototype, "mapWidth", {
+        get: function () { return this._mapWidth; },
+        set: function (val) { this._mapWidth = this.setVal(val); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(test_WFC2D_base.prototype, "mapHeigth", {
+        get: function () { return this._mapHeigth; },
+        set: function (val) { this._mapHeigth = this.setVal(val); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(test_WFC2D_base.prototype, "tileSize", {
+        get: function () { return this._tileSize; },
+        set: function (val) {
+            if (this.autoTileSize)
+                return;
+            this._tileSize = this.setVal(val);
+        },
+        enumerable: false,
+        configurable: true
+    });
+    test_WFC2D_base.prototype.setVal = function (val) { return Math.floor(val < 1 ? 1 : val); };
+    test_WFC2D_base.prototype.setTileSize = function (val) { this._tileSize = this.setVal(val); this.tileSize = this._tileSize; };
+    test_WFC2D_base.prototype.setGUI = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var app, obj, gui, wfcPs;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, datGui.init()];
+                    case 1:
+                        _a.sent();
+                        if (!dat)
+                            return [2 /*return*/];
+                        app = m4m.framework.sceneMgr.app;
+                        //
+                        app.showFps();
+                        app.showDrawCall();
+                        obj = {
+                            isOnFPS: true,
+                            swFPS: function () {
+                                (obj.isOnFPS = !obj.isOnFPS) ? app.showFps() : app.closeFps();
+                            },
+                            isOnDCall: true,
+                            swDC: function () {
+                                (obj.isOnDCall = !obj.isOnDCall) ? app.showDrawCall() : app.closeDrawCall();
+                            }
+                        };
+                        gui = new dat.GUI();
+                        gui.add(obj, "swFPS").name("FPS \u5F00\u5173");
+                        gui.add(obj, "swDC").name("drawcall \u5F00\u5173");
+                        gui.add(this, "autoTileSize").name("\u5355\u5143\u50CF\u7D20\u81EA\u52A8").listen();
+                        gui.add(this, "tileSize").name("\u74E6\u7247\u5355\u5143\u50CF\u7D20\u5C3A\u5BF8").listen();
+                        gui.add(this, "imgToAtlas").name("\u4F18\u5316\u6210\u56FE\u96C6").listen();
+                        gui.add(this, "selectWFC2DRes", this.WFC2DResList).name("\u9009\u62E9\u8D44\u6E90");
+                        gui.add(this, "currWFC2DRes").name("\u8D44\u6E90\u540D").listen();
+                        gui.add(this, "mapWidth").name("\u5730\u56FE\u5BBD").listen();
+                        gui.add(this, "mapHeigth").name("\u5730\u56FE\u9AD8").listen();
+                        wfcPs = gui.addFolder("WFC2D \u751F\u6210\u53C2\u6570");
+                        wfcPs.add(this, "backOffMaxNum", 0).name("\u6700\u5927\u56DE\u9000\u6B21\u6570");
+                        wfcPs.add(this, "capQueueMaxLen", 0).name("\u56DE\u9000\u7F13\u5B58\u6B21\u6570");
+                        wfcPs.add(this, "capRate", 0, 1, 0.001).name("\u7F13\u5B58\u7387").listen();
+                        wfcPs.close();
+                        gui.add(this, "genBG").name("\u751F\u6210");
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    test_WFC2D_base.prototype.getWFCRes = function (res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var textRes, jsonObj;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, util.loadRes("".concat(resRootPath, "wfc2d/").concat(res, "/data.json"))];
+                    case 1:
+                        textRes = _a.sent();
+                        jsonObj = JSON.parse(textRes.content);
+                        return [2 /*return*/, jsonObj];
+                }
+            });
+        });
+    };
+    test_WFC2D_base.prototype.makeTile = function (size, img, rotate) {
+        var result;
+        var node;
+        if (img instanceof m4m.framework.texture) {
+            node = m4m.framework.TransformUtil.Create2DPrimitive(m4m.framework.Primitive2DType.RawImage2D);
+            var rawImg = node.getComponent("rawImage2D");
+            rawImg.image = img;
+            result = rawImg;
+        }
+        else {
+            node = m4m.framework.TransformUtil.Create2DPrimitive(m4m.framework.Primitive2DType.Image2D);
+            var img2d = node.getComponent("image2D");
+            img2d.sprite = img;
+            result = img2d;
+        }
+        //
+        node.width = size;
+        node.height = size;
+        node.localRotate = rotate * 90 * m4m.math.DEG2RAD;
+        node.pivot = new m4m.math.vector2(0.5, 0.5);
+        return result;
+    };
+    test_WFC2D_base.prototype.combinationGB = function (tileData, imgNameResMap, w, h) {
+        if (!tileData)
+            return null;
+        var tileSize = this._tileSize;
+        var result = new m4m.framework.transform2D();
+        result.name = "".concat(this.currWFC2DRes, "_bg_root");
+        result.width = tileSize * this._mapWidth;
+        result.height = tileSize * this._mapHeigth;
+        //绘制地图的每个瓦片
+        var count = 0;
+        for (var y = 0; y < h; y++) {
+            for (var x = 0; x < w; x++) {
+                var imgData = tileData[count++];
+                //图片资源名 , 类型 string
+                var imgName = imgData[0];
+                //图片顺时针旋转次数（每次90度）, 类型 number 
+                var rotate = imgData[1];
+                //绘制 一个 瓦片到容器  (xxxDrawTile 替换成自己的绘制函数)
+                var _img = imgNameResMap.get(imgName);
+                var _2dImg = this.makeTile(tileSize, _img, rotate);
+                _2dImg.transform.localTranslate.x = x * tileSize;
+                _2dImg.transform.localTranslate.y = y * tileSize;
+                result.addChild(_2dImg.transform);
+            }
+        }
+        return result;
+    };
+    /** 生成 背景图 */
+    test_WFC2D_base.prototype.genBG = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var jsonConf, imgURLs, tiles, imgNames, key, element, wfc2d, resultMap, err_1;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        //先清理历史
+                        this.releaseHistory();
+                        return [4 /*yield*/, this.getWFCRes(this.currWFC2DRes)];
+                    case 1:
+                        jsonConf = _a.sent();
+                        imgURLs = [];
+                        tiles = jsonConf.tiles;
+                        imgNames = [];
+                        for (key in tiles) {
+                            if (Object.prototype.hasOwnProperty.call(tiles, key)) {
+                                element = tiles[key];
+                                imgURLs.push("".concat(resRootPath, "wfc2d/").concat(this.currWFC2DRes, "/").concat(key).concat(element[0]));
+                                imgNames.push(key);
+                            }
+                        }
+                        wfc2d = new WFC.WFC2D(jsonConf);
+                        _a.label = 2;
+                    case 2:
+                        _a.trys.push([2, 4, , 5]);
+                        return [4 /*yield*/, wfc2d.collapse(this._mapWidth, this._mapHeigth, this.backOffMaxNum, this.capQueueMaxLen, this.capRate)];
+                    case 3:
+                        resultMap = _a.sent();
+                        return [3 /*break*/, 5];
+                    case 4:
+                        err_1 = _a.sent();
+                        alert("\u751F\u6210\u5931\u8D25 \nWFC \u7B97\u6CD5\u662F\u4E0D\u4FDD\u8BC1\u6210\u529F\u7684 \n\u5BF9\u4E8E\u4E0D\u540C\u7684\u8D44\u6E90\u6210\u529F\u7387\u4E5F\u4E0D\u4E00\u6837 \n\u60F3\u8981\u63D0\u9AD8\u6210\u529F\u7387\u53EF\u4EE5\u5C1D\u8BD5\u4FEE\u6539 \u201CWFC2D \u751F\u6210\u53C2\u6570\u201D \u8BBE\u7F6E");
+                        return [2 /*return*/];
+                    case 5:
+                        if (this.imgToAtlas) {
+                            //图集模式 ，使用 Image2D ，UI drawCall 少 ，会合批
+                            this.makeBGByImg(resultMap, imgURLs);
+                        }
+                        else {
+                            //单图模式 ，使用 RawImage ，UI drawCall 多
+                            this.makeBGByRawImg(resultMap, imgURLs, imgNames);
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    test_WFC2D_base.prototype.makeBGByRawImg = function (wfc2dReslutMap, imgURLs, imgNames) {
+        return __awaiter(this, void 0, void 0, function () {
+            var imgs, imgNameResMap, i, len, genBG;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, util.loadTextures(imgURLs, m4m.framework.sceneMgr.app.getAssetMgr())];
+                    case 1:
+                        imgs = _a.sent();
+                        if (this.autoTileSize && imgs.length > 0) {
+                            this.setTileSize(imgs[0].glTexture.width);
+                        }
+                        imgNameResMap = new Map();
+                        for (i = 0, len = imgs.length; i < len; i++) {
+                            imgNameResMap.set(imgNames[i], imgs[i]);
+                        }
+                        genBG = this.combinationGB(wfc2dReslutMap, imgNameResMap, this._mapWidth, this._mapHeigth);
+                        //挂载到场景
+                        this.bgRoot.addChild(genBG);
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    test_WFC2D_base.prototype.makeBGByImg = function (wfc2dReslutMap, imgURLs) {
+        return __awaiter(this, void 0, void 0, function () {
+            var atlas, sps, imgNameResMap, hasSetTileSize, key, element, genBG;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, util.imageMergeToAtlas(imgURLs)];
+                    case 1:
+                        atlas = _a.sent();
+                        sps = atlas.sprites;
+                        imgNameResMap = new Map();
+                        hasSetTileSize = false;
+                        for (key in sps) {
+                            if (Object.prototype.hasOwnProperty.call(sps, key)) {
+                                element = sps[key];
+                                imgNameResMap.set(key, element);
+                                if (this.autoTileSize && !hasSetTileSize) {
+                                    this.setTileSize(element.rect.w);
+                                    hasSetTileSize = true;
+                                }
+                            }
+                        }
+                        genBG = this.combinationGB(wfc2dReslutMap, imgNameResMap, this._mapWidth, this._mapHeigth);
+                        //挂载到场景
+                        this.bgRoot.addChild(genBG);
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    test_WFC2D_base.prototype.releaseHistory = function () {
+        this.bgRoot.removeAllChild(true);
+    };
+    test_WFC2D_base.prototype.start = function (app) {
+        return __awaiter(this, void 0, void 0, function () {
+            var scene, objCam;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        scene = app.getScene();
+                        objCam = new m4m.framework.transform();
+                        objCam.name = "sth.";
+                        scene.addChild(objCam);
+                        this.camera = objCam.gameObject.addComponent("camera");
+                        this.camera.near = 0.01;
+                        this.camera.far = 10;
+                        //2dUI root
+                        this.rooto2d = new m4m.framework.overlay2D();
+                        this.camera.addOverLay(this.rooto2d);
+                        //node root
+                        this.bgRoot = new m4m.framework.transform2D();
+                        this.bgRoot.name = "bgRoot";
+                        this.rooto2d.addChild(this.bgRoot);
+                        //load js
+                        // await util.loadJSLib(`./lib/dat.gui.js`);
+                        return [4 /*yield*/, util.loadJSLib("./lib/wfc2D.js")];
+                    case 1:
+                        //load js
+                        // await util.loadJSLib(`./lib/dat.gui.js`);
+                        _a.sent();
+                        //init gui
+                        this.setGUI();
+                        //先生成一个
+                        this.genBG();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    test_WFC2D_base.prototype.update = function (delta) {
+    };
+    return test_WFC2D_base;
 }());
 var test_animationClip = /** @class */ (function () {
     function test_animationClip() {
@@ -20627,6 +20932,109 @@ var util;
         return displayer;
     }
     util.makeAABBDisplayer = makeAABBDisplayer;
+    /**
+     * 根据输入的 图列表 合并成一个图集
+     * @param imgUrls 图url列表
+     * @param middleGap 中间的间隔
+     * @returns 图集
+     */
+    function imageMergeToAtlas(imgUrls, middleGap) {
+        if (middleGap === void 0) { middleGap = 1; }
+        return __awaiter(this, void 0, void 0, function () {
+            var app, gapSize, imgs, imgNames, ps, _loop_9, i, len, blocks, i, len, img, w, h, idx, packer, atlasW, atlasH, i, len, b, _w, _h, _canvas, atlasName, atlasTex, result, _ctx2d, i, len, b, idx, x, y, imgName, img, _sp, glTex;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!imgUrls || imgUrls.length < 1)
+                            return [2 /*return*/];
+                        app = m4m.framework.sceneMgr.app;
+                        if (!!globalThis.GrowingPacker) return [3 /*break*/, 2];
+                        return [4 /*yield*/, loadJSLib("./lib/packer.growing.js")];
+                    case 1:
+                        _a.sent();
+                        _a.label = 2;
+                    case 2:
+                        gapSize = middleGap * 2;
+                        imgs = [];
+                        imgNames = [];
+                        ps = [];
+                        _loop_9 = function (i, len) {
+                            var url = imgUrls[i];
+                            var img = new Image();
+                            var tempStr = url.split("/").pop();
+                            var urlSp = tempStr.split(".");
+                            urlSp.pop();
+                            imgNames.push(urlSp.pop());
+                            img.src = url;
+                            imgs.push(img);
+                            var p = new Promise(function (res, rej) {
+                                img.onload = res;
+                                img.onerror = rej;
+                            });
+                            ps.push(p);
+                        };
+                        for (i = 0, len = imgUrls.length; i < len; i++) {
+                            _loop_9(i, len);
+                        }
+                        return [4 /*yield*/, Promise.all(ps)];
+                    case 3:
+                        _a.sent(); //等待所有 image 资源加载完
+                        blocks = [];
+                        for (i = 0, len = imgs.length; i < len; i++) {
+                            img = imgs[i];
+                            w = img.width + gapSize;
+                            h = img.height + gapSize;
+                            idx = i;
+                            blocks.push({ w: w, h: h, idx: idx });
+                        }
+                        blocks.sort(function (a, b) { return (b.h - a.h); }); // sort inputs for best results
+                        packer = new globalThis.GrowingPacker();
+                        packer.fit(blocks);
+                        atlasW = 0;
+                        atlasH = 0;
+                        for (i = 0, len = blocks.length; i < len; i++) {
+                            b = blocks[i];
+                            _w = b.fit.x + b.fit.w;
+                            _h = b.fit.y + b.fit.h;
+                            if (_w > atlasW)
+                                atlasW = _w;
+                            if (_h > atlasH)
+                                atlasH = _h;
+                        }
+                        _canvas = document.createElement("canvas");
+                        _canvas.width = atlasW;
+                        _canvas.height = atlasH;
+                        atlasName = "imageMergeAtlas";
+                        atlasTex = new m4m.framework.texture("".concat(atlasName, "_Tex"));
+                        result = new m4m.framework.atlas(atlasName);
+                        result.texturewidth = atlasW;
+                        result.textureheight = atlasH;
+                        _ctx2d = _canvas.getContext("2d", { alpha: true });
+                        for (i = 0, len = blocks.length; i < len; i++) {
+                            b = blocks[i];
+                            idx = b.idx;
+                            x = b.fit.x - middleGap;
+                            y = b.fit.y - middleGap;
+                            imgName = imgNames[idx];
+                            img = imgs[idx];
+                            //  逐图绘制到canvas
+                            _ctx2d.drawImage(img, x, y);
+                            _sp = new m4m.framework.sprite("".concat(atlasName, "_").concat(imgName));
+                            _sp.texture = atlasTex;
+                            result.sprites[imgName] = _sp;
+                            _sp.rect = new m4m.math.rect(x, y, img.width, img.height);
+                        }
+                        glTex = atlasTex.glTexture = new m4m.render.glTexture2D(app.webgl, m4m.render.TextureFormatEnum.RGBA);
+                        glTex.uploadImage(_canvas, false, true);
+                        //  构建Atlas 
+                        result.texture = atlasTex;
+                        //
+                        return [2 /*return*/, result];
+                }
+            });
+        });
+    }
+    util.imageMergeToAtlas = imageMergeToAtlas;
 })(util || (util = {}));
 //加载动作病简单使用动作的Dome
 var UseAniplayClipDemo = /** @class */ (function () {
@@ -24482,16 +24890,20 @@ var datGui = /** @class */ (function () {
     //加载 js
     datGui.loadJs = function () {
         var datUrl = "./lib/dat.gui.js";
-        var p = new m4m.threading.gdPromise(function (resolve, reason) {
-            m4m.io.loadText(datUrl, function (txt) {
-                var isok = eval(txt);
-                setTimeout(function () {
-                    resolve();
-                    console.warn(dat);
-                }, 0);
-            });
-        });
-        return p;
+        return util.loadJSLib(datUrl);
+        // let p = new m4m.threading.gdPromise<any>((resolve, reason) =>
+        // {
+        //     m4m.io.loadText(datUrl, (txt) =>
+        //     {
+        //         let isok = eval(txt);
+        //         setTimeout(() =>
+        //         {
+        //             resolve();
+        //             console.warn(dat);
+        //         }, 0);
+        //     });
+        // });
+        // return p;
     };
     /** 使用样例 */
     datGui.example = function () {
