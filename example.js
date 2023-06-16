@@ -9748,7 +9748,7 @@ var test_UI_Component = /** @class */ (function () {
         }, this);
         //一个输入框
         var iptFrame_t = new m4m.framework.transform2D;
-        iptFrame_t.width = 800;
+        iptFrame_t.width = 500;
         iptFrame_t.height = 30;
         iptFrame_t.pivot.x = 0;
         iptFrame_t.pivot.y = 0;
@@ -9756,6 +9756,7 @@ var test_UI_Component = /** @class */ (function () {
         iptFrame_t.localTranslate.y = 180;
         bg_t.addChild(iptFrame_t);
         var ipt = iptFrame_t.addComponent("inputField");
+        // ipt.ContentType = m4m.framework.contentType.PassWord;                              //内容类型限制
         ipt.LineType = m4m.framework.lineType.SingleLine; //单行输入
         ipt.onTextSubmit = function (t) {
             console.log("\u63D0\u4EA4\u6587\u672C:".concat(t));
@@ -9791,7 +9792,17 @@ var test_UI_Component = /** @class */ (function () {
         ipt.PlaceholderLabel.font = _font;
         ipt.PlaceholderLabel.fontsize = 24;
         ipt.PlaceholderLabel.color = new m4m.math.color(0.6, 0.6, 0.6, 1);
-        m4m["he"] = ipt;
+        //单行 密文输入框
+        var ipt_password_SingleLine = m4m.framework.TransformUtil.Create2DPrimitive(m4m.framework.Primitive2DType.InputField);
+        bg_t.addChild(ipt_password_SingleLine);
+        var ls_password = ipt_password_SingleLine.getComponentsInChildren("label");
+        ls_password.forEach(function (l) { l.font = _font; }); //改成使用的字体
+        ipt_password_SingleLine.width = 300;
+        ipt_password_SingleLine.localTranslate.x = 550;
+        ipt_password_SingleLine.localTranslate.y = 180;
+        var ipt_sg = ipt_password_SingleLine.getComponent("inputField");
+        ipt_sg.ContentType = m4m.framework.contentType.PassWord; //密码模式
+        ipt_sg.PlaceholderLabel.text = "passWord input mode ...";
         //多行输入框 (回车换行)
         var ipt_mul_t = m4m.framework.TransformUtil.Create2DPrimitive(m4m.framework.Primitive2DType.InputField);
         bg_t.addChild(ipt_mul_t);

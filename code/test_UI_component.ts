@@ -226,7 +226,7 @@ class test_UI_Component implements IState {
 
         //一个输入框
         let iptFrame_t = new m4m.framework.transform2D;
-        iptFrame_t.width = 800;
+        iptFrame_t.width = 500;
         iptFrame_t.height = 30;
         iptFrame_t.pivot.x = 0;
         iptFrame_t.pivot.y = 0;
@@ -234,6 +234,7 @@ class test_UI_Component implements IState {
         iptFrame_t.localTranslate.y = 180;
         bg_t.addChild(iptFrame_t);
         let ipt = iptFrame_t.addComponent("inputField") as m4m.framework.inputField;
+        // ipt.ContentType = m4m.framework.contentType.PassWord;                              //内容类型限制
         ipt.LineType = m4m.framework.lineType.SingleLine;                              //单行输入
         ipt.onTextSubmit = (t) => {
             console.log(`提交文本:${t}`);
@@ -273,7 +274,20 @@ class test_UI_Component implements IState {
         ipt.PlaceholderLabel.fontsize = 24
         ipt.PlaceholderLabel.color = new m4m.math.color(0.6, 0.6, 0.6, 1);
 
-        m4m["he"] = ipt;
+        //单行 密文输入框
+        let ipt_password_SingleLine = m4m.framework.TransformUtil.Create2DPrimitive(m4m.framework.Primitive2DType.InputField);
+        bg_t.addChild(ipt_password_SingleLine);
+        
+        let ls_password = ipt_password_SingleLine.getComponentsInChildren("label") as m4m.framework.label[];
+        ls_password.forEach((l) => { l.font = _font; });//改成使用的字体
+
+        ipt_password_SingleLine.width = 300;
+        ipt_password_SingleLine.localTranslate.x = 550;
+        ipt_password_SingleLine.localTranslate.y = 180;
+        let ipt_sg = ipt_password_SingleLine.getComponent("inputField") as m4m.framework.inputField;
+        ipt_sg.ContentType = m4m.framework.contentType.PassWord;    //密码模式
+        ipt_sg.PlaceholderLabel.text = "passWord input mode ...";
+
 
         //多行输入框 (回车换行)
         let ipt_mul_t = m4m.framework.TransformUtil.Create2DPrimitive(m4m.framework.Primitive2DType.InputField);
