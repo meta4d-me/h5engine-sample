@@ -9825,6 +9825,9 @@ var test_UI_Component = /** @class */ (function () {
         ls.forEach(function (l) { l.font = _font; });
         ipt_mul.TextLabel.richText = true; //让 textLable 使用富文本
         ipt_mul.TextLabel.imageTextAtlas = emojiAtlas; //设置 textLable 富文本中的图片字符
+        // ipt_mul.OverflowMode = m4m.framework.inputOverflowMode.SCROLL;  //一直显示滚动进度条
+        // ipt_mul.OverflowMode = m4m.framework.inputOverflowMode.AUTO;  //自动显示滚动进度条
+        ipt_mul.OverflowMode = m4m.framework.inputOverflowMode.HIDDEN; //隐藏滚动进度条
         //多行输入框 (回车换行)
         var ipt_mul_t_1 = m4m.framework.TransformUtil.Create2DPrimitive(m4m.framework.Primitive2DType.InputField);
         bg_t.addChild(ipt_mul_t_1);
