@@ -9552,27 +9552,33 @@ var test_UI_Component = /** @class */ (function () {
         this.taskmgr = new m4m.framework.taskMgr();
     }
     test_UI_Component.prototype.start = function (app) {
-        this.app = app;
-        this.scene = this.app.getScene();
-        this.assetMgr = this.app.getAssetMgr();
-        //相机
-        var objCam = new m4m.framework.transform();
-        objCam.name = "sth.";
-        this.scene.addChild(objCam);
-        this.camera = objCam.gameObject.addComponent("camera");
-        this.camera.near = 0.01;
-        this.camera.far = 10;
-        //2dUI root
-        this.rooto2d = new m4m.framework.overlay2D();
-        this.camera.addOverLay(this.rooto2d);
-        //任务排队执行系统
-        this.taskmgr.addTaskCall(this.loadTexture.bind(this));
-        this.taskmgr.addTaskCall(this.loadAtlas.bind(this));
-        this.taskmgr.addTaskCall(this.createUI.bind(this));
+        return __awaiter(this, void 0, void 0, function () {
+            var objCam;
+            return __generator(this, function (_a) {
+                this.app = app;
+                this.scene = this.app.getScene();
+                this.assetMgr = this.app.getAssetMgr();
+                objCam = new m4m.framework.transform();
+                objCam.name = "sth.";
+                this.scene.addChild(objCam);
+                this.camera = objCam.gameObject.addComponent("camera");
+                this.camera.near = 0.01;
+                this.camera.far = 10;
+                //2dUI root
+                this.rooto2d = new m4m.framework.overlay2D();
+                this.camera.addOverLay(this.rooto2d);
+                //任务排队执行系统
+                this.taskmgr.addTaskCall(this.loadTexture.bind(this));
+                this.taskmgr.addTaskCall(this.loadAtlas.bind(this));
+                this.taskmgr.addTaskCall(this.createUI.bind(this));
+                return [2 /*return*/];
+            });
+        });
     };
     test_UI_Component.prototype.createUI = function (astState, state) {
         var atlasComp = this.assetMgr.getAssetByName("comp.atlas.json");
         var tex_0 = this.assetMgr.getAssetByName("zg03_256.png");
+        var tex_1 = this.assetMgr.getAssetByName("OIP-C.jpg");
         var emojiAtlas = m4m.framework.sceneMgr.app.getAssetMgr().getAssetByName("emoji.atlas.json", "emoji.assetbundle.json");
         //9宫格拉伸底图
         var bg_t = new m4m.framework.transform2D;
@@ -9885,14 +9891,51 @@ var test_UI_Component = /** @class */ (function () {
         s_l.verticalType = m4m.framework.VerticalType.Top;
         s_l.text = "scrollRect \ntry drag \nto move";
         ct.addChild(s_l_t);
-        test_UI_Component.temp = iptFrame_t;
-        //key dwon test
-        var inputMgr = this.app.getInputMgr();
-        this.app.webgl.canvas.addEventListener("keydown", function (ev) {
-            if (ev.keyCode == 81) {
-            }
-        }, false);
+        //rawImage 组件
+        //rawImage 基本
+        var rawImg_t = m4m.framework.TransformUtil.Create2DPrimitive(m4m.framework.Primitive2DType.RawImage2D);
+        rawImg_t.width = 200;
+        rawImg_t.height = 200;
+        rawImg_t.localTranslate.x = 600;
+        rawImg_t.localTranslate.y = 250;
+        bg_t.addChild(rawImg_t);
+        var rawImg = rawImg_t.getComponent("rawImage2D");
+        rawImg.image = tex_1;
+        this.addInfoTextLabel("rawImage\u7EC4\u4EF6\n \u5BBD:".concat(rawImg_t.width, " \u9AD8:").concat(rawImg_t.height), rawImg_t, _font);
+        //rawImage 图等比缩放
+        var rawImg1_t = m4m.framework.TransformUtil.Create2DPrimitive(m4m.framework.Primitive2DType.RawImage2D);
+        rawImg1_t.width = 200;
+        rawImg1_t.height = 200;
+        rawImg1_t.localTranslate.x = 805;
+        rawImg1_t.localTranslate.y = 250;
+        bg_t.addChild(rawImg1_t);
+        var rawImg1 = rawImg1_t.getComponent("rawImage2D");
+        rawImg1.proportionalScalingMode = true;
+        rawImg1.image = tex_1;
+        this.addInfoTextLabel("rawImage\u7EC4\u4EF6\n \u5BBD:".concat(rawImg1_t.width, " \u9AD8:").concat(rawImg1_t.height, "\n\u56FE\u7B49\u6BD4\u7F29\u653E"), rawImg1_t, _font);
         state.finish = true;
+    };
+    /**
+     * 为节点添加一个文本信息
+     * @param info
+     * @param target
+     * @param color
+     */
+    test_UI_Component.prototype.addInfoTextLabel = function (info, target, font, width, fontSize, color) {
+        if (width === void 0) { width = 200; }
+        if (fontSize === void 0) { fontSize = 26; }
+        if (color === void 0) { color = new m4m.math.color(1, 0, 0, 1); }
+        var lab_t = m4m.framework.TransformUtil.Create2DPrimitive(m4m.framework.Primitive2DType.Label);
+        lab_t.width = width;
+        lab_t.layoutState = m4m.framework.layoutOption.H_CENTER | m4m.framework.layoutOption.V_CENTER;
+        var lab = lab_t.getComponent("label");
+        lab.verticalOverflow = true;
+        lab.text = info;
+        lab.horizontalType = m4m.framework.HorizontalType.Center;
+        lab.fontsize = fontSize;
+        lab.color = color;
+        lab.font = font;
+        target.addChild(lab_t);
     };
     test_UI_Component.prototype.loadTexture = function (lastState, state) {
         var _this = this;
@@ -9906,9 +9949,14 @@ var test_UI_Component = /** @class */ (function () {
                             if (s.isfinish) {
                                 _this.assetMgr.load("".concat(resRootPath, "font/") + _this.fontjson, m4m.framework.AssetTypeEnum.Auto, function (s) {
                                     _this.assetMgr.load("".concat(resRootPath, "texture/zg03_256.png"), m4m.framework.AssetTypeEnum.Auto, function (s) {
-                                        if (s.isfinish) {
-                                            state.finish = true;
-                                        }
+                                        // if (s.isfinish) {
+                                        //     state.finish = true;
+                                        // }
+                                        _this.assetMgr.load("".concat(resRootPath, "texture/OIP-C.jpg"), m4m.framework.AssetTypeEnum.Auto, function (s) {
+                                            if (s.isfinish) {
+                                                state.finish = true;
+                                            }
+                                        });
                                     });
                                 });
                             }
@@ -24879,6 +24927,91 @@ var guideMask = /** @class */ (function (_super) {
     ], guideMask);
     return guideMask;
 }(m4m.framework.behaviour2d));
+/**
+ * 任务 管理器
+ * 单个任务 ： Function(cb):void;
+ */
+var TaskManager = /** @class */ (function () {
+    function TaskManager() {
+    }
+    // private static onTaskClear() {
+    //     console.log(`任务完全清空！`);
+    // }
+    // public static addTask(task: TaskFun) {
+    //     task(this.onTaskClear);
+    // }
+    /**
+     * 创建串行任务
+     * @param tasks 任务函数(多参数)
+     */
+    TaskManager.serial = function () {
+        var tasks = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            tasks[_i] = arguments[_i];
+        }
+        return this.serialArray(tasks);
+    };
+    /**
+     * 创建串行任务
+     * @param tasks 任务函数队列
+     */
+    TaskManager.serialArray = function (tasks) {
+        var _tasks = tasks.concat(); //copy 一个
+        var _cb;
+        var result = function (cb) {
+            if (!_cb) {
+                _cb = cb;
+            }
+            var t = _tasks.shift();
+            if (t) {
+                t(result);
+            }
+            else {
+                _cb();
+            }
+        };
+        return result;
+    };
+    /**
+     * 创建并行任务
+     * @param tasks 任务函数(多参数)
+     */
+    TaskManager.parallel = function () {
+        var tasks = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            tasks[_i] = arguments[_i];
+        }
+        return this.parallelArray(tasks);
+    };
+    /**
+     * 创建并行任务
+     * @param tasks 任务函数队列
+     */
+    TaskManager.parallelArray = function (tasks) {
+        var _tasks = tasks.concat(); //copy 一个
+        var result = function (cb) {
+            var len = _tasks.length;
+            var count = 0;
+            var counting = function () {
+                count++;
+                if (count >= len) {
+                    cb();
+                }
+            };
+            if (len > 0) { //并行处理任务
+                for (var i = 0; i < len; i++) {
+                    var t_4 = tasks[i];
+                    t_4(counting);
+                }
+            }
+            else { //任务为空直接跳过
+                cb();
+            }
+        };
+        return result;
+    };
+    return TaskManager;
+}());
 // declare let Promise;
 /**
  * datGui 工具类
@@ -25039,8 +25172,8 @@ var physics3dDemoTool = /** @class */ (function () {
             var url = "".concat(resRootPath, "texture/uvTest.jpg");
             this.astMgr.load(url, m4m.framework.AssetTypeEnum.Texture, function (sta) {
                 if (sta.isfinish) {
-                    var t_4 = _this.astMgr.getAssetByName("uvTest.jpg");
-                    mat.setTexture("_MainTex", t_4);
+                    var t_5 = _this.astMgr.getAssetByName("uvTest.jpg");
+                    mat.setTexture("_MainTex", t_5);
                 }
             });
         }

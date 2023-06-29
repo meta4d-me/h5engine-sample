@@ -10,7 +10,7 @@ class test_UI_Component implements IState {
     assetMgr: m4m.framework.assetMgr;
     rooto2d: m4m.framework.overlay2D;
     static temp: m4m.framework.transform2D;
-    start(app: m4m.framework.application) {
+    async start(app: m4m.framework.application) {
 
         this.app = app;
         this.scene = this.app.getScene();
@@ -38,6 +38,7 @@ class test_UI_Component implements IState {
     private createUI(astState: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         let atlasComp = this.assetMgr.getAssetByName("comp.atlas.json") as m4m.framework.atlas;
         let tex_0 = this.assetMgr.getAssetByName("zg03_256.png") as m4m.framework.texture;
+        let tex_1 = this.assetMgr.getAssetByName("OIP-C.jpg") as m4m.framework.texture;
         let emojiAtlas = m4m.framework.sceneMgr.app.getAssetMgr().getAssetByName(`emoji.atlas.json`, `emoji.assetbundle.json`) as m4m.framework.atlas;
 
 
@@ -277,7 +278,7 @@ class test_UI_Component implements IState {
         //单行 密文输入框
         let ipt_password_SingleLine = m4m.framework.TransformUtil.Create2DPrimitive(m4m.framework.Primitive2DType.InputField);
         bg_t.addChild(ipt_password_SingleLine);
-        
+
         let ls_password = ipt_password_SingleLine.getComponentsInChildren("label") as m4m.framework.label[];
         ls_password.forEach((l) => { l.font = _font; });//改成使用的字体
 
@@ -377,20 +378,53 @@ class test_UI_Component implements IState {
         s_l.text = "scrollRect \ntry drag \nto move";
         ct.addChild(s_l_t);
 
-        test_UI_Component.temp = iptFrame_t;
+        //rawImage 组件
 
-        //key dwon test
-        let inputMgr = this.app.getInputMgr();
+        //rawImage 基本
+        let rawImg_t = m4m.framework.TransformUtil.Create2DPrimitive(m4m.framework.Primitive2DType.RawImage2D);
+        rawImg_t.width = 200;
+        rawImg_t.height = 200;
+        rawImg_t.localTranslate.x = 600;
+        rawImg_t.localTranslate.y = 250;
+        bg_t.addChild(rawImg_t);
+        let rawImg = rawImg_t.getComponent("rawImage2D") as m4m.framework.rawImage2D;
+        rawImg.image = tex_1;
+        this.addInfoTextLabel(`rawImage组件\n 宽:${rawImg_t.width} 高:${rawImg_t.height}`, rawImg_t, _font);
 
-        this.app.webgl.canvas.addEventListener("keydown", (ev: KeyboardEvent) => {
-            if (ev.keyCode == 81) {
-
-            }
-        }, false);
-
+        //rawImage 图等比缩放
+        let rawImg1_t = m4m.framework.TransformUtil.Create2DPrimitive(m4m.framework.Primitive2DType.RawImage2D);
+        rawImg1_t.width = 200;
+        rawImg1_t.height = 200;
+        rawImg1_t.localTranslate.x = 805;
+        rawImg1_t.localTranslate.y = 250;
+        bg_t.addChild(rawImg1_t);
+        let rawImg1 = rawImg1_t.getComponent("rawImage2D") as m4m.framework.rawImage2D;
+        rawImg1.proportionalScalingMode = true;
+        rawImg1.image = tex_1;
+        this.addInfoTextLabel(`rawImage组件\n 宽:${rawImg1_t.width} 高:${rawImg1_t.height}\n图等比缩放`, rawImg1_t, _font);
 
 
         state.finish = true;
+    }
+
+    /**
+     * 为节点添加一个文本信息
+     * @param info 
+     * @param target 
+     * @param color 
+     */
+    private addInfoTextLabel(info: string, target: m4m.framework.transform2D, font: m4m.framework.font, width = 200, fontSize = 26, color = new m4m.math.color(1, 0, 0, 1)) {
+        let lab_t = m4m.framework.TransformUtil.Create2DPrimitive(m4m.framework.Primitive2DType.Label);
+        lab_t.width = width;
+        lab_t.layoutState = m4m.framework.layoutOption.H_CENTER | m4m.framework.layoutOption.V_CENTER;
+        let lab = lab_t.getComponent("label") as m4m.framework.label;
+        lab.verticalOverflow = true;
+        lab.text = info;
+        lab.horizontalType = m4m.framework.HorizontalType.Center;
+        lab.fontsize = fontSize;
+        lab.color = color;
+        lab.font = font;
+        target.addChild(lab_t);
     }
 
     private loadTexture(lastState: m4m.framework.taskstate, state: m4m.framework.taskstate) {
@@ -404,9 +438,14 @@ class test_UI_Component implements IState {
                             if (s.isfinish) {
                                 this.assetMgr.load(`${resRootPath}font/` + this.fontjson, m4m.framework.AssetTypeEnum.Auto, (s) => {
                                     this.assetMgr.load(`${resRootPath}texture/zg03_256.png`, m4m.framework.AssetTypeEnum.Auto, (s) => {
-                                        if (s.isfinish) {
-                                            state.finish = true;
-                                        }
+                                        // if (s.isfinish) {
+                                        //     state.finish = true;
+                                        // }
+                                        this.assetMgr.load(`${resRootPath}texture/OIP-C.jpg`, m4m.framework.AssetTypeEnum.Auto, (s) => {
+                                            if (s.isfinish) {
+                                                state.finish = true;
+                                            }
+                                        });
                                     });
                                 });
                             }
@@ -415,6 +454,8 @@ class test_UI_Component implements IState {
                 });
             }
         });
+
+
     }
 
     private loadAtlas(lastState: m4m.framework.taskstate, state: m4m.framework.taskstate) {
