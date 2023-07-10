@@ -19,7 +19,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
-        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+        while (_) try {
             if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
             if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
@@ -1333,7 +1333,7 @@ var main = /** @class */ (function () {
             demoList.addBtn("UI 新手引导mask", function () { return new test_UIGuideMask(); });
             demoList.addBtn("UI 使用 纹理数组模式(webgl2 优化)", function () { return new test_UI_Texture_Array(); });
             demoList.addBtn("UI 贴到3D空间", function () { return new test_UI_Attach3D(); });
-            demoList.addBtn("波函数坍缩 WFC 2D 生成背景", function () { return new test_WFC2D_base(); });
+            demoList.addBtn("动态加载序列帧动画", function () { return new test_AnimatedSprite(); });
             return new demoList();
         });
         //-------------------------------------------物理
@@ -5478,6 +5478,99 @@ var test_3DPhysics_motor_wheel = /** @class */ (function () {
         this.syncDisplayRT();
     };
     return test_3DPhysics_motor_wheel;
+}());
+var test_AnimatedSprite = /** @class */ (function () {
+    function test_AnimatedSprite() {
+        this.spriteMap = new Map();
+        this.animation = "run";
+        this.timer = 0;
+        this.index = 0;
+    }
+    test_AnimatedSprite.prototype.start = function (app) {
+        var _this = this;
+        var scene = app.getScene();
+        //添加一个摄像机
+        var objCam = new m4m.framework.transform();
+        objCam.name = "sth.";
+        scene.addChild(objCam);
+        var camera = objCam.gameObject.addComponent("camera");
+        camera.near = 0.01;
+        camera.far = 10;
+        objCam.localTranslate = new m4m.math.vector3(0, 0, -10);
+        objCam.markDirty(); //标记为需要刷新
+        //2dtest overlay
+        var o2d = new m4m.framework.overlay2D();
+        camera.addOverLay(o2d);
+        //单张sprite宽高
+        var width = 48;
+        var height = 48;
+        //普通显示
+        var t2d_1 = new m4m.framework.transform2D();
+        t2d_1.width = width;
+        t2d_1.height = height;
+        t2d_1.localScale = new m4m.math.vector2(10, 10);
+        t2d_1.pivot.x = 0;
+        t2d_1.pivot.y = 0;
+        t2d_1.localTranslate.x = 150;
+        t2d_1.localTranslate.y = 150;
+        var img_1 = t2d_1.addComponent("image2D");
+        img_1.imageType = m4m.framework.ImageType.Simple;
+        this.img_1 = img_1;
+        o2d.addChild(t2d_1);
+        var url = "".concat(resRootPath, "sprite/HeavyBandit.png");
+        m4m.io.loadImg(url, function (_tex, err) {
+            if (err) {
+                console.error("加载失败: ", err);
+            }
+            else {
+                //构建 texture
+                var _texture = new m4m.framework.texture(url.substring(url.lastIndexOf("/") + 1));
+                var _textureFormat = m4m.render.TextureFormatEnum.RGBA; //这里需要确定格式
+                m4m.render.WriteableTexture2D;
+                var t2d = new m4m.render.glTexture2D(m4m.framework.sceneMgr.app.webgl, _textureFormat);
+                t2d.uploadImage(_tex, false, true, false, false, false); //非2次幂 图 不能显示设置repeat
+                _texture.glTexture = t2d;
+                _texture.use();
+                //idle动画
+                _this.spriteMap.set("idle", _this.getFrames(_texture, 0, 0, width, height, 4));
+                //奔跑动画
+                _this.spriteMap.set("run", _this.getFrames(_texture, 0, height, width, height, 8));
+                //攻击
+                _this.spriteMap.set("attack", _this.getFrames(_texture, 0, height * 2, width, height, 8));
+                //苏醒
+                _this.spriteMap.set("revive", _this.getFrames(_texture, 0, height * 3, width, height, 8));
+                //死亡
+                _this.spriteMap.set("die", _this.getFrames(_texture, 0, height * 4, width, height, 4));
+            }
+        });
+    };
+    test_AnimatedSprite.prototype.update = function (delta) {
+        this.timer += delta;
+        if (this.timer > 0.2) {
+            this.timer %= 0.2;
+            var list = this.spriteMap.get(this.animation);
+            if (list != null) {
+                this.img_1.sprite = list[this.index];
+                this.index++;
+                if (this.index >= list.length) {
+                    this.index = 0;
+                }
+            }
+        }
+    };
+    test_AnimatedSprite.prototype.getFrames = function (texture, x, y, width, height, frameCount) {
+        var array = [];
+        for (var i = 0; i < frameCount; i++) {
+            //构建 sprite
+            var _sprite = new m4m.framework.sprite();
+            _sprite.texture = texture;
+            _sprite.border = new m4m.math.border(0, 0, 0, 0);
+            _sprite.rect = new m4m.math.rect(x + width * i, y, width, height);
+            array.push(_sprite);
+        }
+        return array;
+    };
+    return test_AnimatedSprite;
 }());
 /** GPU 压缩纹理测试 */
 var test_CompressTexture = /** @class */ (function () {
