@@ -19,7 +19,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
             if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
             if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
@@ -5526,9 +5526,11 @@ var test_AnimatedSprite = /** @class */ (function () {
                 //构建 texture
                 var _texture = new m4m.framework.texture(url.substring(url.lastIndexOf("/") + 1));
                 var _textureFormat = m4m.render.TextureFormatEnum.RGBA; //这里需要确定格式
-                m4m.render.WriteableTexture2D;
-                var t2d = new m4m.render.glTexture2D(m4m.framework.sceneMgr.app.webgl, _textureFormat);
-                t2d.uploadImage(_tex, false, true, false, false, false); //非2次幂 图 不能显示设置repeat
+                //原生贴图
+                var linear = false; //线性过滤，关了就是点
+                var mipmap = false; //mipmap，缩放抗水印，2d一般也不用
+                var t2d = new m4m.render.glTexture2D(m4m.framework.sceneMgr.app.webgl, _textureFormat, mipmap, linear);
+                t2d.uploadImage(_tex, mipmap, linear, false, false, false); //非2次幂 图 不能显示设置repeat
                 _texture.glTexture = t2d;
                 _texture.use();
                 //idle动画

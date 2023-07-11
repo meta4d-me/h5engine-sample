@@ -52,12 +52,15 @@ class test_AnimatedSprite implements IState {
                 //构建 texture
                 let _texture = new m4m.framework.texture(url.substring(url.lastIndexOf("/") + 1));
                 let _textureFormat = m4m.render.TextureFormatEnum.RGBA;//这里需要确定格式
-                m4m.render.WriteableTexture2D
-                let t2d = new m4m.render.glTexture2D(m4m.framework.sceneMgr.app.webgl, _textureFormat);
-                t2d.uploadImage(_tex, false, true, false, false, false); //非2次幂 图 不能显示设置repeat
+
+                //原生贴图
+                let linear = false;//线性过滤，关了就是点
+                let mipmap = false;//mipmap，缩放抗水印，2d一般也不用
+                let t2d = new m4m.render.glTexture2D(m4m.framework.sceneMgr.app.webgl, _textureFormat, mipmap, linear);
+                t2d.uploadImage(_tex, mipmap, linear, false, false, false); //非2次幂 图 不能显示设置repeat
                 _texture.glTexture = t2d;
                 _texture.use();
-                
+
 
                 //idle动画
                 this.spriteMap.set("idle", this.getFrames(_texture, 0, 0, width, height, 4));
