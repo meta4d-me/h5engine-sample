@@ -19,7 +19,11 @@ class dome_loadaniplayer implements IState {
     private names: string[] = ["pc2_cskill1.FBAni.aniclip.bin", "pc2_skill1.FBAni.aniclip.bin", "pc2_skill34.FBAni.aniclip.bin","pc2_skill27.FBAni.aniclip.bin","pc1_skill27.FBAni.aniclip.bin"];
     //动作的Component
     private ani: m4m.framework.aniplayer;
-
+    /**
+     * 加载shader
+     * @param laststate 
+     * @param state 加载状态
+     */
     private loadShader(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (s) => {
             if (s.isfinish) {
@@ -28,6 +32,11 @@ class dome_loadaniplayer implements IState {
         });
     }
 
+    /**
+     * 加载动画角色
+     * @param laststate 
+     * @param state 加载状态
+     */
     private loadRole(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
 
         let name = this.roleName;
@@ -59,6 +68,10 @@ class dome_loadaniplayer implements IState {
         });
     }
 
+    /**
+     * 加载角色技能资源
+     * @param name 资源名字
+     */
     private loadSkill(name: string) {
         this.assetmgr.load(`res/prefabs/roles/${this.roleName}/Resources/${name}`, m4m.framework.AssetTypeEnum.Auto, (s) => {
             // if (s.isfinish) {
@@ -73,6 +86,10 @@ class dome_loadaniplayer implements IState {
         });
     }
 
+    /**
+     * 加载角色武器资源
+     * @param name 资源名字
+     */
     private loadWeapon(name: string) {
         this.assetmgr.load(`res/prefabs/weapons/${name}/${name}.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (s) => {
             if (s.isfinish) {
@@ -101,7 +118,11 @@ class dome_loadaniplayer implements IState {
         });
     }
 
-    //初始化操作按钮
+    /**
+     * 初始化操作按钮
+     * @param laststate 
+     * @param state 加载状态
+     */
     private ctrlBtn(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         let play = document.createElement("button") as HTMLButtonElement;
         let stop = document.createElement("button") as HTMLButtonElement;
@@ -186,7 +207,11 @@ class dome_loadaniplayer implements IState {
         state.finish = true;
     }
 
-    //初始化摄像机
+    /**
+     * 初始化摄像机
+     * @param laststate 
+     * @param state 加载状态
+     */
     private addCam(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         let objCam = new m4m.framework.transform;
         objCam.name = "sth.";

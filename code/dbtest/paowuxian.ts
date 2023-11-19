@@ -31,6 +31,11 @@ namespace dome
             this.taskmgr.addTaskCall(this.gamerun.bind(this));
         }
 
+        /**
+         * 加载shader
+         * @param laststate 
+         * @param state 加载状态
+         */
         private loadShader(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
             this.app.getAssetMgr().load(`${resRootPath}shader/shader.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (_state) =>
@@ -43,6 +48,11 @@ namespace dome
             );
         }
 
+        /**
+         * 游戏运行
+         * @param laststate 
+         * @param state 加载状态
+         */
         private gamerun(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
             this.addcam();
@@ -60,6 +70,11 @@ namespace dome
 
         private timer:number=0;
         private forward:m4m.math.vector3=new m4m.math.vector3();
+
+        /**
+         * 更新
+         * @param delta 帧间间隔时间
+         */
         update(delta: number) {
             this.taskmgr.move(delta);
             CameraController.instance().update(delta);
@@ -166,7 +181,7 @@ namespace dome
 
 
         /**
-         * 
+         * 检测目标
          * @param targets1 仅仅碰撞 碰撞盒子
          * @param targets2 先碰撞盒子再碰mesh
          * @param info 
@@ -232,6 +247,12 @@ namespace dome
         //     return false;
         // }
 
+        /**
+         * 检测二次碰撞所有
+         * @param target 目标列表
+         * @param info 拾取信息
+         * @returns 有拾取到？
+         */
         private detectSecond_Colliders(target:m4m.framework.transform[],info:m4m.framework.pickinfo):boolean
         {
             let distancc:number=Number.MAX_VALUE;
@@ -252,6 +273,12 @@ namespace dome
             return picked;
         }
 
+        /**
+         * 检测二次碰撞
+         * @param target 目标
+         * @param info 拾取信息
+         * @returns 有拾取到？
+         */
         private detectSecond_Collider(target:m4m.framework.transform,info:m4m.framework.pickinfo):boolean
         {
             if(this.beNeedRecompute)
@@ -271,6 +298,12 @@ namespace dome
             return false;
         }
 
+        /**
+         * 检测二次碰撞 mesh列表
+         * @param target 目标列表
+         * @param info 拾取信息
+         * @returns 有拾取到？
+         */
         private detectSecond_Meshs(target:m4m.framework.transform[],info:m4m.framework.pickinfo):boolean
         {
             let distancc:number=Number.MAX_VALUE;
@@ -291,6 +324,12 @@ namespace dome
             return picked;
         }
 
+        /**
+         * 检测二次碰撞 mesh
+         * @param target 目标
+         * @param info 拾取信息
+         * @returns 有拾取到？
+         */
         private detectSecond_Mesh(target:m4m.framework.transform,info:m4m.framework.pickinfo):boolean
         {
             if(this.beNeedRecompute)
@@ -316,6 +355,14 @@ namespace dome
             return false;
         }
 
+        /**
+         * 检测线与碰撞器的碰撞
+         * @param start 线开始点
+         * @param end 线结束点
+         * @param targets 目标
+         * @param newtargets 
+         * @returns 是碰撞？
+         */
         private linedetectcollider(start:m4m.math.vector3,end:m4m.math.vector3,targets:m4m.framework.transform[],newtargets:m4m.framework.transform[]):boolean
         {
             let dir=new m4m.math.vector3();
@@ -364,6 +411,9 @@ namespace dome
         }
         private cam2:m4m.framework.gameObject;
         private camctr:camCtr;
+        /**
+         * 添加相机
+         */
         private addcam()
         {
             //添加一个摄像机
@@ -397,7 +447,9 @@ namespace dome
             this.camctr=objCam.gameObject.addComponent("camCtr") as camCtr;
         }
 
-
+        /**
+         * 添加cube
+         */
         private addcube()
         {
             // let cube0=new m4m.framework.transform();
@@ -450,6 +502,11 @@ namespace dome
         }
 
         private cubes:m4m.framework.transform[]=[];
+        /**
+         * 添加缩放的cube
+         * @param scale 缩放值
+         * @returns 
+         */
         private addscaledCube(scale:number):m4m.framework.transform
         {
             let cube4=new m4m.framework.transform();
@@ -462,6 +519,11 @@ namespace dome
             return cube4;
         }
 
+        /**
+         * 获取方向
+         * @param euler 欧拉角
+         * @param dir 方向
+         */
         getDirByRotAngle(euler:m4m.math.vector3,dir:m4m.math.vector3)
         {
             let rot=new m4m.math.quaternion();
@@ -478,7 +540,15 @@ namespace dome
         private endpos:m4m.math.vector3=new m4m.math.vector3();
         private hPos:m4m.math.vector3=new m4m.math.vector3();
         private startPos:m4m.math.vector3=new m4m.math.vector3();
-
+        /**
+         * 获取mesh数据
+         * @param anglex 角度
+         * @param gravity 重力
+         * @param speed 速度
+         * @param paoLen 炮长度
+         * @param paojiaPosY 炮位置Y
+         * @returns mesh
+         */
         getMeshData(anglex:number,gravity:number,speed:number,paoLen:number,paojiaPosY:number=0):m4m.framework.mesh
         {
             if(this.mesh==null)
@@ -534,6 +604,15 @@ namespace dome
             return this.mesh
         }
 
+        /**
+         * 初始化mesh
+         * @param anglex 角度
+         * @param gravity 重力
+         * @param speed 速度
+         * @param paoLen 炮长度
+         * @param paojiaPosY 炮位置Y
+         * @returns mesh
+         */
         private initmesh(anglex:number,gravity:number,speed:number,paoLen:number,paojiaPosY:number=0):m4m.framework.mesh
         {
             anglex=anglex*Math.PI/180;
@@ -604,6 +683,9 @@ namespace dome
         private actived:boolean=false;
         private enableWASD:boolean=true;
 
+        /**
+         * 添加UI
+         */
         private addUI()
         {
             let deltaangle:number=3;
@@ -667,6 +749,9 @@ namespace dome
 
         }
 
+        /**
+         * 应用
+         */
         private apply()
         {
             let target=new m4m.math.vector3();
@@ -677,7 +762,13 @@ namespace dome
             this.rotEuler.y=rotinfo.roty;
         }
 
-
+        /**
+         * 添加按钮
+         * @param text 文本 
+         * @param x x
+         * @param y y
+         * @param func 触发函数 
+         */
         private addBtn(text: string,x:number,y:number,func:()=>void)
         {
             var btn = document.createElement("button");
@@ -692,6 +783,11 @@ namespace dome
             this.app.container.appendChild(btn);
         }
 
+        /**
+         * 加载mesh
+         * @param laststate 
+         * @param state 加载状态
+         */
         private loadmesh(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
             var name="box";
@@ -727,6 +823,14 @@ namespace dome
             });
         }
 
+        /**
+         * 交叉检测
+         * @param LinePoints 线上的点
+         * @param mesh mesh
+         * @param matrix 矩阵
+         * @param outInfo 拾取到的信息
+         * @returns 是交叉了？
+         */
         private intersects(LinePoints:m4m.math.vector3[],mesh:m4m.framework.mesh,matrix: m4m.math.matrix, outInfo:m4m.framework.pickinfo): boolean
         {
             let ishided = false;
@@ -787,6 +891,14 @@ namespace dome
             m4m.math.pool.delete_vector3Array(worldPosArr);
             return ishided;
         }
+
+        /**
+         * 交叉检测
+         * @param LinePoints 线上的点
+         * @param target 目标节点
+         * @param outInfo 拾取到的信息
+         * @returns 是交叉了？
+         */
         private intersectCollider(LinePoints:m4m.math.vector3[],target:m4m.framework.transform, outInfo:m4m.framework.pickinfo): boolean
         {
             let ishided = false;
@@ -820,6 +932,15 @@ namespace dome
             return ishided;
         }
 
+        /**
+         * 获取旋转角度
+         * @param speed 速度
+         * @param h 高
+         * @param g 重力
+         * @param target 目标点
+         * @param forward 前方
+         * @returns 旋转角度
+         */
         private getRotAnlge(speed:number,h:number,g:number,target:m4m.math.vector3,forward:m4m.math.vector3):{rotx:number,roty:number,canReach:boolean}
         {
             let L=Math.sqrt(target.x*target.x+target.z*target.z);
@@ -844,6 +965,13 @@ namespace dome
 
         }
 
+        /**
+         * a 到 b 的旋转
+         * @param from a
+         * @param to b
+         * @param right r 
+         * @returns 旋转
+         */
         private fromToRotation(from:m4m.math.vector3,to:m4m.math.vector3,right:m4m.math.vector3):number
         {
             let dir1=m4m.math.pool.new_vector3();
@@ -880,16 +1008,31 @@ namespace dome
         private _distance:number=0;
         private _offset:m4m.math.vector3=new m4m.math.vector3();
         private camrotAgnle:m4m.math.vector3=new m4m.math.vector3();
+        /**
+         * 设置目标
+         * @param target 目标 
+         * @param worldOffset 偏移
+         */
         setTarget(target:m4m.framework.transform,worldOffset:m4m.math.vector3=null)
         {
             this._target=target;
             this._worldOffset=worldOffset;
         }
+        /**
+         * 设置旋转角
+         * @param yanle 角度y
+         * @param xangle 角度x
+         */
         setRotAngle(yanle:number,xangle:number)
         {
             this.camrotAgnle.x=xangle;
             this.camrotAgnle.y=yanle;
         }
+
+        /**
+         * 设置目标的距离
+         * @param distance 距离
+         */
         setDistanceToTarget(distance:number)
         {
             this._distance=distance;

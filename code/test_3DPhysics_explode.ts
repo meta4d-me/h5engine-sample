@@ -24,6 +24,9 @@ class test_3DPhysics_explode implements IState {
     private boxTran : m4m.framework.transform;
     private floor : m4m.framework.transform;
     private boxList : m4m.framework.meshRenderer []= [];
+    /**
+     * 初始化
+     */
     init(){
         
         let mat_activated = physics3dDemoTool.mats["activated"];
@@ -95,6 +98,9 @@ class test_3DPhysics_explode implements IState {
     }
 
     private guiMsg = "中心点爆炸 样例 ";
+    /**
+     * 设置 调试GUI 
+     */
     setGUI(){
         if(!dat) return;
         let gui = new dat.GUI();
@@ -110,6 +116,9 @@ class test_3DPhysics_explode implements IState {
 
     }
 
+    /**
+     * 重置demo物理状态
+     */
     private applyReset(){
         physics3dDemoTool.resetObj(this.mrs);
     }
@@ -118,6 +127,9 @@ class test_3DPhysics_explode implements IState {
     private optStrs: string[] = [];
     private freezeDic : {[opt:string]: boolean} = {};
 
+    /**
+     * 对目标施加冲量
+     */
     private impulseTarget(){
         if(!this.targetTran) return;
         this.doImpulse(this.targetTran.physicsImpostor);
@@ -126,6 +138,10 @@ class test_3DPhysics_explode implements IState {
     private force = new m4m.math.vector3(-10,0,5);
     private contactlocalPoint = new m4m.math.vector3(0,0,0);
     private tempV3 = new m4m.math.vector3();
+    /**
+     * 标施加冲量
+     * @param phyImpostor 物理代理
+     */
     private doImpulse(phyImpostor : m4m.framework.PhysicsImpostor){
         let pos = this.tempV3;
         m4m.math.vec3Add(phyImpostor.object.getWorldPosition(),this.contactlocalPoint,pos);
@@ -138,7 +154,11 @@ class test_3DPhysics_explode implements IState {
 
     delta= 0 ;
     movespeed = 10;
-    /** 移动 ↑ ↓ ← → 7 4  ， 爆炸 0 */
+    /**
+     * 按键按下 执行
+     * 移动 ↑ ↓ ← → 7 4  ， 爆炸 0 
+     * @param param0 按键keycode
+     */
     keyDown([keyCode]){
         switch(keyCode){
             case m4m.event.KeyCode.ArrowUp: 
@@ -165,7 +185,10 @@ class test_3DPhysics_explode implements IState {
 
     private explodeFroce = 100; //爆炸冲击力
     private explodeRadius = 10; //爆炸冲击半径（线性衰减）
-    /** 爆炸 */
+    /**
+     * 指定点施加 爆炸行为
+     * @param point 指定点
+     */
     explode(point: m4m.math.vector3){
         if(!point) return;
         this.boxList.forEach(box=>{

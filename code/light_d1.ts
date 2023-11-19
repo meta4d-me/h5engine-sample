@@ -4,6 +4,9 @@
     {
         app: m4m.framework.application;
         scene: m4m.framework.scene;
+        /**
+         * 添加cube
+         */
         private addcube()
         {
             var smesh1 = this.app.getAssetMgr().getDefaultMesh("cube");
@@ -37,6 +40,10 @@
                 }
             }
         }
+
+        /**
+         * 添加相机和灯光
+         */
         private addCameraAndLight()
         {
             //添加一个摄像机

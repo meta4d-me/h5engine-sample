@@ -1,5 +1,12 @@
+/**
+ * 相机控制器
+ */
 class CameraController {
         private static g_this: CameraController;
+        /**
+         * 单实例对象
+         * @returns CameraController实例
+         */
         public static instance() {
             if (CameraController.g_this == null) {
                 CameraController.g_this = new CameraController();
@@ -15,7 +22,10 @@ class CameraController {
         rotateSpeed: number = 0.1;
         keyMap: { [id: number]: boolean } = {};
         beRightClick: boolean = false;
-
+        /**
+         * 更新
+         * @param delta 帧间时间（s）
+         */
         update(delta: number) {
             if (this.beRightClick) {
                 this.doMove(delta);
@@ -24,6 +34,11 @@ class CameraController {
 
         rotAngle: m4m.math.vector3;
         isInit: boolean = false;
+        /**
+         * 初始化
+         * @param app 引擎app 
+         * @param target 相机
+         */
         init(app: m4m.framework.application, target: m4m.framework.camera) {
             this.isInit = true;
             this.app = app;
@@ -70,6 +85,10 @@ class CameraController {
         }
 
         private moveVector: m4m.math.vector3 = new m4m.math.vector3(0, 0, 1);
+        /**
+         * 执行移动
+         * @param delta  帧间时间（s）
+         */
         doMove(delta: number) {
             if (this.target == null)
                 return;
@@ -128,6 +147,11 @@ class CameraController {
 
             this.target.gameObject.transform.markDirty();
         }
+        /**
+         * 执行旋转
+         * @param rotateX 旋转x 
+         * @param rotateY 旋转y
+         */
         doRotate(rotateX: number, rotateY: number) {
             this.rotAngle.x += rotateY * this.rotateSpeed;
             this.rotAngle.y += rotateX * this.rotateSpeed;
@@ -138,6 +162,10 @@ class CameraController {
             m4m.math.quatFromEulerAngles(this.rotAngle.x, this.rotAngle.y, this.rotAngle.z, this.target.gameObject.transform.localRotate);
         }
 
+        /**
+         * 执行注视
+         * @param trans 注视目标
+         */
         lookat(trans: m4m.framework.transform) {
             this.target.gameObject.transform.lookat(trans);
             this.target.gameObject.transform.markDirty();
@@ -145,6 +173,11 @@ class CameraController {
             m4m.math.quatToEulerAngles(this.target.gameObject.transform.localRotate, this.rotAngle);
         }
 
+        /**
+         * 检查 当鼠标右键点击
+         * @param mouseEvent 鼠标事件
+         * @returns 是点击？
+         */
         checkOnRightClick(mouseEvent: MouseEvent) {
             var value = mouseEvent.button;
             if (value == 2) {
@@ -158,6 +191,11 @@ class CameraController {
             }
         }
 
+        /**
+         * 执行鼠标中间滚轮滚动
+         * @param ev 中间滚轮事件
+         * @param isFirefox 是Firefox？
+         */
         private doMouseWheel(ev: WheelEvent, isFirefox: boolean) {
             if (!this.target)
                 return;
@@ -180,6 +218,9 @@ class CameraController {
 
             }
         }
+        /**
+         * 移除
+         */
         remove() {
 
         }

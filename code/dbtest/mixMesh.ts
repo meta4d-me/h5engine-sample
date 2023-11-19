@@ -17,7 +17,13 @@ namespace dome
         maxEboLen:number;
         realEboLen:number=0;
         ebodata:Uint16Array;
-
+        /**
+         * GMesh
+         * @param mat 材质
+         * @param vCount 顶点数
+         * @param vf 顶点格式
+         * @param webgl webgl 上下文
+         */
         constructor(mat: m4m.framework.material, vCount:number,vf:number,webgl:WebGL2RenderingContext)
         {
             this.mat = mat;
@@ -51,6 +57,9 @@ namespace dome
             this.mesh=gmesh;
             this.vertexByteSize=gmesh.glMesh.vertexByteSize;
         }
+        /**
+         * 重置
+         */
         reset() {
             this.currentVerteCount = 0;
             this.realVboLen = 0;
@@ -58,6 +67,12 @@ namespace dome
         }
 
         private temptPos:m4m.math.vector3=new m4m.math.vector3();
+        /**
+         * 上载mesh数据
+         * @param mat 矩阵
+         * @param mesh mesh
+         * @param webgl webgl上下文
+         */
         uploadMeshData(mat:m4m.math.matrix,mesh:m4m.framework.mesh,webgl:WebGL2RenderingContext)
         {
             let data=mesh.data;
@@ -133,12 +148,22 @@ namespace dome
             this.mesh.submesh[0].size=this.realEboLen;
         }
 
+        /**
+         * 混合到GMesh
+         * @param webgl  webgl上下文
+         */
         mixToGLmesh(webgl:WebGL2RenderingContext)
         {
             this.mesh.glMesh.uploadVertexData(webgl,this.vbodata);
             this.mesh.glMesh.uploadIndexData(webgl, 0, this.ebodata);
         }
-
+        
+        /**
+         * 检查mesh 容量
+         * @param vertexcount 顶点数
+         * @param eboLen ebo 长度
+         * @param webgl webgl上下文
+         */
         private checkMeshCapacity(vertexcount:number,eboLen:number,webgl:WebGL2RenderingContext)
         {
             if(this.currentVerteCount+vertexcount>this.maxVerteCount)
@@ -192,6 +217,10 @@ namespace dome
         picker = [];
         obs: any;
         flag: boolean = false;
+        /**
+         * 开始
+         * @param app 引擎app
+         */
         start(app: m4m.framework.application) {
             this.app = app;
             this.app.showDrawCall();
@@ -241,6 +270,10 @@ namespace dome
             objCam.markDirty();//标记为需要刷新
         }
 
+        /**
+         * 刷新
+         * @returns 
+         */
         refresh() {
             if(!this.flag)
                 return;
@@ -270,6 +303,10 @@ namespace dome
             }
         }
 
+        /**
+         * 生成单obj
+         * @param target 目标
+         */
         generateSignelObs(target) {
             let [level, obType, posx, posz, rotationy, trans] = target; // Access data chunk
             // if(level!=2||obType!=1) return;
@@ -286,6 +323,12 @@ namespace dome
                 trans.gameObject.visiable = true;
             }
         }
+
+        /**
+         * 加载
+         * @param path 路径字符串 
+         * @param cb 回调函数
+         */
         load(path: string, cb) {
 
             this.app.getAssetMgr().load(path, m4m.framework.AssetTypeEnum.Auto, (s) => {
@@ -294,9 +337,20 @@ namespace dome
                 }
             })
         }
+
+        /**
+         * 加载预制体
+         * @param name 名
+         * @param cb 回调函数
+         */
         loadPrefab(name: string, cb) {
             this.load("res/prefabs/" + name + "/" + name + ".assetbundle.json", cb);
         }
+
+        /**
+         * 更新
+         * @param delta 帧间间隔时间 
+         */
         update(delta: number) {
             CameraController.instance().update(delta);
 
@@ -308,7 +362,12 @@ namespace dome
         matinstance: { [matID: number]: m4m.framework.material } = {};
         mixmeshDic:{[matID:number]:GMesh}={};
 
-
+        /**
+         * 混合mesh
+         * @param targets 节点猎豹
+         * @param vf 顶点格式
+         * @returns 
+         */
         mixMesh(targets:m4m.framework.transform[],vf:number=m4m.render.VertexFormatMask.Position | m4m.render.VertexFormatMask.Normal| m4m.render.VertexFormatMask.Tangent| m4m.render.VertexFormatMask.UV0):{nobatch:m4m.framework.transform[],batch:m4m.framework.transform[],mixMeshId:number[]}
         {
             let nobatchArr:m4m.framework.transform[]=[];
@@ -366,7 +425,5 @@ namespace dome
 
             return {batch:batchArr,nobatch:nobatchArr,mixMeshId:mixmeshid};
         }
-
-
     }
 }

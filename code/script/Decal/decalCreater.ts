@@ -204,6 +204,14 @@ class decalGeometry{
     private vertices : m4m.math.vector3 []= [];
     private normals : m4m.math.vector3[]= [];
     private uvs : m4m.math.vector2[] = [];
+    /**
+     * 贴花几何体
+     * @param tragetMeshf meshFilter
+     * @param position 位置
+     * @param orientation 旋转
+     * @param size 尺寸
+     * @param webgl webgl上下文
+     */
     constructor(public tragetMeshf: m4m.framework.meshFilter , public position:m4m.math.vector3, public orientation:m4m.math.quaternion,public size:m4m.math.vector3 , webgl : WebGL2RenderingContext){
     	// THREE.BufferGeometry.call( this );
         decalGeometry.id++;
@@ -505,6 +513,11 @@ class decalGeometry{
 class DecalVertex{
     position : m4m.math.vector3;
     normal : m4m.math.vector3;
+    /**
+     * 贴花 顶点
+     * @param position 坐标
+     * @param normal 法线
+     */
     constructor(position: m4m.math.vector3, normal?:m4m.math.vector3){
 		this.position = position;
 		this.normal = normal;

@@ -3,7 +3,15 @@
 let resRootPath = "exampleResource/"
 
 interface IState {
+    /**
+     * 开始执行函数
+     * @param app 引擎app
+     */
     start(app: m4m.framework.application);
+    /**
+     * loop 更新
+     * @param delta 帧间间隔时间 
+     */
     update(delta: number);
 }
 //需加上这个反射标记，引擎才能通过名字找到这个类，并自动创建他
@@ -12,6 +20,10 @@ class main implements m4m.framework.IUserCode {
     static instance: main;
     app: m4m.framework.application;
     state: IState;
+    /**
+     * 当 开始执行函数
+     * @param app 引擎app
+     */
     onStart(app: m4m.framework.application) {
         if (!main.instance) main.instance = this;
         console.log("i am here.");
@@ -214,6 +226,11 @@ class main implements m4m.framework.IUserCode {
     private x: number = this.def_x;
     private y: number = this.def_y;
     private btns: HTMLButtonElement[] = [];
+    /**
+     * 添加按钮
+     * @param text 文本字符串数据 
+     * @param act 行为函数
+     */
     addBtn(text: string, act: () => IState) {
         var btn = document.createElement("button");
         this.btns.push(btn);
@@ -236,6 +253,10 @@ class main implements m4m.framework.IUserCode {
         this.app.container.appendChild(btn);
 
     }
+
+    /**
+     * 清理按钮
+     */
     clearBtn() {
         for (var i = 0; i < this.btns.length; i++) {
             this.app.container.removeChild(this.btns[i]);
@@ -245,10 +266,19 @@ class main implements m4m.framework.IUserCode {
         this.btns.length = 0;
     }
 
+    /**
+     * 当更新
+     * @param delta  帧间间隔时间
+     */
     onUpdate(delta: number) {
         if (this.state != null)
             this.state.update(delta);
     }
+
+    /**
+     * 是关闭的
+     * @returns 
+     */
     isClosed(): boolean {
         return false;
     }

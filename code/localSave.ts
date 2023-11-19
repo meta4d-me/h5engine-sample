@@ -11,6 +11,11 @@ class localSave
     }
     public localServerPath: string;// = "http://localhost:25888";
 
+    /**
+     * 字符串转 utf8字符数据
+     * @param str 字符串转
+     * @returns utf8字符数据
+     */
     stringToUtf8Array(str: string): number[]
     {
         var bstr: number[] = [];
@@ -45,18 +50,36 @@ class localSave
         }
         return bstr;
     }
+
+    /**
+     * 文件 字符转串 blob数据
+     * @param string 字符转串数据
+     * @returns blob数据
+     */
     file_str2blob(string: string): Blob
     {
         var u8 = new Uint8Array(this.stringToUtf8Array(string));
         var blob = new Blob([u8]);
         return blob;
     }
+
+    /**
+     * 文件 utf8数据 转串 blob数据
+     * @param array utf8数据
+     * @returns blob数据
+     */
     file_u8array2blob(array: Uint8Array): Blob
     {
         var blob = new Blob([array]);
         return blob;
     }
 
+    /**
+     * 保存
+     * @param path 路径
+     * @param file 文件
+     * @returns 
+     */
     save(path: string, file: Blob | File): number
     {
         var req = new XMLHttpRequest();//ness
@@ -73,6 +96,12 @@ class localSave
         return json["code"];
     }
 
+    /**
+     * 执行开始 Direct模式
+     * @param exec exe 字符串
+     * @param path 路径
+     * @param argc 参数
+     */
     startDirect(exec: string, path: string, argc: string): any
     {
         var req = new XMLHttpRequest();//ness
@@ -87,6 +116,11 @@ class localSave
         return json;
     }
 
+    /**
+     * 执行开始
+     * @param path 路径
+     * @returns json
+     */
     start(path: string): any
     {
         var req = new XMLHttpRequest();//ness
@@ -97,6 +131,11 @@ class localSave
         return json;
     }
 
+    /**
+     * 开始 不等待
+     * @param path  路径
+     * @param fun  回调函数
+     */
     startnowait(path: string, fun: (_txt: string, _err: Error) => void = null): any
     {
         var req = new XMLHttpRequest();//ness
@@ -148,7 +187,11 @@ class localSave
     //     };
     //     req.send();
     // }
-
+    /**
+     * 立即加载文本
+     * @param url url
+     * @param fun 回调函数
+     */
     loadTextImmediate(url: string, fun: (_txt: string, _err: Error) => void)
     {
         let req = new XMLHttpRequest();
@@ -173,6 +216,11 @@ class localSave
         req.send();
     }
 
+    /**
+     * 立即加载Blob数据
+     * @param url url
+     * @param fun 回调函数
+     */
     loadBlobImmediate(url: string, fun: (_blob: Blob, _err: Error) => void): void
     {
         var req = new XMLHttpRequest();

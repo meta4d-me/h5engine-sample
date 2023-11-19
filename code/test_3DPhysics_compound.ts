@@ -25,7 +25,10 @@ class test_3DPhysics_compound implements IState {
     private sizes = [ 30,5,30,  4,30,4,  4,30,4,  4,30,4,  4,30,4,  4,30,4,  4,30,4,  23,10,3 ];
     private positions = [ 0,0,0,  12,-16,12,  -12,-16,12,  12,-16,-12,  -12,-16,-12,  12,16,-12,  -12,16,-12,  0,25,-12 ];
     private chairId = 0;
-    //创建一把 椅子
+    /**
+     * 创建一把 椅子
+     * @returns 椅子节点
+     */
     private crateChair(){
         let chairTran = new m4m.framework.transform();
         m4m.math.vec3Set(chairTran.localPosition,0,3,5);
@@ -66,7 +69,11 @@ class test_3DPhysics_compound implements IState {
         return chairTran;
     }
 
-    /** 创建胶囊体 */
+    /**
+     * 创建胶囊体
+     * @param showCollisionMesh 显示碰撞mesh？
+     * @returns 胶囊体节点
+     */
     private crateCapsule(showCollisionMesh = false){
         let mat_activated = physics3dDemoTool.mats["activated"];
         
@@ -121,6 +128,9 @@ class test_3DPhysics_compound implements IState {
     private boxTran : m4m.framework.transform;
     private cylinderTran : m4m.framework.transform;
     private floor : m4m.framework.transform;
+    /**
+     * 初始化
+     */
     init(){
         //初始化 物理世界-----------------------
         this.scene.enablePhysics(new m4m.math.vector3(0,-9.8,0),new m4m.framework.OimoJSPlugin());
@@ -175,6 +185,9 @@ class test_3DPhysics_compound implements IState {
     }
 
     private guiMsg = "复合物理对象 demo ";
+    /**
+     * 设置 调试GUI 
+     */
     setGUI(){
         if(!dat) return;
         let gui = new dat.GUI();
@@ -197,11 +210,16 @@ class test_3DPhysics_compound implements IState {
         folderFun.add(this, 'applyReset' );
     }
 
-    //重置
+    /**
+     * 重置 (调试GUI 中触发)
+     */
     private applyReset(){
         physics3dDemoTool.resetObj(this.mrs);
     }
 
+    /**
+     * 对目标施加冲量
+     */
     private impulseTarget(){
         this.doImpulse(this.targetTran.physicsImpostor);
     }
@@ -209,6 +227,10 @@ class test_3DPhysics_compound implements IState {
     private force = new m4m.math.vector3(-10,0,5);
     private contactlocalPoint = new m4m.math.vector3(0,0,0);
     private tempV3 = new m4m.math.vector3();
+    /**
+     * 标施加冲量
+     * @param phyImpostor 物理代理
+     */
     private doImpulse(phyImpostor : m4m.framework.PhysicsImpostor){
         let pos = this.tempV3;
         m4m.math.vec3Add(phyImpostor.object.getWorldPosition(),this.contactlocalPoint,pos);
@@ -218,7 +240,10 @@ class test_3DPhysics_compound implements IState {
     cachePickInfo = new m4m.framework.pickinfo();
     cacheRota = new m4m.math.quaternion();
     cache_y = 0;
-    //移动 到射线点
+    /**
+     * 移动 到射线点
+     * @param param0 点坐标
+     */
     onPonitMove([x,y]){
         let viewPos = m4m.poolv2();
         viewPos.x = x;

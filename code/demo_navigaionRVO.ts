@@ -66,6 +66,12 @@ class demo_navigaionRVO implements IState
     }
 
     private isInitPlayer = false;
+    /**
+     * 初始化 player
+     * @param x 坐标x
+     * @param y 坐标y
+     * @param z 坐标z
+     */
     private initPlayer(x,y,z){
         if(this.isInitPlayer) return;
         this.player = this.generateGeomtry("cylinder" , new m4m.math.vector4(0,1,0.2,1));
@@ -91,6 +97,11 @@ class demo_navigaionRVO implements IState
         // this.goals.push([x, z]);
     }
 
+    /**
+     * 加载场景
+     * @param assetName 资源名
+     * @param isCompress 是压缩模式？
+     */
     private loadScene(assetName:string , isCompress = false){
         let addScene = ()=>{
             let beAddScene = false;
@@ -163,7 +174,11 @@ class demo_navigaionRVO implements IState
 
 
     //----------- 点击navmesh处理 ----------------
-
+    /**
+     * 在导航mesh 上发射检查射线
+     * @param oPos 位置
+     * @returns 点到的位置
+     */
     private PosRayNavmesh(oPos:m4m.math.vector3){
         if(!this.navmeshMgr.navMesh || !this.navmeshMgr.navTrans) return;
         var pickinfo = new m4m.framework.pickinfo();
@@ -174,6 +189,9 @@ class demo_navigaionRVO implements IState
         return pickinfo.hitposition;
     }
 
+    /**
+     * 点击
+     */
     pickDown():void{
         if(this.isAKeyDown){
             //添加 敌人
@@ -183,6 +201,10 @@ class demo_navigaionRVO implements IState
             this.tryFindingPath();
         }
     }
+    /**
+     * 射线检测导航mesh
+     * @returns 交叉点
+     */
     private rayNavMesh():m4m.math.vector3{
         let navTrans = this.navmeshMgr.navTrans;
         let navmesh = this.navmeshMgr.navMesh;
@@ -197,6 +219,10 @@ class demo_navigaionRVO implements IState
     }
 
     private enemys:m4m.framework.transform[] = [];
+    /**
+     * 添加敌人
+     * @returns 
+     */
     private addEnemy(){
         let endPos = this.rayNavMesh();
         if(!endPos) return;
@@ -216,6 +242,9 @@ class demo_navigaionRVO implements IState
     }
 
     private pos = [];
+    /**
+     * 尝试 找路径
+     */
     private tryFindingPath(){
         let endPos = this.rayNavMesh();
         if(!endPos) return;
@@ -258,6 +287,10 @@ class demo_navigaionRVO implements IState
 
     //----------- 绘制路径线段----------------
     private lastLine:m4m.framework.transform;
+    /**
+     * 绘制线
+     * @param points 线的点
+     */
     private drawLine(points:m4m.math.vector3[]){
         if(this.lastLine){
             this.lastLine.gameObject.visible = false;
@@ -277,6 +310,11 @@ class demo_navigaionRVO implements IState
         this.lastLine.markDirty();
     }
 
+    /**
+     * 生成线mesh
+     * @param points 线点列表
+     * @returns mesh
+     */
     private genLineMesh(points:m4m.math.vector3[]){
         var meshD = new m4m.render.meshData();
         meshD.pos = [];
@@ -314,6 +352,10 @@ class demo_navigaionRVO implements IState
         return _mesh;
     }
 
+    /**
+     * 创建所有的点
+     * @param count 数量 
+     */
     private createAllPoint(count:number){
         this.points.forEach(element => {
             if(element) element.gameObject.visible = false;
@@ -329,6 +371,14 @@ class demo_navigaionRVO implements IState
         }
     }
 
+    /**
+     * 设置路点
+     * @param index 索引 
+     * @param x 坐标x
+     * @param y 坐标y
+     * @param z 坐标z
+     * @param color 路点颜色
+     */
     private setRoadPoint(index,x,y,z,color:m4m.math.color){
         let cube = this.points[index];
         cube.localTranslate.x = x;
@@ -349,6 +399,12 @@ class demo_navigaionRVO implements IState
     }
 
     private points: m4m.framework.transform[] = [];
+    /**
+     * 生成几何模型
+     * @param meshType mesh类型
+     * @param color 颜色
+     * @returns 节点
+     */
     private generateGeomtry(meshType:string = "cube",color:m4m.math.vector4 = null){
         let G3D = new m4m.framework.transform;
         let mf = G3D.gameObject.addComponent(`meshFilter`) as m4m.framework.meshFilter;
@@ -374,6 +430,10 @@ class demo_navigaionRVO implements IState
     bere: boolean = false;
     isAKeyDown = false;
     private pointDown = false;
+    /**
+     * 更新
+     * @param delta 帧间时间
+     */
     update(delta: number)
     {
 
@@ -394,6 +454,12 @@ class demo_navigaionRVO implements IState
         this.rvoMgr.update(); // 更新 Transform
     }
 
+    /**
+     * 添加html按钮
+     * @param topOffset top偏移
+     * @param textContent 内容文本
+     * @param func 点击执行函数
+     */
     private addbtn(topOffset:string,textContent:string,func:()=>void)
     {
         var btn = document.createElement("button");

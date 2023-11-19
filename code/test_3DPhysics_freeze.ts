@@ -22,7 +22,10 @@ class test_3DPhysics_freeze implements IState {
     private targetTran : m4m.framework.transform;
     private boxTran : m4m.framework.transform;
     private cylinderTran : m4m.framework.transform;
-    private floor : m4m.framework.transform;
+    private floor : m4m.framework.transform
+    /**
+     * 初始化
+     */
     init(){
         
         let mat_activated = physics3dDemoTool.mats["activated"];
@@ -103,6 +106,9 @@ class test_3DPhysics_freeze implements IState {
     }
 
     private guiMsg = "冻结测试demo ";
+    /**
+     * 设置 调试GUI 
+     */
     setGUI(){
         if(!dat) return;
         let gui = new dat.GUI();
@@ -132,7 +138,9 @@ class test_3DPhysics_freeze implements IState {
         folderFun.add(this, 'applyReset' );
 
     }
-
+    /**
+     * 重置demo物理状态
+     */
     private applyReset(){
         physics3dDemoTool.resetObj(this.mrs);
     }
@@ -140,7 +148,10 @@ class test_3DPhysics_freeze implements IState {
     private enumArr : number[] = [];
     private optStrs: string[] = [];
     private freezeDic : {[opt:string]: boolean} = {};
-    //执行冻结
+    /**
+     * 执行冻结
+     * @returns 
+     */
     private applyFreezeOpt(){
         let phy = this.targetTran.physicsImpostor;
         if(!phy) return;
@@ -151,6 +162,9 @@ class test_3DPhysics_freeze implements IState {
         });
     }
 
+    /**
+     * 对目标施加冲量
+     */
     private impulseTarget(){
         this.doImpulse(this.targetTran.physicsImpostor);
     }
@@ -158,6 +172,10 @@ class test_3DPhysics_freeze implements IState {
     private force = new m4m.math.vector3(-10,0,5);
     private contactlocalPoint = new m4m.math.vector3(0,0,0);
     private tempV3 = new m4m.math.vector3();
+    /**
+     * 标施加冲量
+     * @param phyImpostor 物理代理
+     */
     private doImpulse(phyImpostor : m4m.framework.PhysicsImpostor){
         let pos = this.tempV3;
         m4m.math.vec3Add(phyImpostor.object.getWorldPosition(),this.contactlocalPoint,pos);
@@ -167,7 +185,10 @@ class test_3DPhysics_freeze implements IState {
     cachePickInfo = new m4m.framework.pickinfo();
     cacheRota = new m4m.math.quaternion();
     cache_y = 0;
-    //移动 到射线点
+    /**
+     * 移动 到射线点
+     * @param param0 点坐标
+     */
     onPonitMove([x,y]){
         let viewPos = m4m.poolv2();
         viewPos.x = x;

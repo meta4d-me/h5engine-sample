@@ -1,3 +1,6 @@
+/**
+ * 相机控制器（测试）
+ */
 class Test_CameraController {
     private static g_this: Test_CameraController;
     public static instance() {
@@ -15,7 +18,10 @@ class Test_CameraController {
     rotateSpeed: number = 0.1;
     keyMap: { [id: number]: boolean } = {};
     beRightClick: boolean = false;
-
+    /**
+     * 更新
+     * @param delta 帧间时间（s）
+     */
     update(delta: number) {
         if (this.beRightClick) {
             this.doMove(delta);
@@ -23,7 +29,10 @@ class Test_CameraController {
     }
 
     cameras:m4m.framework.camera[]=[];
-    
+    /**
+     * 添加相机
+     * @param camera 相机 
+     */
     add(camera:m4m.framework.camera)
     {
         this.cameras.push(new m4m.framework.camera());
@@ -33,7 +42,11 @@ class Test_CameraController {
 
     rotAngle: m4m.math.vector3;
     isInit: boolean = false;
-
+    
+    /**
+     * 判决相机
+     * @param target 相机
+     */
     decideCam(target:m4m.framework.camera)
     {
         this.target = target;
@@ -41,7 +54,10 @@ class Test_CameraController {
         m4m.math.quatToEulerAngles(this.target.gameObject.transform.localRotate, this.rotAngle);
     }
 
-
+    /**
+     * 初始化
+     * @param app 引擎app
+     */
     init(app: m4m.framework.application) {
         this.isInit = true;
         this.app = app;
@@ -88,6 +104,10 @@ class Test_CameraController {
     }
 
     private moveVector: m4m.math.vector3 = new m4m.math.vector3(0, 0, 1);
+    /**
+     * 执行移动
+     * @param delta 帧间时间（s）
+     */
     doMove(delta: number) {
         if (this.target == null)
             return;
@@ -146,6 +166,12 @@ class Test_CameraController {
 
         this.target.gameObject.transform.markDirty();
     }
+
+    /**
+     * 执行旋转
+     * @param rotateX 旋转x
+     * @param rotateY 旋转y
+     */
     doRotate(rotateX: number, rotateY: number) {
         this.rotAngle.x += rotateY * this.rotateSpeed;
         this.rotAngle.y += rotateX * this.rotateSpeed;
@@ -156,6 +182,10 @@ class Test_CameraController {
         m4m.math.quatFromEulerAngles(this.rotAngle.x, this.rotAngle.y, this.rotAngle.z, this.target.gameObject.transform.localRotate);
     }
 
+    /**
+     * 注视
+     * @param trans 被注视对象 
+     */
     lookat(trans: m4m.framework.transform) {
         this.target.gameObject.transform.lookat(trans);
         this.target.gameObject.transform.markDirty();
@@ -163,6 +193,11 @@ class Test_CameraController {
         m4m.math.quatToEulerAngles(this.target.gameObject.transform.localRotate, this.rotAngle);
     }
 
+    /**
+     * 检查 右键点击
+     * @param mouseEvent 鼠标点击事件 
+     * @returns 是点击了？
+     */
     checkOnRightClick(mouseEvent: MouseEvent) {
         var value = mouseEvent.button;
         if (value == 2) {
@@ -176,6 +211,11 @@ class Test_CameraController {
         }
     }
 
+    /**
+     * 执行 鼠标中间滚动
+     * @param ev 中间滚动事件
+     * @param isFirefox 是Firefox ？
+     */
     private doMouseWheel(ev: WheelEvent, isFirefox: boolean) {
         if (!this.target)
             return;
@@ -198,6 +238,9 @@ class Test_CameraController {
 
         }
     }
+    /**
+     * 移除
+     */
     remove() {
 
     }

@@ -14,7 +14,9 @@ class test_3DPhysics_baseShape implements IState {
         this.init();
         return null;
     }
-
+    /**
+     * 初始化
+     */
     init(){
 
         let mat_activated = physics3dDemoTool.mats["activated"];
