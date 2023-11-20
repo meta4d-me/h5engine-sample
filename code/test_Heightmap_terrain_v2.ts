@@ -60,6 +60,17 @@ class test_Heightmap_terrain_v2 implements IState {
         this.setGUI();
     }
 
+    /**
+     * 设置地形材质
+     * @param mtr 材质
+     * @param heightMax 最大高度 
+     * @param heightMap 高度图
+     * @param splatCtr 画笔控制图
+     * @param splat0 笔画纹理0
+     * @param splat1 笔画纹理1
+     * @param splat2 笔画纹理2
+     * @param splat3 笔画纹理3
+     */
     setTerrainMaterial(mtr: m4m.framework.material, heightMax: number, heightMap: texture, splatCtr: texture, splat0: texture, splat1: texture, splat2: texture, splat3: texture) {
         let assetMgr = m4m.framework.sceneMgr.app.getAssetMgr();
         //获取 高度图shader
@@ -83,6 +94,9 @@ class test_Heightmap_terrain_v2 implements IState {
         mtr.setVector4(`_Splat3_ST`, new m4m.math.vector4(26.7, 26.7, 0, 0));
     }
 
+    /**
+     * 保存数据
+     */
     saveData() {
         const texs = this.texs;
         const dataCfg: ITerrainConfig = { version: "1.0" };
@@ -102,6 +116,9 @@ class test_Heightmap_terrain_v2 implements IState {
         // this.setTerrainMaterial(mtr, 200, texs[0], texs[1], texs[2], texs[3], texs[4], texs[5]);
     }
 
+    /**
+     * 设置GUI
+     */
     setGUI() {
         if (!dat) return;
         let gui = new dat.GUI();
@@ -368,6 +385,16 @@ class test_Heightmap_terrain_v2 implements IState {
         return _mesh;
     }
 
+    /**
+     * 生成mesh
+     * @param gl webgl上下文
+     * @param heightmap 高度图
+     * @param width 宽
+     * @param depth 深度
+     * @param segmentsW 段落宽
+     * @param segmentsH 段落高
+     * @returns 输出mesh
+     */
     public static genMesh(gl: WebGL2RenderingContext, heightmap: m4m.framework.texture, width: number = 1000, depth: number = 1000, segmentsW: number = 30, segmentsH: number = 30) {
         const pixelReader = (heightmap.glTexture as m4m.render.glTexture2D).getReader(true);    //只读灰度信息
         // pixelReader.getPixel();

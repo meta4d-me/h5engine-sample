@@ -52,6 +52,10 @@ class test_ParticleSystem implements IState {
         this.init();
     }
 
+    /**
+     * 设置GUI
+     * @returns 
+     */
     setGUI() {
         if (!dat) return;
         let gui = new dat.GUI();
@@ -63,6 +67,9 @@ class test_ParticleSystem implements IState {
         gui.add(this, 'stop');
     }
 
+    /**
+     * 播放
+     */
     play() {
         this._particle.gameObject.getComponentsInChildren("ParticleSystem").forEach(v => {
             var ps: m4m.framework.ParticleSystem = <any>v;
@@ -75,6 +82,9 @@ class test_ParticleSystem implements IState {
         })
     }
 
+    /**
+     * 暂停播放
+     */
     stop() {
         this._particle.gameObject.getComponentsInChildren("ParticleSystem").forEach(v => {
             var ps: m4m.framework.ParticleSystem = <any>v;
@@ -91,6 +101,9 @@ class test_ParticleSystem implements IState {
     }
     private _particleName: string = "ps_inheritVelocity";
 
+    /**
+     * 初始化
+     */
     private init() {
         //相机-----------------------------------
         var objCam = new m4m.framework.transform();
@@ -115,6 +128,10 @@ class test_ParticleSystem implements IState {
         // this.initParticleSystem();
     }
 
+    /**
+     * 显示粒子
+     * @param res 资源
+     */
     private async _showParticle(res: string) {
         if (this._particle) {
             this.scene.removeChild(this._particle);

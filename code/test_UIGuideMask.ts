@@ -27,6 +27,9 @@ class test_UIGuideMask implements IState {
     }
     
     private dec  = "点击屏幕 , 移动孔的位置"
+    /**
+     * 初始化
+     */
     init(){
         //遮挡模板 
         let template = new m4m.framework.transform2D();

@@ -18,6 +18,10 @@ class test_keyFrameAni implements IState
             .then(() => this.loadAsset())
             .then(() => this.addbtns())
     }
+
+    /**
+     * 添加相机
+     */
     private addCamera()
     {
         //添加一个摄像机
@@ -31,6 +35,10 @@ class test_keyFrameAni implements IState
         CameraController.instance().init(this.app, camera);
     }
 
+    /**
+     * 加载资源
+     * @returns 资源 Promise
+     */
     private loadAsset()
     {
         return util.loadModel(this.app.getAssetMgr(), "PF_PlayerSharkAlien")
@@ -48,6 +56,9 @@ class test_keyFrameAni implements IState
             })
     }
 
+    /**
+     * 添加按钮
+     */
     private addbtns()
     {
         this.addbtn("play", 10, 100, () =>
@@ -70,6 +81,13 @@ class test_keyFrameAni implements IState
         });
     }
 
+    /**
+     * 添加按钮
+     * @param text  文本字符 
+     * @param x x值
+     * @param y y值
+     * @param func 函数
+     */
     private addbtn(text: string, x: number, y: number, func: () => void)
     {
         var btn = document.createElement("button");

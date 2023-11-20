@@ -5,6 +5,11 @@ namespace t
     {
         app: m4m.framework.application;
         scene: m4m.framework.scene;
+        /**
+         * 加载着色器
+         * @param laststate 
+         * @param state 资源状态
+         */
         private loadShader(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
             this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (_state) =>
@@ -14,6 +19,11 @@ namespace t
             );
         }
 
+        /**
+         * 加载文本字符串
+         * @param laststate 
+         * @param state 资源状态
+         */
         private loadText(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
             this.app.getAssetMgr().load("res/zg256.png", m4m.framework.AssetTypeEnum.Auto, (s) => 
@@ -30,6 +40,11 @@ namespace t
             );
         }
         sh: m4m.framework.shader;
+        /**
+         * 初始化场景
+         * @param laststate 
+         * @param state 资源状态
+         */
         private initscene(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
             {
@@ -91,6 +106,11 @@ namespace t
 
         }
 
+        /**
+         * 添加在UI上的3d模型
+         * @param laststate 
+         * @param state 资源状态
+         */
         private add3dmodelbeforeUi(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
             {

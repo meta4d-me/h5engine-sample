@@ -68,6 +68,9 @@ class test_GPU_instancing implements IState {
     }
 
     private _batcher = false;
+    /**
+     * 合批切换
+     */
     batcherSwitch() {
         this._batcher = !this._batcher;
         if (this._batcher) {
@@ -92,6 +95,9 @@ class test_GPU_instancing implements IState {
         this._scene.refreshGpuInstancBatcher();
     }
 
+    /**
+     * 刷新
+     */
     refresh() {
         this.cubeRoot.removeAllChild();
         this.cubeRoot.gameObject.isStatic = this.isStatic;
@@ -129,6 +135,10 @@ class test_GPU_instancing implements IState {
 
 
     private loadedTest = false;
+    /**
+     * 加载资源
+     * @param modelName 模型名
+     */
     async loadTest(modelName: string) {
         let url = `${resRootPath}prefab/${modelName}/${modelName}.assetbundle.json`;
         if (!this.loadedTest)
@@ -154,6 +164,10 @@ class test_GPU_instancing implements IState {
         }
     }
 
+    /**
+     * 创建指定数量
+     * @param num 数量
+     */
     createByNum(num: number) {
         if (num < 1) num = 1;
         let count = 0;
@@ -163,6 +177,9 @@ class test_GPU_instancing implements IState {
         }
     }
 
+    /**
+     * 实例化 切换
+     */
     instanceSwitch() {
         this.isInstancing = !this.isInstancing;
         this.mats.forEach((v) => {
@@ -170,6 +187,9 @@ class test_GPU_instancing implements IState {
         });
     }
 
+    /**
+     * 初始化材质
+     */
     initMaterails() {
         this._mat_ins = new m4m.framework.material("GPU_Instancing");
         this.instanceShBase = this._app.getAssetMgr().getShader("demo_gpu_instancing.shader.json");
@@ -177,6 +197,11 @@ class test_GPU_instancing implements IState {
     }
 
     private count = 0;
+    /**
+     * 创建一个
+     * @param app 引擎app 
+     * @param needInstance 需要GPUInstance
+     */
     createOne(app, needInstance: boolean) {
         let obj = m4m.framework.TransformUtil.CreatePrimitive(m4m.framework.PrimitiveType.Cube, app);
         obj.gameObject.transform.enableCulling = false;
@@ -203,6 +228,11 @@ class test_GPU_instancing implements IState {
         this.mrArr.push(mr);
     }
 
+    /**
+     * 注视相机
+     * @param trans  节点
+     * @returns 
+     */
     private lookAtCamera(trans: m4m.framework.transform) {
         if (!this.cam) return;
         //朝向玩家
@@ -213,6 +243,11 @@ class test_GPU_instancing implements IState {
         trans.setWorldRotate(tempQuat);
     }
 
+    /**
+     * 获取随机数
+     * @param range 范围值 
+     * @returns 数
+     */
     private getRandom(range: number) {
         return range * Math.random() * (Math.random() > 0.5 ? 1 : -1);
     }
@@ -249,6 +284,10 @@ class gpuInstanceMgr {
         }
     }
 
+    /**
+     * 填充参数
+     * @param mat 材质
+     */
     private static fillParameters(mat: m4m.framework.material) {
         let staMap = mat.statedMapUniforms;
         for (let key in staMap) {
@@ -264,6 +303,11 @@ class gpuInstanceMgr {
         }
     }
 
+    /**
+     * 检查能否 使用 GPUInstance
+     * @param mat 材质
+     * @returns 能使用？
+     */
     private static ckCanUseGpuInstance(mat: m4m.framework.material) {
         if (!mat) return false;
         let sh = mat.getShader();

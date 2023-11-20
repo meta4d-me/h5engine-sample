@@ -129,6 +129,9 @@ class test_spine_IK implements IState
             })
     }
 
+    /**
+     * 发射
+     */
     private fire = () =>
     {
         this._comp.state.setAnimation(3, "aim", true);
@@ -140,11 +143,19 @@ class test_spine_IK implements IState
             }
         };
     }
+
+    /**
+     *  跳跃 
+     */
     private jump = () =>
     {
         this._comp.state.setAnimation(2, "jump", false);
         this._comp.state.addEmptyAnimation(2, 0.5, 0);
     }
+    /**
+     * 设置GUI
+     * @returns 
+     */
     setGUI()
     {
         if (!dat) return;

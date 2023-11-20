@@ -72,6 +72,12 @@ class test_pick_boxcollider implements IState
         l.type = m4m.framework.LightTypeEnum.Direction;
         
     }
+
+    /**
+     * 加载场景
+     * @param assetName 资源名
+     * @param isCompress 是压缩？
+     */
     private loadScene(assetName: string, isCompress = false)
     {
         let ShowBoxcollder = (trans: m4m.framework.transform) =>
@@ -122,6 +128,13 @@ class test_pick_boxcollider implements IState
     }
 
     private colorMap: { [key: string]: m4m.math.vector4 } = {};
+    /**
+     * 获取颜色
+     * @param r r值 
+     * @param g g值
+     * @param b b值
+     * @returns 颜色值
+     */
     private getColor(r, g, b)
     {
         let key = `${r}_${g}_${b}`;
@@ -130,6 +143,10 @@ class test_pick_boxcollider implements IState
     }
 
     private balls = [];
+    /**
+     * 添加球
+     * @param pos 
+     */
     private addBall(pos: m4m.math.vector3)
     {
         let ball = this.generateGeomtry("sphere", this.getColor(1, 0, 0));
@@ -140,6 +157,9 @@ class test_pick_boxcollider implements IState
     }
 
     private pickLayer = 8;
+    /**
+     * 点击拾取
+     */
     pickDown(): void
     {
         let v3 = this.rayCollider();
@@ -148,6 +168,11 @@ class test_pick_boxcollider implements IState
             this.addBall(v3.hitposition);
         }
     }
+
+    /**
+     * 射线碰撞
+     * @returns 拾取信息
+     */
     private rayCollider(): m4m.framework.pickinfo
     {
         let inputMgr = this.app.getInputMgr();
@@ -161,6 +186,12 @@ class test_pick_boxcollider implements IState
     }
     //----------- 绘制路径线段----------------
     private points: m4m.framework.transform[] = [];
+    /**
+     * 生成几何体
+     * @param meshType mesh类型
+     * @param color 颜色
+     * @returns 节点
+     */
     private generateGeomtry(meshType: string = "cube", color: m4m.math.vector4 = null)
     {
         let G3D = new m4m.framework.transform;

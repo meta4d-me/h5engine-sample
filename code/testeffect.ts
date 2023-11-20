@@ -9,6 +9,11 @@ class test_effect implements IState
     effect: m4m.framework.effectSystem;
     label: HTMLLabelElement;
 
+    /**
+     * 加载着色器
+     * @param laststate 
+     * @param state 状态 
+     */
     private loadShader(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
     {
         this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (_state) =>
@@ -20,6 +25,12 @@ class test_effect implements IState
         }
         );
     }
+
+    /**
+     * 加载文本
+     * @param laststate 
+     * @param state 状态 
+     */
     private loadText(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) 
     {
         this.app.getAssetMgr().load("res/zg256.png", m4m.framework.AssetTypeEnum.Auto, (s) =>
@@ -35,6 +46,12 @@ class test_effect implements IState
         }
         );
     }
+
+    /**
+     * 添加cube
+     * @param laststate 
+     * @param state 状态
+     */
     private addcube(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
     {
         //添加一个盒子
@@ -68,6 +85,11 @@ class test_effect implements IState
     }
 
     private dragon: m4m.framework.transform;
+    /**
+     * 加载模型
+     * @param laststate 
+     * @param state 状态
+     */
     private loadModel(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
     {
         this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (s) =>
@@ -104,6 +126,11 @@ class test_effect implements IState
     }
 
     private text:m4m.framework.textasset;
+    /**
+     * 加载特效
+     * @param laststate 
+     * @param state 状态
+     */
     private loadEffect(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) 
     {
         // this._loadEffect("res/particleEffect/hjxnew/hjxnew.assetbundle.json", "hjxnew");//
@@ -130,6 +157,9 @@ class test_effect implements IState
 
     }
 
+    /**
+     * 添加按钮
+     */
     private addButton()
     {
 
@@ -226,12 +256,22 @@ class test_effect implements IState
         this.app.container.appendChild(btn1);
     }
 
+    /**
+     * 通过URL 获取资源名
+     * @param path URL
+     * @returns 
+     */
     private getNameFromURL(path: string)
     {
         let index = path.lastIndexOf("/");
         return path.substring(index + 1);
     }
 
+    /**
+     * 添加相机
+     * @param laststate 
+     * @param state 
+     */
     private addcam(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
     {
         //添加一个摄像机

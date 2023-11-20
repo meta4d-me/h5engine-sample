@@ -31,6 +31,9 @@ class test_Rvo2 implements IState
     }
 
     spheres:m4m.framework.transform[] = [];
+    /**
+     * 初始化
+     */
     init(){
         //加球
         let sphere = new m4m.framework.transform;
@@ -86,6 +89,12 @@ class test_Rvo2 implements IState
           this.sim.doStep(); //走一步
         }
     }
+    /**
+     * 设置目标
+     * @param sim 
+     * @param goals 
+     * @returns 
+     */
     reachedGoals(sim, goals) {
         for (var i = 0, len = sim.agents.length; i < len; i ++) {
             if (RVO.Vector.absSq(RVO.Vector.subtract(sim.agents[i].position, goals[i])) > 1) {
@@ -94,6 +103,12 @@ class test_Rvo2 implements IState
         }
         return true;
     }
+
+    /**
+     * 设置速度
+     * @param sim 管理器
+     * @param goals 目标列表
+     */
     setPreferredVelocities(sim, goals) {
         for (var i = 0, len = sim.agents.length; i < len; i ++) {
         // 据当前目标重新获取目标方向向量
@@ -104,6 +119,11 @@ class test_Rvo2 implements IState
             sim.agents[i].prefVelocity = goalVector; // 更新
         }
     }
+
+    /**
+     * 更新可视化
+     * @param sim 管理器
+     */
     updateVisualization (sim){
         for(var i = 0 ; i<this.spheres.length; i++){
             this.spheres[i].localTranslate.x = sim.agents[i].position[0];

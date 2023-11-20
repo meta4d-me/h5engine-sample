@@ -23,6 +23,9 @@ class test_LightMap implements IState {
         this.change();
     }
 
+    /**
+     * 添加相机
+     */
     private addCam() {
         //添加一个摄像机
         //initCamera
@@ -43,6 +46,10 @@ class test_LightMap implements IState {
         hoverc.lookAtPoint = new m4m.math.vector3(0, 2.5, 0)
     }
 
+    /**
+     * 设置GUI
+     * @returns 
+     */
     private setGUI() {
         if (!dat) return;
         let gui = new dat.GUI();
@@ -54,6 +61,10 @@ class test_LightMap implements IState {
         gui.add(this, "change").name(`加载替换资源`);
     }
 
+    /**
+     * 执行改变
+     * @returns  Promise
+     */
     async change() {
         let { f, type } = this.resTypeFileMap[this.resType];
         if (!f) return;
@@ -62,6 +73,11 @@ class test_LightMap implements IState {
         await this.loadToScene(f, type);
     }
 
+    /**
+     * 加载到场景
+     * @param fileName 资源名
+     * @param type 类型
+     */
     async loadToScene(fileName: string, type: string) {
         let assetMgr = this.app.getAssetMgr();
         switch (type) {
@@ -81,6 +97,9 @@ class test_LightMap implements IState {
         }
     }
 
+    /**
+     * 清理场景
+     */
     clearScene() {
         this.scene.getRoot().removeAllChild();
     }

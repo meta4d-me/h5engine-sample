@@ -97,7 +97,13 @@ class HDR_sample implements IState {
     _enableLight: boolean = true;
     lightRoot: m4m.framework.transform;
     modelRoot: m4m.framework.transform;
-
+    
+    /**
+     * 加载资源
+     * @param path 路径
+     * @param type 类型
+     * @returns 返回资源Promise
+     */
     _load(path: string, type = m4m.framework.AssetTypeEnum.Auto) {
         return new Promise((resolve) => {
             this.assetMgr?.load(path, type, (res) => {
@@ -108,11 +114,25 @@ class HDR_sample implements IState {
             });
         });
     }
+
+    /**
+     * 加载资源
+     * @param path 路径
+     * @param name 名
+     * @param type 类型
+     * @returns 返回资源Promise
+     */
     async load<T extends m4m.framework.IAsset>(path: string, name: string, type?: m4m.framework.AssetTypeEnum) {
         await this._load(path + name, type);
         return this.assetMgr.getAssetByName<T>(name);
     }
 
+    /**
+     * 加载cube纹理
+     * @param folder 文件夹
+     * @param images 纹理资源名列表
+     * @returns Promise  CubeTexture
+     */
     async loadCubeTexture(folder: string,
         images = [
             'negx.hdr',
@@ -193,6 +213,10 @@ class HDR_sample implements IState {
         }
     }
 
+    /**
+     * 加载GLTF
+     * @param gltfModels gltf模型 url
+     */
     async toLoadGLTF(gltfModels: any[]) {
         const config = JSON.parse(this.sceneConfig);
         console.log(config);
@@ -352,6 +376,9 @@ class HDR_sample implements IState {
         }
     }
 
+    /**
+     * 启用GUI
+     */
     async enableGUI() {
         this.ModelList = this.gltfModels.map((val) => { return val.file.split(".")[0] });
         await datGui.init();
@@ -375,6 +402,9 @@ class HDR_sample implements IState {
         this.lightRoot.children.forEach((l) => { l.gameObject.visible = val; });
     }
 
+    /**
+     * 加载
+     */
     toLoad() {
         this.clearGLTF();
 
@@ -437,6 +467,9 @@ class HDR_sample implements IState {
         this.toLoadGLTF([model]);
     }
 
+    /**
+     * 清理GLTF
+     */
     clearGLTF() {
         this.lightRoot.removeAllChild();
         this.modelRoot.removeAllChild();

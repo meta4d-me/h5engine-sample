@@ -37,9 +37,22 @@ class test_WFC2D_base implements IState {
         this._tileSize = this.setVal(val);
     }
 
+    /**
+     * 设置 大于0的整数 值
+     * @param val 值
+     * @returns 返回值
+     */
     private setVal(val: number) { return Math.floor(val < 1 ? 1 : val); }
+    /**
+     * 设置瓦片尺寸
+     * @param val 尺寸
+     */
     private setTileSize(val: number) { this._tileSize = this.setVal(val); this.tileSize = this._tileSize; }
 
+    /**
+     * 设置GUI
+     * @returns 
+     */
     private async setGUI() {
         await datGui.init();
         if (!dat) return;
@@ -79,6 +92,11 @@ class test_WFC2D_base implements IState {
 
     }
 
+    /**
+     * 获取WFC 资源
+     * @param res 资源名
+     * @returns 返回的 Promise<> 异步资源
+     */
     private async getWFCRes(res: string) {
         //得到配置对象 (xxxloadJson 替换成自己的加载json的函数)
         let textRes = await util.loadRes<m4m.framework.textasset>(`${resRootPath}wfc2d/${res}/data.json`);
@@ -193,6 +211,12 @@ class test_WFC2D_base implements IState {
 
     }
 
+    /**
+     * 通过 raw纹理数据 创建 背景图
+     * @param wfc2dReslutMap wfc 计算输出的结果数据
+     * @param imgURLs raw纹理 url 链接列表
+     * @param imgNames raw纹理 名 列表
+     */
     private async makeBGByRawImg(wfc2dReslutMap: [string, number][], imgURLs: string[], imgNames: string[]) {
         //加载所有的单图成引擎纹理
         let imgs = await util.loadTextures(imgURLs, m4m.framework.sceneMgr.app.getAssetMgr());
@@ -210,6 +234,11 @@ class test_WFC2D_base implements IState {
         this.bgRoot.addChild(genBG);
     }
 
+    /**
+     * 通过 raw纹理 创建 背景图
+     * @param wfc2dReslutMap wfc 计算输出的结果数据
+     * @param imgURLs raw纹理 url 链接列表
+     */
     private async makeBGByImg(wfc2dReslutMap: [string, number][], imgURLs: string[]) {
         //生成 图集
         let atlas = await util.imageMergeToAtlas(imgURLs);
@@ -233,6 +262,9 @@ class test_WFC2D_base implements IState {
         this.bgRoot.addChild(genBG);
     }
 
+    /**
+     * 清理历史
+     */
     private releaseHistory() {
         this.bgRoot.removeAllChild(true);
     }

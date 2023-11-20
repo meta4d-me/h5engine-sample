@@ -10,6 +10,11 @@ namespace t {
             this.taskmgr.addTaskCall(this.loadTexture.bind(this));
             this.taskmgr.addTaskCall(this.initscene.bind(this));
         }
+        /**
+         * 加载着色器
+         * @param laststate 
+         * @param state 状态 
+         */
         private loadShader(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
             this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (_state) => {
                 if (_state.isfinish) {
@@ -19,6 +24,11 @@ namespace t {
             );
         }
 
+        /**
+         * 加载纹理
+         * @param laststate 
+         * @param state 状态 
+         */
         private loadTexture(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
             this.app.getAssetMgr().load("res/rock256.png", m4m.framework.AssetTypeEnum.Auto, (s) => {
                 if (s.isfinish) {
@@ -31,6 +41,12 @@ namespace t {
             );
         }
         sh: m4m.framework.shader;
+        
+        /**
+         *  初始化场景 
+         * @param laststate 
+         * @param state 状态
+         */
         private initscene(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
             var objCam = new m4m.framework.transform();
             objCam.name = "cam_show";
@@ -92,8 +108,6 @@ namespace t {
             }
             state.finish = true;
         }
-
-
 
         private fuckLabel: m4m.framework.label;
         private showcamera: m4m.framework.camera;

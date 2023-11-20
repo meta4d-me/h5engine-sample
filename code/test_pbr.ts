@@ -34,8 +34,11 @@ class test_pbr implements IState {
         this.taskmgr.addTaskCall(this.init.bind(this));
     }
 
-
-
+    /**
+     * 初始化
+     * @param astState 
+     * @param state 状态
+     */
     private init(astState: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         let temp1 = new m4m.framework.transform();
         this.scene.addChild(temp1);
@@ -148,6 +151,11 @@ class test_pbr implements IState {
     private material:string = this.PBRPath + "meta3/";
     private skyName = "map";
     private iblPath:string = this.PBRPath + `IBL/${this.skyName}/`;
+    /**
+     * 加载pbr 资源
+     * @param lastState 
+     * @param state 加载状态
+     */
     private loadpbrRes(lastState: m4m.framework.taskstate, state: m4m.framework.taskstate){
         this.assetMgr.load(this.iblPath + "negx.jpg",m4m.framework.AssetTypeEnum.Auto,(s0)=>{
             if(s0.isfinish){
@@ -176,6 +184,11 @@ class test_pbr implements IState {
         });
     }
 
+    /**
+     * 加载pbr 资源
+     * @param lastState 
+     * @param state 加载状态
+     */
     private loadpbrRes1(lastState: m4m.framework.taskstate, state: m4m.framework.taskstate){
         this.assetMgr.load(this.iblPath + "negx_1.jpg",m4m.framework.AssetTypeEnum.Auto,(s0)=>{
             if(s0.isfinish){
@@ -204,6 +217,11 @@ class test_pbr implements IState {
         });
     }
 
+    /**
+     * 加载pbr 资源
+     * @param lastState 
+     * @param state 加载状态
+     */
     private loadpbrRes2(lastState: m4m.framework.taskstate, state: m4m.framework.taskstate){
         this.assetMgr.load(this.iblPath + "negx_2.jpg",m4m.framework.AssetTypeEnum.Auto,(s0)=>{
             if(s0.isfinish){
@@ -232,6 +250,11 @@ class test_pbr implements IState {
         });
     }
 
+    /**
+     * 加载pbr 资源
+     * @param lastState 
+     * @param state 加载状态
+     */
     private loadpbrRes3(lastState: m4m.framework.taskstate, state: m4m.framework.taskstate){
         this.assetMgr.load(this.iblPath + "negx_3.jpg",m4m.framework.AssetTypeEnum.Auto,(s0)=>{
             if(s0.isfinish){
@@ -260,6 +283,11 @@ class test_pbr implements IState {
         });
     }
 
+    /**
+     * 加载pbr 资源
+     * @param lastState 
+     * @param state 加载状态
+     */
     private loadpbrRes4(lastState: m4m.framework.taskstate, state: m4m.framework.taskstate){
         this.assetMgr.load(this.iblPath + "negx_4.jpg",m4m.framework.AssetTypeEnum.Auto,(s0)=>{
             if(s0.isfinish){
@@ -288,6 +316,11 @@ class test_pbr implements IState {
         });
     }
 
+    /**
+     * 加载纹理
+     * @param lastState 
+     * @param state 加载状态
+     */
     private loadTexture(lastState: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         //加载图片资源
         this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (s1) =>
@@ -317,6 +350,10 @@ class test_pbr implements IState {
             }
         });
     }
+    
+    /**
+     * 添加cube
+     */
     private addCube() {
         var cube = new m4m.framework.transform();
         cube.name = "cube";

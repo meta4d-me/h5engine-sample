@@ -14,7 +14,11 @@ namespace t
         counttimer: number = 0;
         private angularVelocity: m4m.math.vector3 = new m4m.math.vector3(10, 0, 0);
         private eulerAngle = m4m.math.pool.new_vector3();
-
+        /**
+         * 加载着色器
+         * @param laststate 
+         * @param state 加载状态
+         */
         private loadShader(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
             this.app.getAssetMgr().load(`${resRootPath}shader/shader.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (_state) =>
@@ -28,6 +32,11 @@ namespace t
             );
         }
 
+        /**
+         * 加载文本字符串
+         * @param laststate 
+         * @param state 加载状态
+         */
         private loadText(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
             let t = 2;
@@ -68,6 +77,9 @@ namespace t
             );
         }
 
+        /**
+         * 添加相机
+         */
         private addcam()
         {
 
@@ -84,6 +96,9 @@ namespace t
         }
 
         foreground: m4m.framework.transform;
+        /**
+         * 添加地板
+         */
         private addplane()
         {
             {
@@ -140,7 +155,6 @@ namespace t
                 this.foreground = foreground;
             }
         }
-
 
         start(app: m4m.framework.application)
         {

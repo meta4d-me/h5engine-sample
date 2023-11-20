@@ -44,6 +44,21 @@ class test_pbr_scene implements IState {
     private lightPos1 = new m4m.math.vector4(0.5, 0.5, 0.5, 1.0);
     private lightPos2 = new m4m.math.vector4(10, 5, 0, 1.0);
 
+    /**
+     * 添加球
+     * @param x x值
+     * @param y y值
+     * @param z z值
+     * @param IBL cube纹理0
+     * @param IBL_1 cube纹理1
+     * @param IBL_2 cube纹理2
+     * @param IBL_3 cube纹理3
+     * @param IBL_4 cube纹理4
+     * @param IBL_5 cube纹理5
+     * @param albedo 基础色
+     * @param metallic 金属度
+     * @param roughness 粗糙度
+     */
     private addSphere(
         x: number,
         y: number,
@@ -99,6 +114,11 @@ class test_pbr_scene implements IState {
         // mr.materials[0].setCubeTexture("u_sky_5",IBL_5);
     }
 
+    /**
+     * 初始化
+     * @param astState 
+     * @param state 加载状态
+     */
     private init(astState: m4m.framework.taskstate, state: m4m.framework.taskstate) {
 
         //sky
@@ -201,6 +221,11 @@ class test_pbr_scene implements IState {
     private material:string = this.PBRPath + "meta3/";
     private skyName = "map";
     private iblPath:string = this.PBRPath + `IBL/${this.skyName}/`;
+    /**
+     * 加载pbr 资源
+     * @param lastState 
+     * @param state 加载状态
+     */
     private loadpbrRes(lastState: m4m.framework.taskstate, state: m4m.framework.taskstate){
         this.assetMgr.load(this.iblPath + "negx.jpg",m4m.framework.AssetTypeEnum.Auto,(s0)=>{
             if(s0.isfinish){
@@ -229,6 +254,11 @@ class test_pbr_scene implements IState {
         });
     }
 
+    /**
+     * 加载pbr 资源
+     * @param lastState 
+     * @param state 加载状态
+     */
     private loadpbrRes1(lastState: m4m.framework.taskstate, state: m4m.framework.taskstate){
         this.assetMgr.load(this.iblPath + "negx_1.jpg",m4m.framework.AssetTypeEnum.Auto,(s0)=>{
             if(s0.isfinish){
@@ -257,6 +287,11 @@ class test_pbr_scene implements IState {
         });
     }
 
+    /**
+     * 加载pbr 资源
+     * @param lastState 
+     * @param state 加载状态
+     */
     private loadpbrRes2(lastState: m4m.framework.taskstate, state: m4m.framework.taskstate){
         this.assetMgr.load(this.iblPath + "negx_2.jpg",m4m.framework.AssetTypeEnum.Auto,(s0)=>{
             if(s0.isfinish){
@@ -285,6 +320,11 @@ class test_pbr_scene implements IState {
         });
     }
 
+    /**
+     * 加载pbr 资源
+     * @param lastState 
+     * @param state 加载状态
+     */
     private loadpbrRes3(lastState: m4m.framework.taskstate, state: m4m.framework.taskstate){
         this.assetMgr.load(this.iblPath + "negx_3.jpg",m4m.framework.AssetTypeEnum.Auto,(s0)=>{
             if(s0.isfinish){
@@ -313,6 +353,11 @@ class test_pbr_scene implements IState {
         });
     }
 
+    /**
+     * 加载pbr 资源
+     * @param lastState 
+     * @param state 加载状态
+     */
     private loadpbrRes4(lastState: m4m.framework.taskstate, state: m4m.framework.taskstate){
         this.assetMgr.load(this.iblPath + "negx_4.jpg",m4m.framework.AssetTypeEnum.Auto,(s0)=>{
             if(s0.isfinish){
@@ -341,6 +386,11 @@ class test_pbr_scene implements IState {
         });
     }
 
+    /**
+     * 加载纹理
+     * @param lastState 
+     * @param state 加载状态
+     */
     private loadTexture(lastState: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         //加载图片资源
         this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (s1) =>

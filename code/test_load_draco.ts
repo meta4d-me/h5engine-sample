@@ -233,6 +233,13 @@ class test_load_draco implements IState {
         return outMesh;
     }
 
+    /**
+     * 获取解码索引
+     * @param draco draco
+     * @param decoder 解码器
+     * @param dracoGeometry draco几何体
+     * @returns decodeIndex
+     */
     private getDecodeIndex(draco, decoder, dracoGeometry): decodeIndex {
 
         const numFaces = dracoGeometry.num_faces();
@@ -248,6 +255,16 @@ class test_load_draco implements IState {
 
     }
 
+    /**
+     * 获取解码属性
+     * @param draco draco
+     * @param decoder 解码器
+     * @param dracoGeometry draco几何体
+     * @param attributeName 属性名
+     * @param attributeType 属性类型
+     * @param attribute 属性
+     * @returns 解码属性
+     */
     private getDecodeAttribute(draco, decoder, dracoGeometry, attributeName: string, attributeType, attribute): decodeAttribute {
         const numComponents = attribute.num_components();
         const numPoints = dracoGeometry.num_points();
@@ -267,6 +284,11 @@ class test_load_draco implements IState {
         };
     }
 
+    /**
+     * 获取draco数据类型
+     * @param draco draco
+     * @param attributeType 属性类型
+     */
     private getDracoDataType(draco, attributeType) {
         switch (attributeType) {
             case Float32Array: return draco.DT_FLOAT32;

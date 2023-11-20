@@ -27,6 +27,10 @@ class test_ShaderToy_Player implements IState {
         this.setGUI();
     }
 
+    /**
+     * 设置GUI
+     * @returns 
+     */
     private setGUI() {
         if (!dat) return;
         let gui = new dat.GUI();
@@ -38,12 +42,19 @@ class test_ShaderToy_Player implements IState {
         gui.add(this, "change").name(`加载替换资源`);
     }
 
+    /**
+     * 改变
+     */
     async change() {
         this.clearScene();
         this.addCam();
         await this.loadToScene(this.res);
     }
 
+    /**
+     * 加载到场景
+     * @param fileName 文件名
+     */
     async loadToScene(fileName: string) {
         const url = `${resRootPath}sToy/${fileName}/`;
         const sToyData = await shaderToyData.Load(url);
@@ -54,6 +65,9 @@ class test_ShaderToy_Player implements IState {
         m4m.framework.sceneMgr.scene.addChild(sToyNode);
     }
 
+    /**
+     * 添加相机
+     */
     private addCam() {
         const scene = m4m.framework.sceneMgr.scene;
         //添加一个摄像机
@@ -75,12 +89,13 @@ class test_ShaderToy_Player implements IState {
         hoverc.lookAtPoint = new m4m.math.vector3(0, 2.5, 0)
     }
 
+    /**
+     * 清理场景
+     */
     private clearScene() {
         const scene = m4m.framework.sceneMgr.scene;
         scene.getRoot().removeAllChild();
     }
-
-
 
     update(delta: number) {
 
@@ -173,7 +188,10 @@ class shaderToyData {
     public get instanceID() { return this._instanceID; }
     /** 着色器 */
     public get shader() { return this._shader; }
-
+    /**
+     * 初始化
+     * @returns 
+     */
     private static init() {
         if (this._inited) return;
         this._inited = true;
@@ -190,6 +208,11 @@ class shaderToyData {
         this._instanceID = shaderToyData._instanceCount++;
     }
 
+    /**
+     * 加载
+     * @param resUrl 资源url
+     * @returns 
+     */
     public static async Load(resUrl: string) {
         const loadRes = <T>(url: string, _type = m4m.framework.AssetTypeEnum.Auto) => {
             const mgr = m4m.framework.sceneMgr.app.getAssetMgr();
@@ -236,7 +259,10 @@ class shaderToyData {
         return result;
     }
 
-    /** 构建着色器 */
+    /**
+     * 构建着色器
+     * @param data 数据
+     */
     private static makeShader(data: shaderToyData) {
         const app = m4m.framework.sceneMgr.app;
         const gl = app.webgl;
@@ -272,7 +298,10 @@ class shaderToyData {
         data._shader = sh;
     }
 
-    /** 生成 stoyMesh */
+    /**
+     * 生成 stoyMesh
+     * @returns mesh
+     */
     private static genSToyMesh(): m4m.framework.mesh {
         const data = new m4m.render.meshData();
         data.pos = [];
@@ -362,6 +391,10 @@ class shaderToyPlayer implements m4m.framework.IRenderer {
         }
     }
 
+    /**
+     * 当点按下
+     * @param param0 点坐标
+     */
     private onPointDown([x, y]) {
         const h = m4m.framework.sceneMgr.app.height;
         y = h - y;
@@ -369,6 +402,10 @@ class shaderToyPlayer implements m4m.framework.IRenderer {
         this._pointIsDown = true;
     }
 
+    /**
+     * 当点移动
+     * @param param0 点坐标
+     */
     private onPointMove([x, y]) {
         this._pointIsDown = true;
         const h = m4m.framework.sceneMgr.app.height;
@@ -377,6 +414,10 @@ class shaderToyPlayer implements m4m.framework.IRenderer {
         this._iMouse.y = y;
     }
 
+    /**
+     * 当点点击
+     * @param param0 点坐标
+     */
     private onPointClick([x, y]) {
         const h = m4m.framework.sceneMgr.app.height;
         y = h - y;
@@ -384,6 +425,10 @@ class shaderToyPlayer implements m4m.framework.IRenderer {
         this._pointIsClick = true;
     }
 
+    /**
+     * 设置鼠标点击
+     * @param _mouse 
+     */
     private setMouseClick(_mouse: m4m.math.vector4) {
         //
         const mzSign = Math.sign(_mouse.z);
@@ -394,6 +439,10 @@ class shaderToyPlayer implements m4m.framework.IRenderer {
         this._pointIsClick = false;
     }
 
+    /**
+     * 设置数据
+     * @param _data 数据
+     */
     private setDate(_data: m4m.math.vector4) {
         let date = new Date();
         let year = date.getFullYear() // 年
@@ -406,6 +455,10 @@ class shaderToyPlayer implements m4m.framework.IRenderer {
         m4m.math.vec4Set(_data, year, month, day, hour * 3600 + minutes * 60 + seconds);
     }
 
+    /**
+     * 设置通道播放时间
+     * @param cPlayTime 播放时间
+     */
     private setChannelPlayTime(cPlayTime: Float32Array) {
         cPlayTime[0] = 0;
         cPlayTime[1] = 0;
@@ -413,10 +466,20 @@ class shaderToyPlayer implements m4m.framework.IRenderer {
         cPlayTime[3] = 0;
     }
 
+    /**
+     * 设置通道分辨率
+     * @param cRs 
+     */
     private setChannelResolution(cRs: Float32Array) {
         cRs.forEach((v, i) => { cRs[i] = i });
     }
 
+    /**
+     * 执行渲染
+     * @param context 渲染上下文
+     * @param assetmgr 资源管理器
+     * @param camera 相机
+     */
     render(context: m4m.framework.renderContext, assetmgr: m4m.framework.assetMgr, camera: m4m.framework.camera) {
         if (!this._stoyData) return;
         // const gl = context.webgl;
@@ -455,6 +518,9 @@ class shaderToyPlayer implements m4m.framework.IRenderer {
         //关闭FBO
     }
 
+    /**
+     * on播放
+     */
     onPlay() { }
 
     start() {
@@ -467,6 +533,9 @@ class shaderToyPlayer implements m4m.framework.IRenderer {
     update(delta: number) {
     }
 
+    /**
+     * 移除
+     */
     remove() {
 
         //unreg event

@@ -62,6 +62,10 @@ class test_spine_transition implements IState
         };
     }
 
+    /**
+     * 设置GUI
+     * @returns 
+     */
     setGUI()
     {
         if (!dat) return;
@@ -73,6 +77,9 @@ class test_spine_transition implements IState
         gui.add(this, 'playDie');
     }
 
+    /**
+     * 播放死亡动画
+     */
     private playDie = () =>
     {
         this._comp.state.setAnimation(0, "death", false);

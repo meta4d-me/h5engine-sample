@@ -42,6 +42,11 @@ class test_navMesh implements IState {
         this.navmeshMgr = m4m.framework.NavMeshLoadManager.Instance;
     }
 
+    /**
+     * 加载场景
+     * @param assetName 资源名
+     * @param isCompress 是压缩模式
+     */
     loadScene(assetName: string, isCompress = false) {
         let abName = `${assetName}.assetbundle.json`;
         let addScene = () => {
@@ -91,6 +96,10 @@ class test_navMesh implements IState {
     }
 
     private pos = [];
+    /**
+     * 拾取点下
+     * @returns 
+     */
     pickDown(): void {
         let navTrans = this.navmeshMgr.navTrans;
         let navmesh = this.navmeshMgr.navMesh;
@@ -129,6 +138,10 @@ class test_navMesh implements IState {
     }
 
     private lastLine: m4m.framework.transform;
+    /**
+     * 绘制线
+     * @param points 线点列表
+     */
     private drawLine(points: m4m.math.vector3[]) {
         if (this.lastLine) {
             this.lastLine.gameObject.visible = false;
@@ -150,6 +163,11 @@ class test_navMesh implements IState {
         this.lastLine.markDirty();
     }
 
+    /**
+     * 生成mesh
+     * @param points 线点列表
+     * @returns mesh
+     */
     private genMesh(points: m4m.math.vector3[]) {
         var meshD = new m4m.render.meshData();
         meshD.pos = [];
@@ -189,6 +207,10 @@ class test_navMesh implements IState {
         return _mesh;
     }
 
+    /**
+     * 创建所有点
+     * @param count 数量
+     */
     private createAllPoint(count: number) {
         this.points.forEach(element => {
             if (element) element.gameObject.visible = false;
@@ -202,6 +224,14 @@ class test_navMesh implements IState {
         }
     }
 
+    /**
+     * 设置点
+     * @param index 索引
+     * @param x x值
+     * @param y y值
+     * @param z z值
+     * @param color 颜色
+     */
     private setPoint(index, x, y, z, color: m4m.math.color) {
         let cube = this.points[index];
         cube.localTranslate.x = x;
@@ -222,6 +252,9 @@ class test_navMesh implements IState {
     }
 
     private points: m4m.framework.transform[] = [];
+    /**
+     * 生成点
+     */
     private generatePoint() {
         let cube = new m4m.framework.transform;
         let mf = cube.gameObject.addComponent(`meshFilter`) as m4m.framework.meshFilter;

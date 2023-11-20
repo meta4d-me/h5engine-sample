@@ -43,6 +43,9 @@ class test_spine_mesh implements IState
                 datGui.init().then(() => this.setGUI())
             })
     }
+    /**
+     * 设置GUI
+     */
     setGUI()
     {
         if (!dat) return;

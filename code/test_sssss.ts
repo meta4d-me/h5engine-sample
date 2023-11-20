@@ -84,6 +84,9 @@ class test_sssss implements IState {
 
     }
 
+    /**
+     * 初始化
+     */
     private init() {
         let names: string[] = ["Head"];
         let name = names[0];
@@ -381,6 +384,11 @@ class test_sssss implements IState {
         });
     }
 
+    /**
+     * 加载PBR 资源
+     * @param lastState 
+     * @param state 资源状态
+     */
     private loadpbrRes(lastState: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         this.app.getAssetMgr().load(`${resRootPath}pbrRes/SSSSS/` + "albedo.jpg", m4m.framework.AssetTypeEnum.Auto, (s0) => {
             if (s0.isfinish) {
@@ -401,6 +409,11 @@ class test_sssss implements IState {
         });
     }
 
+    /**
+     * 加载IBL
+     * @param lastState 
+     * @param state 资源状态
+     */
     private loadIBL(lastState: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         this.app.getAssetMgr().load(`${resRootPath}pbrRes/IBL/map/` + "negx_1.jpg", m4m.framework.AssetTypeEnum.Auto, (s0) => {
             if (s0.isfinish) {

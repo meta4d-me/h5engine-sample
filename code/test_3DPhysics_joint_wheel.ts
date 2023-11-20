@@ -19,6 +19,9 @@ class test_3DPhysics_joint_wheel implements IState {
     }
 
     private boxTran : m4m.framework.transform;
+    /**
+     * 初始化
+     */
     init(){
         let mat_activated = physics3dDemoTool.mats["activated"];
         let mat_sleeping = physics3dDemoTool.mats["sleeping"];
@@ -70,7 +73,9 @@ class test_3DPhysics_joint_wheel implements IState {
 
     private pole : m4m.framework.transform;
     private pole_1 : m4m.framework.transform;
-    //辅助显示连接轴
+    /**
+     * 辅助显示连接轴
+     */
     addDisplayObj(){
         let mat_pole = physics3dDemoTool.mats["purple"];
         let diameter = 0.25;
@@ -96,6 +101,9 @@ class test_3DPhysics_joint_wheel implements IState {
     }
 
     private tempV3 = new m4m.math.vector3();
+    /**
+     * 同步显示 旋转和缩放
+     */
     syncDisplayRT(){
         if(!this.boxTran || !this.pole) return;
         let bPos = this.boxTran.localPosition;
@@ -111,6 +119,9 @@ class test_3DPhysics_joint_wheel implements IState {
 
 
     private guiMsg = "车轮关节测试demo wheel(hinge2)";
+    /**
+     * 设置 调试GUI 
+     */
     setGUI(){
         if(!dat) return;
         let gui = new dat.GUI();
@@ -131,12 +142,19 @@ class test_3DPhysics_joint_wheel implements IState {
         folderFun.add(this, 'impulseBox' );
     }
 
+    /**
+     * 对目标施加冲量
+     */
     private impulseBox(){
         this.doImpulse(this.boxTran.physicsImpostor);
     }
 
     private force = new m4m.math.vector3(0,10,0);
     private contactlocalPoint = new m4m.math.vector3(0,-0.5,0.45);
+    /**
+     * 标施加冲量
+     * @param phyImpostor 物理代理
+     */
     private doImpulse(phyImpostor : m4m.framework.PhysicsImpostor){
         let pos = this.tempV3;
         m4m.math.vec3Add(phyImpostor.object.getWorldPosition(),this.contactlocalPoint,pos);

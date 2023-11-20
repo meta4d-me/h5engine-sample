@@ -44,6 +44,11 @@ class test_spine_changeSkin implements IState
                 datGui.init().then(() => this.setGUI())
             })
     }
+
+    /**
+     * 设置GUI
+     * @returns 
+     */
     setGUI()
     {
         if (!dat) return;
@@ -57,6 +62,9 @@ class test_spine_changeSkin implements IState
         gui.add(this, "randomGroupSkin")
     }
 
+    /**
+     * 随机SKin
+     */
     private randomSkin = () =>
     {
         let skeleton = this._comp.skeleton;
@@ -66,6 +74,9 @@ class test_spine_changeSkin implements IState
         this._comp.skeleton.setSlotsToSetupPose();
     }
 
+    /**
+     * 随机组Skin
+     */
     private randomGroupSkin = () =>
     {
         let skeleton = this._comp.skeleton;

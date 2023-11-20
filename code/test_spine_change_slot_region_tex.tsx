@@ -49,6 +49,9 @@ class test_spine_change_slot_region_tex implements IState
             })
     }
 
+    /**
+     * 改变孔
+     */
     private changeSlot = () =>
     {
         this._index = (this._index + 1) % 2;
@@ -59,6 +62,10 @@ class test_spine_change_slot_region_tex implements IState
         })
     }
 
+    /**
+     * 设置GUI
+     * @returns 
+     */
     setGUI()
     {
         if (!dat) return;

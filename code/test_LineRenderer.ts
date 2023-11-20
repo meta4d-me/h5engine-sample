@@ -31,6 +31,10 @@ class test_LineRenderer implements IState
         this.init();
     }
 
+    /**
+     * 设置GUI
+     * @returns 
+     */
     setGUI()
     {
         if (!dat) return;
@@ -39,6 +43,9 @@ class test_LineRenderer implements IState
         gui.add(this, 'viewcamera');
     }
 
+    /**
+     * 初始化
+     */
     private init()
     {
         //相机-----------------------------------
@@ -64,6 +71,9 @@ class test_LineRenderer implements IState
         this.initLineRenderer();
     }
 
+    /**
+     * 初始化线渲染
+     */
     private initLineRenderer()
     {
         let tran = new m4m.framework.transform();
@@ -79,6 +89,10 @@ class test_LineRenderer implements IState
         lr.positions = [new m4m.math.vector3(0, 0, 0), new m4m.math.vector3(1, 0, 0), new m4m.math.vector3(0, 1, 0),];
     }
 
+    /**
+     * 显示粒子
+     * @param res 资源 
+     */
     private async _showParticle(res: string)
     {
     }

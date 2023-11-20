@@ -17,20 +17,67 @@ declare namespace spine_m4m
         transform: m4m.framework.transform2D;
         remove();
         onUpdate: () => void;
+        /**
+         * 获取到canvas空间的矩阵
+         * @param mat 
+         */
         getToCanvasMatrix(mat?: m4m.math.matrix3x2): m4m.math.matrix3x2;
+        /**
+         * 改变孔 纹理
+         * @param slotName 孔名
+         * @param texture 纹理
+         */
         changeSlotTexture(slotName: string, texture: m4mTexture);
+        /**
+         * 清理孔
+         * @param slotName 
+         */
         clearSlot(slotName: string)
     }
     class SpineAssetMgr
     {
         constructor(mgr: m4m.framework.assetMgr, baseUrl?: string)
+        /**
+         * 加载二进制数据
+         * @param path 路径
+         * @param success 成功回调
+         * @param error 异常
+         */
         loadBinary(path: string, success?: (path: string, binary: Uint8Array) => void, error?: (path: string, message: string) => void): void;
+        /**
+         * 加载文本字符数据
+         * @param path 路径
+         * @param success 成功回调
+         * @param error 异常
+         */
         loadText(path: string, success?: (path: string, text: string) => void, error?: (path: string, message: string) => void): void;
+        /**
+         * 加载json字符数据
+         * @param path 路径
+         * @param success 成功回调
+         * @param error 异常
+         */
         loadJson(path: string, success?: (path: string, object: object) => void, error?: (path: string, message: string) => void): void;
+        /**
+         * 加载纹理
+         * @param path 路径
+         * @param success 成功回调
+         * @param error 异常
+         */
         loadTexture(path: string, success?: (path: string, texture: m4mTexture) => void, error?: (path: string, message: string) => void): void;
+        /**
+         * 加载图集资源
+         * @param path 路径
+         * @param success 成功回调
+         * @param error 异常
+         */
         loadTextureAtlas(path: string, success?: (path: string, atlas: any) => void, error?: (path: string, message: string) => void, fileAlias?: {
             [keyword: string]: string;
         }): void;
+        /**
+         * 获取资源
+         * @param asset 资源key
+         */
         get(asset: string): any;
     }
 
@@ -42,6 +89,10 @@ declare namespace spine_m4m
     class SkeletonJson
     {
         constructor(json: any);
+        /**
+         * 读取骨骼数据
+         * @param data 
+         */
         readSkeletonData(data: any)
         scale: number
     }
@@ -49,10 +100,38 @@ declare namespace spine_m4m
     class AnimationState
     {
         timeScale: number;
+        /**
+         * 添加动画
+         * @param trackIndex 时间轨索引
+         * @param animationName 动画名
+         * @param loop 是循环的？
+         * @param delay 延时
+         */
         addAnimation(trackIndex: number, animationName: string, loop?: boolean, delay?: number): TrackEntry
+        /**
+         * 设置动画
+         * @param trackIndex 时间轨索引
+         * @param animationName 动画名
+         * @param loop 是循环的？
+         */
         setAnimation(trackIndex: number, animationName: string, loop?: boolean): TrackEntry
+        /**
+         * 添加空的动画
+         * @param trackIndex 时间轨索引
+         * @param mixDuration 混合度
+         * @param delay 延时
+         */
         addEmptyAnimation(trackIndex: number, mixDuration?: number, delay?: number): TrackEntry;
+        /**
+         * 设置所有空的动画
+         * @param mixDuration 混合度
+         */
         setEmptyAnimations(mixDuration?: number): void;
+        /**
+         * 设置空的动画
+         * @param trackIndex 时间轨索引
+         * @param mixDuration 混合度
+         */
         setEmptyAnimation(trackIndex: number, mixDuration?: number): TrackEntry;
     }
 
@@ -77,11 +156,36 @@ declare namespace spine_m4m
     }
     class AnimationStateListener
     {
+        /**
+         * 开始
+         * @param entry 时轨对象 
+         */
         start?(entry: TrackEntry): void;
+        /**
+         * 中断
+         * @param entry 时轨对象
+         */
         interrupt?(entry: TrackEntry): void;
+        /**
+         * 结束
+         * @param entry 时轨对象
+         */
         end?(entry: TrackEntry): void;
+        /**
+         * 销毁
+         * @param entry 时轨对象
+         */
         dispose?(entry: TrackEntry): void;
+        /**
+         * 完成
+         * @param entry 时轨对象
+         */
         complete?(entry: TrackEntry): void;
+        /**
+         * 事件
+         * @param entry 时轨对象
+         * @param event 事件
+         */
         event?(entry: TrackEntry, event: Event): void;
     }
 
@@ -93,9 +197,24 @@ declare namespace spine_m4m
         scaleY: number;
         x: number;
         y: number;
+        /**
+         * 通过名字设置skin 
+         * @param skinName skin名字
+         */
         setSkinByName(skinName: string): void;
+        /**
+         * 设置 skin
+         * @param skin skin对象
+         */
         setSkin(skin: Skin): void;
+        /**
+         * 设置孔到 骨骼姿态
+         */
         setSlotsToSetupPose();
+        /**
+         * 找骨骼
+         * @param boneName 骨骼名 
+         */
         findBone(boneName: string): Bone;
     }
 
@@ -107,6 +226,12 @@ declare namespace spine_m4m
     class Skin
     {
         name: string;
+        /**
+         * 设置附件
+         * @param slotIndex 孔索引
+         * @param name 名
+         * @param attachment 附件 
+         */
         setAttachment(slotIndex: number, name: string, attachment: Attachment): void;
         attachments: { [att: string]: Attachment }[]
         constructor(name: string)
@@ -140,11 +265,30 @@ declare namespace spine_m4m
         worldX: number;
         sorted: boolean;
         active: boolean;
-
+        /**
+         * 世界到本地位置
+         * @param world 世界位置 
+         */
         worldToLocal(world: Vector2): Vector2;
+        /**
+         * 本地到世界位置
+         * @param local 本地位置
+         */
         localToWorld(local: Vector2): Vector2;
+        /**
+         * 世界到本地旋转
+         * @param worldRotation 世界旋转
+         */
         worldToLocalRotation(worldRotation: number): number;
+        /**
+         * 本地到世界旋转
+         * @param localRotation 本地旋转
+         */
         localToWorldRotation(localRotation: number): number;
+        /**
+         * 旋转世界
+         * @param degrees 旋转度
+         */
         rotateWorld(degrees: number): void;
     }
     class BoneData
@@ -174,6 +318,11 @@ declare namespace spine_m4m
     {
         x: number;
         y: number;
+        /**
+         * 设置二维向量
+         * @param x 
+         * @param y 
+         */
         set(x: number, y: number);
     }
 }
@@ -226,6 +375,10 @@ class test_spine_spriteSheet implements IState
                 datGui.init().then(() => this.setGUI())
             })
     }
+    /**
+     * 设置GUI
+     * @returns 
+     */
     setGUI()
     {
         if (!dat) return;

@@ -143,6 +143,10 @@ class test_01 implements IState {
 
     }
 
+    /**
+     * 测试预制体
+     * @param cube 节点
+     */
     private testPrefab(cube: m4m.framework.transform) {
 
         // cube.localScale.x = cube.localScale.y = cube.localScale.z = 1;
@@ -259,6 +263,10 @@ class test_01 implements IState {
         });
     }
 
+    /**
+     * 测试 N 资源
+     * @param root 
+     */
     private testNRes(root: m4m.framework.transform) {
         let cndroot = "http://192.168.88.68:8088/public/1/hungryshark/Resources_new/";
         let assetMgr = this.app.getAssetMgr();
@@ -285,7 +293,9 @@ class test_01 implements IState {
 
     }
 
-
+    /**
+     * 测试特效
+     */
     private testEffect() {
         let assetMgr = this.app.getAssetMgr();
         assetMgr.load("res/f14effprefab/customShader/customShader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (state) => {

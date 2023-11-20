@@ -32,6 +32,9 @@ class test_ETC1_KTX implements IState
         this.init();
     }
 
+    /**
+     * 初始化
+     */
     private init()
     {
         //相机-----------------------------------
@@ -49,6 +52,9 @@ class test_ETC1_KTX implements IState
         this.loadPrefabs();
     }
 
+    /**
+     * 加载所有预制体
+     */
     private async loadPrefabs()
     {
         var res = "test_ktx";

@@ -58,6 +58,11 @@ class test_uiPerfabLoad implements IState
     }
 
     private bgui: m4m.framework.transform2D;
+    /**
+     * 创建UI 
+     * @param astState 
+     * @param state 状态 
+     */
     private createUI(astState: m4m.framework.taskstate, state: m4m.framework.taskstate)
     {
         let atlasComp = this.assetMgr.getAssetByName("comp.atlas.json") as m4m.framework.atlas;
@@ -107,6 +112,11 @@ class test_uiPerfabLoad implements IState
     }
 
     targetui: m4m.framework.transform2D;
+    /**
+     * 加载资源
+     * @param name 资源名 
+     * @returns 
+     */
     private doLoad(name)
     {
         if (!this.bgui) return;
@@ -133,6 +143,11 @@ class test_uiPerfabLoad implements IState
         });
     }
 
+    /**
+     * 加载着色器
+     * @param lastState 
+     * @param state 状态
+     */
     private loadShaders(lastState: m4m.framework.taskstate, state: m4m.framework.taskstate)
     {
         this.assetMgr.load(`${resRootPath}shader/shader.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (s) =>
@@ -144,6 +159,11 @@ class test_uiPerfabLoad implements IState
         });
     }
 
+    /**
+     * 加载纹理
+     * @param lastState 
+     * @param state 状态
+     */
     private loadTexture(lastState: m4m.framework.taskstate, state: m4m.framework.taskstate)
     {
         //加载图片资源

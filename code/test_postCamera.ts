@@ -68,6 +68,9 @@ class test_postCamera implements IState{
         postColor:m4m.framework.cameraPostQueue_Color;
         postQuad:m4m.framework.cameraPostQueue_Quad;
         depthColor:m4m.framework.cameraPostQueue_Depth;
+        /**
+         * 添加相机
+         */
         private addCamera()
         {
             this.camTran = new m4m.framework.transform();

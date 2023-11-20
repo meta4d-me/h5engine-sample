@@ -34,6 +34,9 @@ class test_TrailRenderer implements IState
         this.init();
     }
 
+    /**
+     * 设置 GUI 控件
+     */
     setGUI()
     {
         if (!dat) return;
@@ -42,6 +45,9 @@ class test_TrailRenderer implements IState
         gui.add(this, 'viewcamera');
     }
 
+    /**
+     * 初始化函数
+     */
     private init()
     {
         //相机-----------------------------------
@@ -67,6 +73,9 @@ class test_TrailRenderer implements IState
         this.loadRes(this.res);
     }
 
+    /**
+     * 初始化 LineRenderer
+     */
     private initLineRenderer()
     {
         let tran = new m4m.framework.transform();
@@ -80,6 +89,10 @@ class test_TrailRenderer implements IState
         this.lr = lr;
     }
 
+    /**
+     * 加载资源
+     * @param res 资源名称
+     */
     private async loadRes(res: string)
     {
         if (this.lr)

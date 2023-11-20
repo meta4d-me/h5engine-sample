@@ -14,7 +14,11 @@
         count: number = 0;
         counttimer: number = 0;
 
-
+        /**
+         * 加载着色器
+         * @param laststate 上一个状态
+         * @param state 当前状态
+         */
         private loadShader(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
             this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (_state) => {
                 if (_state.isfinish) {
@@ -24,6 +28,11 @@
             );
         }
 
+        /**
+         * 加载文本资源
+         * @param laststate 上一个状态
+         * @param state 当前状态
+         */
         private loadText(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
             this.app.getAssetMgr().load("res/trailtest2_00000.imgdesc.json", m4m.framework.AssetTypeEnum.Auto, (s) => {
                 if (s.isfinish) {
@@ -47,6 +56,11 @@
         aniplayer: m4m.framework.aniplayer;
         role: m4m.framework.transform;
         private roleLength: number;
+        /**
+         * 加载角色模型
+         * @param laststate 上一个状态
+         * @param state 当前状态
+         */
         private loadRole(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
             this.app.getAssetMgr().load("res/prefabs/dragon/dragon.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (s) => {
                 if (s.isfinish) {
@@ -80,6 +94,11 @@
             });
         }
 
+        /**
+         * 添加摄像机
+         * @param laststate 上一个状态
+         * @param state 当前状态
+         */
         private addcam(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
 
@@ -98,6 +117,11 @@
 
         }
 
+        /**
+         * 添加立方体和相关组件
+         * @param laststate 上一个状态
+         * @param state 当前状态
+         */
         private addcube(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
             //添加一个盒子
@@ -181,7 +205,10 @@
             state.finish = true;
         }
 
-
+        /**
+         * 启动函数
+         * @param app 应用程序
+         */
         start(app: m4m.framework.application)
         {
             console.log("i am here.");
@@ -200,6 +227,10 @@
         private eulerAngle = m4m.math.pool.new_vector3();
 
         private  zeroPoint=new m4m.math.vector3(0,0,0);
+         /**
+         * 更新函数
+         * @param delta 时间间隔
+         */
         update(delta: number)
         {
             this.taskmgr.move(delta);

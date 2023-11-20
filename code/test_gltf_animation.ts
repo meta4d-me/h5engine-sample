@@ -8,6 +8,11 @@ class test_gltf_animation implements IState {
     cube: m4m.framework.transform;
     taskmgr: m4m.framework.taskMgr = new m4m.framework.taskMgr();
 
+    /**
+     * 加载着色器
+     * @param laststate 
+     * @param state 加载状态
+     */
     private loadShader(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         this.app.getAssetMgr().load(`${resRootPath}shader/shader.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (s) => {
             if (s.isfinish) {
@@ -16,6 +21,11 @@ class test_gltf_animation implements IState {
         });
     }
 
+    /**
+     * 加载资源 prefab
+     * @param laststate 
+     * @param state 加载状态
+     */
     private loadLongPrefab(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         let settring = ["elong", "Run"];
         // let settring = ["MutantWalking", "001"];
@@ -40,6 +50,11 @@ class test_gltf_animation implements IState {
         });
     }
 
+    /**
+     * 添加相机
+     * @param laststate 
+     * @param state 加载状态
+     */
     private addCamera(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         //添加一个摄像机
         var objCam = new m4m.framework.transform();

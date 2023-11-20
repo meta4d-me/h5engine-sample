@@ -35,6 +35,9 @@ class test_UI_Component implements IState {
         this.taskmgr.addTaskCall(this.createUI.bind(this));
     }
 
+     /**
+     * 设置GUI控件
+     */
     private createUI(astState: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         let atlasComp = this.assetMgr.getAssetByName("comp.atlas.json") as m4m.framework.atlas;
         let tex_0 = this.assetMgr.getAssetByName("zg03_256.png") as m4m.framework.texture;
@@ -427,6 +430,11 @@ class test_UI_Component implements IState {
         target.addChild(lab_t);
     }
 
+    /**
+     * 加载纹理
+     * @param lastState  
+     * @param state 状态
+     */
     private loadTexture(lastState: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         //加载图片资源
         this.assetMgr.load(`${resRootPath}atlas/comp/comp.json.png`, m4m.framework.AssetTypeEnum.Auto, (s) => {
@@ -458,6 +466,11 @@ class test_UI_Component implements IState {
 
     }
 
+    /**
+     * 加载图集资源
+     * @param lastState 
+     * @param state 状态
+     */
     private loadAtlas(lastState: m4m.framework.taskstate, state: m4m.framework.taskstate) {
 
         let abName = `${this.emoji}.assetbundle.json`;
@@ -476,7 +489,9 @@ class test_UI_Component implements IState {
 
     }
 
-
+    /**
+     * 测试
+     */
     testFun() {
         let lab = test_UI_Component["lab"] as m4m.framework.label;
         let datater = lab["datar"] as number[];

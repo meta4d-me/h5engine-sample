@@ -21,6 +21,9 @@ class test_3DPhysics_joint_distance implements IState {
 
 
     private boxTran : m4m.framework.transform;
+    /**
+     * 初始化
+     */
     init(){
         let mat_activated = physics3dDemoTool.mats["activated"];
         let mat_sleeping = physics3dDemoTool.mats["sleeping"];
@@ -89,6 +92,9 @@ class test_3DPhysics_joint_distance implements IState {
     }
 
     private guiMsg = "铰链关节测试demo distance";
+    /**
+     * 设置 调试GUI 
+     */
     setGUI(){
         if(!dat) return;
         let gui = new dat.GUI();
@@ -112,11 +118,16 @@ class test_3DPhysics_joint_distance implements IState {
 
     }
 
-    //重置
+    /**
+     * 重置demo物理状态
+     */
     private applyReset(){
         physics3dDemoTool.resetObj(this.mrs);
     }
 
+    /**
+     * 对目标施加冲量
+     */
     private impulseBox(){
         this.doImpulse(this.boxTran.physicsImpostor);
     }
@@ -124,6 +135,10 @@ class test_3DPhysics_joint_distance implements IState {
     private force = new m4m.math.vector3(-10,0,5);
     private contactlocalPoint = new m4m.math.vector3(0,0,0);
     private tempV3 = new m4m.math.vector3();
+    /**
+     * 标施加冲量
+     * @param phyImpostor 物理代理
+     */
     private doImpulse(phyImpostor : m4m.framework.PhysicsImpostor){
         let pos = this.tempV3;
         m4m.math.vec3Add(phyImpostor.object.getWorldPosition(),this.contactlocalPoint,pos);

@@ -23,6 +23,7 @@ class test_Decal implements IState {
 
     private dec  = "点击模型发射贴上弹痕";
     private building : m4m.framework.transform;
+    /** 初始化 */
     init(){
         this.initCamera();
         //建筑
@@ -54,6 +55,9 @@ class test_Decal implements IState {
          gui.add( this , 'dec');
     }
 
+    /**
+     * 初始化相机
+     */
     private initCamera(){
         //相机-----------------------------------
         var objCam = new m4m.framework.transform();

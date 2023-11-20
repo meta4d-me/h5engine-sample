@@ -76,6 +76,10 @@ class test_UI_Attach3D implements IState {
 
     }
 
+    /**
+     * 创建Spine动画
+     * @param root 根节点
+     */
     private createSpines(root: m4m.framework.transform2D) {
         let app = m4m.framework.sceneMgr.app;
         const assetMgr = app.getAssetMgr();
@@ -184,6 +188,9 @@ class test_UI_Attach3D implements IState {
         });
     };
 
+    /**
+     * 设置GUI控件
+     */
     private async setGUI() {
         await datGui.init();
         let gui = new dat.GUI();

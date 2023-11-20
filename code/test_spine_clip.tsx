@@ -42,6 +42,10 @@ class test_spine_clip implements IState
                 datGui.init().then(() => this.setGUI())
             })
     }
+    /**
+     * 设置GUI
+     * @returns 
+     */
     setGUI()
     {
         if (!dat) return;

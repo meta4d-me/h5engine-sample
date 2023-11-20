@@ -26,6 +26,9 @@ namespace demo
         cubes : m4m.framework.transform []= []; 
         count = 500 ;
         all = 0;
+        /**
+         * 尝试添加
+         */
         tryadd(){
             let max = 2000; 
             let maxcc = 0;
@@ -65,6 +68,9 @@ namespace demo
             }
         }
 
+        /**
+         * 随机一个
+         */
         randome(){
             let idx = Math.floor(Math.random() * this.cubes.length);
             let cube = this.cubes[idx];

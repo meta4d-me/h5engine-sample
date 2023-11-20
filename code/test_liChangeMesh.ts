@@ -83,6 +83,14 @@ class testLiChangeMesh implements IState
     }
 
     uileft: number = 0;
+    /**
+     * 创建改变按钮
+     * @param role 节点0
+     * @param role1 节点1
+     * @param o2d 覆盖层
+     * @param part 
+     * @param part2 
+     */
     createChangeBtn(role: m4m.framework.transform, role1: m4m.framework.transform, o2d: m4m.framework.overlay2D, part: string, part2)
     {
         let t2d_9 = new m4m.framework.transform2D();

@@ -11,6 +11,11 @@ namespace demo
         cube: m4m.framework.transform;
         taskmgr: m4m.framework.taskMgr = new m4m.framework.taskMgr();
 
+        /**
+         * 加载着色器
+         * @param laststate 
+         * @param state 加载状态
+         */
         private loadShader(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
             this.app.getAssetMgr().load(`${resRootPath}shader/shader.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (s) =>
@@ -22,6 +27,11 @@ namespace demo
             });
         }
 
+        /**
+         * 加载 模型资源
+         * @param laststate 
+         * @param state 加载状态
+         */
         private loadLongPrefab(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
             let resName = "long"
@@ -51,6 +61,11 @@ namespace demo
             });
         }
 
+        /**
+         * 添加相机和光源
+         * @param laststate 
+         * @param state 加载状态
+         */
         private addCameraAndLight(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
             var tranCam = new m4m.framework.transform();

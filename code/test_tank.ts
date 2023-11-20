@@ -70,6 +70,11 @@ class Joystick {
 
     triggerFunc: Function;
 
+    /**
+     * 初始化
+     * @param app 引擎app
+     * @param overlay2d 引擎overlay2D对象
+     */
     init(app: m4m.framework.application, overlay2d: m4m.framework.overlay2D) {
         this.app = app;
         this.overlay2d = overlay2d;
@@ -85,6 +90,11 @@ class Joystick {
         document.addEventListener("touchmove", (e) => { this.onTouchMove(e); e.preventDefault(); });
     }
 
+    /**
+     * 加载纹理
+     * @param laststate 
+     * @param state 状态
+     */
     private loadTexture(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         this.app.getAssetMgr().load(`${resRootPath}texture/joystick0.png`, m4m.framework.AssetTypeEnum.Auto, (s0) => {
             if (s0.isfinish) {
@@ -103,6 +113,11 @@ class Joystick {
         });
     }
 
+    /**
+     * 添加控制遥感
+     * @param laststate 
+     * @param state 状态
+     */
     private addJoystick(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         {//left
             this.joystickLeft0 = new m4m.framework.transform2D();
@@ -178,6 +193,10 @@ class Joystick {
         return this.touchRight != 0;
     }
 
+    /**
+     * 当鼠标点下
+     * @param e 鼠标事件
+     */
     private onMouseDown(e: MouseEvent) {
         if (e.clientX <= this.overlay2d.canvas.pixelWidth / 2) {
             this.mouseLeft = true;
@@ -215,6 +234,10 @@ class Joystick {
         }
     }
 
+    /**
+     * 当鼠标点下释放
+     * @param e 鼠标事件
+     */
     private onMouseUp(e: MouseEvent) {
         if (this.mouseRight) {
             if (this.triggerFunc != null) {
@@ -235,6 +258,10 @@ class Joystick {
         this.joystickRight1.markDirty();
     }
 
+    /**
+     * 当鼠标移动
+     * @param e 鼠标事件
+     */
     private onMouseMove(e: MouseEvent) {
         if (this.mouseLeft) {
             let v = new m4m.math.vector2(e.clientX, e.clientY);
@@ -268,6 +295,10 @@ class Joystick {
         }
     }
 
+    /**
+     * 当触摸开始
+     * @param e 触摸事件
+     */
     private onTouchStart(e: TouchEvent) {
         if (e.touches[0].clientX <= this.overlay2d.canvas.pixelWidth / 2) {
             this.touchLeft = e.touches[0].identifier;
@@ -336,6 +367,10 @@ class Joystick {
         }
     }
 
+    /**
+     * 当触摸结束
+     * @param e 触摸事件
+     */
     private onTouchEnd(e: TouchEvent) {
         if (this.touchLeft) {
             var flag = false;
@@ -378,6 +413,10 @@ class Joystick {
         }
     }
 
+    /**
+     * 当触摸移动
+     * @param e 触摸事件
+     */
     private onTouchMove(e: TouchEvent) {
         if (this.touchLeft != 0) {
             let index = -1;
@@ -429,6 +468,10 @@ class Joystick {
         }
     }
 
+    /**
+     * 更新
+     * @param delta 帧间时间
+     */
     update(delta: number) {
         this.taskmgr.move(delta);
     }
@@ -462,7 +505,11 @@ namespace demo {
         colVisible: boolean = false;
 
         private label: HTMLDivElement;
-
+        /**
+         * 加载着色器
+         * @param laststate 
+         * @param state 状态
+         */
         private loadShader(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
             this.app.getAssetMgr().load(`${resRootPath}shader/shader.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (s) => {
                 if (s.isfinish) {
@@ -471,6 +518,11 @@ namespace demo {
             });
         }
 
+        /**
+         * 加载纹理
+         * @param laststate 
+         * @param state 状态
+         */
         private loadTexture(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
             this.app.getAssetMgr().load(`${resRootPath}texture/zg256.png`, m4m.framework.AssetTypeEnum.Auto, (s) => {
                 if (s.isfinish) {
@@ -479,6 +531,11 @@ namespace demo {
             });
         }
 
+        /**
+         * 加载 模型预制体
+         * @param laststate 
+         * @param state 状态
+         */
         private loadHeroPrefab(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
             let resName = "tank01";
             this.app.getAssetMgr().load(`${resRootPath}prefab/${resName}/${resName}.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (s) => {
@@ -502,6 +559,11 @@ namespace demo {
             });
         }
 
+        /**
+         * 加载敌人预制体
+         * @param laststate 
+         * @param state 状态
+         */
         private loadEnemyPrefab(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
             let resName = "tank02";
             this.app.getAssetMgr().load(`${resRootPath}prefab/${resName}/${resName}.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (s) => {
@@ -525,6 +587,11 @@ namespace demo {
             });
         }
 
+        /**
+         * 加载场景
+         * @param laststate 
+         * @param state 状态
+         */
         private loadScene(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
             let resName = "test_scene";
             this.app.getAssetMgr().load(`${resRootPath}prefab/${resName}/${resName}.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (s) => {
@@ -549,6 +616,11 @@ namespace demo {
         }
 
         private cameraShock: CameraShock;
+        /**
+         * 添加相机
+         * @param laststate 
+         * @param state 状态
+         */
         private addCameraAndLight(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
             var tranCam = new m4m.framework.transform();
             tranCam.name = "Cam";
@@ -714,6 +786,11 @@ namespace demo {
             state.finish = true;
         }
 
+        /**
+         * 添加游戏摇杆
+         * @param laststate 
+         * @param state 状态
+         */
         private addJoystick(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
             this.overlay2d = new m4m.framework.overlay2D();
             // this.overlay2d.autoAsp = false;
@@ -733,6 +810,11 @@ namespace demo {
             state.finish = true;
         }
 
+        /**
+         * 添加 场景对象
+         * @param laststate 
+         * @param state 状态
+         */
         private addObject(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
             {//add some puppets
                 var n = 2;
@@ -810,6 +892,11 @@ namespace demo {
             this.fireTick += delta;
         }
 
+        /**
+         * 坦克与的碰撞检测
+         * @param tran 节点
+         * @returns 
+         */
         testTankCol(tran: m4m.framework.transform): boolean {
             var col = tran.gameObject.getComponent("boxcollider") as m4m.framework.boxcollider;
 
@@ -833,6 +920,10 @@ namespace demo {
         }
 
         tempTran: m4m.framework.transform;
+        /**
+         * 坦克遥控
+         * @param delta 帧间时间
+         */
         tankControl(delta: number) {
             if (this.joystick != null) {
                 var targetAngle = new m4m.math.vector3();
@@ -987,6 +1078,9 @@ namespace demo {
         bulletSpeed = 30;
         fireStep = 0.5;
         fireTick = 0;
+        /**
+         * 开火
+         */
         private fire() {
             var tran = new m4m.framework.transform();
             tran.name = "bullet" + this.bulletId;
@@ -1023,6 +1117,10 @@ namespace demo {
             // this.cameraShock.play(1, 0.5, true);
         }
 
+        /**
+         * 更新子弹
+         * @param delta 
+         */
         private updateBullet(delta: number) {
             for (var i = 0; i < this.bulletList.length; i++) {
                 var b = this.bulletList[i];

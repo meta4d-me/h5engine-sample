@@ -115,6 +115,9 @@ namespace t
 
         }
 
+        /**
+         * 执行改变着色器
+         */
         private changeShader()
         {
             var btn = document.createElement("button");
@@ -142,6 +145,10 @@ namespace t
             this.app.container.appendChild(btn2);
         }
 
+        /**
+         * 改变着色器
+         * @param sha 着色器
+         */
         change(sha: m4m.framework.shader)
         {
             // for (let i = 0; i < 4; i++)

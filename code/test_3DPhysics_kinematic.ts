@@ -19,6 +19,9 @@ class test_3DPhysics_kinematic implements IState {
 
     floor : m4m.framework.transform;
     ctrBox :m4m.framework.transform;
+    /**
+     * 初始化
+     */
     init(){
         let mat_activated = physics3dDemoTool.mats["activated"];
         let mat_floor = physics3dDemoTool.mats["white"];
@@ -75,6 +78,11 @@ class test_3DPhysics_kinematic implements IState {
     cachePickInfo = new m4m.framework.pickinfo();
     cacheRota = new m4m.math.quaternion();
     cache_y = 0;
+    /**
+     * 当点移动
+     * @param param0 点坐标
+     * @returns 
+     */
     onPonitMove([x,y]){
         let viewPos = m4m.poolv2();
         viewPos.x = x;
@@ -93,6 +101,9 @@ class test_3DPhysics_kinematic implements IState {
         m4m.poolv2_del(viewPos);
     }
 
+    /**
+     * 更新旋转
+     */
     updateRoate(){
         if(!this.ctrBox) return;
         this.cache_y += 3;

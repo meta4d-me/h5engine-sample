@@ -44,6 +44,9 @@ class test_CompressTexture implements IState {
         this.setGUI();
     }
 
+    /**
+     * 设置 调试GUI 
+     */
     private setGUI() {
         if (!dat) return;
         let gui = new dat.GUI();
@@ -55,6 +58,9 @@ class test_CompressTexture implements IState {
         gui.add(this, "changeTexture").name(`加载替换纹理`);
     }
 
+    /**
+     * 改变纹理
+     */
     private async changeTexture() {
         let file = this.texTypeFileMap[this.texType];
         if (!file) return;

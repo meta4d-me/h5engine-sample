@@ -91,6 +91,16 @@ class test_AnimatedSprite implements IState {
         }
     }
 
+    /**
+     * 获取 帧动画sprite列表
+     * @param texture 纹理
+     * @param x x
+     * @param y y
+     * @param width 宽
+     * @param height 高
+     * @param frameCount 帧数
+     * @returns sprite列表
+     */
     private getFrames(texture: m4m.framework.texture, x: number, y: number, width: number, height: number, frameCount: number) {
         let array: m4m.framework.sprite[] = [];
         for (let i = 0; i < frameCount; i++) {

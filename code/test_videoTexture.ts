@@ -17,6 +17,11 @@ class test_videoTexture implements IState {
         });
     }
 
+    /**
+     * 创建视频纹理
+     * @param video 视频数据元素 
+     * @returns 
+     */
     private makeVideoTexture(video: HTMLVideoElement) {
         const tex = new m4m.framework.texture("videoTex");
         const t2d = new m4m.render.videoTexture(video);

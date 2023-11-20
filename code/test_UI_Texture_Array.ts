@@ -47,7 +47,11 @@ class test_UI_Texture_Array implements IState {
         { atlas: "TA_ICON", spRes: "zg03", w: 180, h: 180 },
     ];
 
-    //加载altas
+    /**
+     * 加载altas
+     * @param resName 资源名
+     * @returns 
+     */
     private async loadAtlas(resName: string): Promise<m4m.framework.atlas> {
         const imgFile = `${this.atlasPath}${resName}/${resName}.png`;
         const jsonFile = `${this.atlasPath}${resName}/${resName}.atlas.json`;
@@ -60,7 +64,10 @@ class test_UI_Texture_Array implements IState {
 
 
 
-    //切换UI 模式
+    /**
+     * 切换UI 模式
+     * @param texArrayMode 纹理数组 模式？
+     */
     private switchUIMode(texArrayMode: boolean) {
         this.textureArrayRoot.visible = false;
         this.normalRoot.visible = false;
@@ -87,7 +94,9 @@ class test_UI_Texture_Array implements IState {
         }
     }
 
-    //随机创建UI节点
+    /**
+     * 随机创建UI节点
+     */
     private randomMakeUI() {
         //随机创建 UI
         const count = this.makeUICount;
@@ -122,7 +131,13 @@ class test_UI_Texture_Array implements IState {
         }
     }
 
-    //创建普通UI
+    /**
+     * 创建普通UI
+     * @param sp sprite资源
+     * @param w 宽
+     * @param h 高
+     * @returns UI节点
+     */
     private makeUI(sp: m4m.framework.sprite, w: number, h: number) {
         const result = m4m.framework.TransformUtil.Create2DPrimitive(m4m.framework.Primitive2DType.Image2D);
         const img = result.getComponent("image2D") as m4m.framework.image2D;
@@ -133,7 +148,14 @@ class test_UI_Texture_Array implements IState {
         return result;
     }
 
-    //创建纹理数组模式UI
+    /**
+     * 创建纹理数组模式UI
+     * @param sp sprite资源
+     * @param w 宽
+     * @param h 高
+     * @param texIndex 纹理索引
+     * @returns 
+     */
     private makeTexArrayUI(sp: m4m.framework.sprite, w: number, h: number, texIndex: number = 0) {
         const result = new m4m.framework.transform2D();
         const texArrImg = result.addComponent("texArrImage2D") as texArrImage2D;
@@ -146,7 +168,10 @@ class test_UI_Texture_Array implements IState {
         return result;
     }
 
-    //创建shader
+    /**
+     * 创建shader
+     * @returns 着色器
+     */
     private makeTexArraySahder(): m4m.framework.shader {
         const shKey = `texArrayImg`;
         const sh = new m4m.framework.shader(this.texArrShaderName);
@@ -247,7 +272,10 @@ class test_UI_Texture_Array implements IState {
         return sh;
     }
 
-    //从assetMgr 获取需要的 htmlImage 图片 （取巧操作 ，整合到引擎需要调整）
+    /**
+     * 从assetMgr 获取需要的 htmlImage 图片 （取巧操作 ，整合到引擎需要调整）
+     * @returns html image 对象
+     */
     private getHtmlImageMap() {
         let _limit = {};
         let _map: { [imgN: string]: HTMLImageElement } = {};
@@ -270,7 +298,11 @@ class test_UI_Texture_Array implements IState {
         return _map;
     }
 
-    //创建texture2D 纹理
+    /**
+     * 创建texture2D 纹理
+     * @param texMap 纹理字典
+     * @returns 纹理
+     */
     private makeTex2dArray(texMap: { [imgN: string]: HTMLImageElement }): m4m.framework.texture {
         let texs: HTMLImageElement[] = [];
         for (let i = 0, len = this.atlasNames.length; i < len; i++) {
@@ -287,6 +319,10 @@ class test_UI_Texture_Array implements IState {
         return result;
     }
 
+    /**
+     * 设置GUI
+     * @returns 
+     */
     private async setGUI() {
         await datGui.init();
         if (!dat) return;
@@ -579,7 +615,9 @@ class texArrImage2D implements m4m.framework.IRectRenderer {
 
     }
 
-    //资源管理器中寻找 指定的贴图资源
+    /**
+     * 资源管理器中寻找 指定的贴图资源
+     */
     private searchTexture() {
         if (this._sprite) return;
         let assetmgr = this.transform.canvas.assetmgr;
@@ -628,7 +666,6 @@ class texArrImage2D implements m4m.framework.IRectRenderer {
     }
 
     /**
-     * @private
      * 根据显示方式来准备数据
      */
     private prepareData() {
@@ -647,7 +684,7 @@ class texArrImage2D implements m4m.framework.IRectRenderer {
     }
 
     /**
-     * @private
+     * 更新 变换组件
      */
     updateTran() {
         var m = this.transform.getWorldMatrix();
@@ -718,7 +755,6 @@ class texArrImage2D implements m4m.framework.IRectRenderer {
     }
 
     /**
-     * @private
      * 更新quad的顶点数据
      */
     private updateQuadData(x0: number, y0: number, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, quadIndex = 0, mirror: boolean = false) {
@@ -754,7 +790,6 @@ class texArrImage2D implements m4m.framework.IRectRenderer {
     }
 
     /**
-     * @private
      * 更新常规数据
      */
     private updateSimpleData(x0: number, y0: number, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number) {
@@ -763,13 +798,19 @@ class texArrImage2D implements m4m.framework.IRectRenderer {
 
 }
 
+/**
+ * 2D 数组纹理
+ */
 class tex2DArray implements m4m.render.ITexture {
     constructor(w: number, h: number) {
         this.width = w;
         this.height = h;
         this.texture = m4m.framework.sceneMgr.app.webgl.createTexture();
     }
-
+    /**
+     * 上传纹理到 webgl API
+     * @param texs html 纹理数据列表
+     */
     uploadImage(texs: HTMLImageElement[]) {
         if (!texs || texs.length < 1) return;
         const w = texs[0].width;
@@ -796,11 +837,23 @@ class tex2DArray implements m4m.render.ITexture {
     texture: WebGLTexture;
     width: number;
     height: number;
+    /**
+     * 是FBO ？
+     * @returns 
+     */
     isFrameBuffer(): boolean {
         return false;
     }
+    /**
+     * 销毁
+     * @param webgl 
+     */
     dispose(webgl: WebGL2RenderingContext) {
     }
+    /**
+     * 计算内存中的数据长度
+     * @returns 数据长度
+     */
     caclByteLength(): number {
         return 0;
     }

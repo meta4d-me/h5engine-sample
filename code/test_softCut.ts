@@ -33,6 +33,11 @@ class test_softCut implements IState{
 
     }
 
+    /**
+     * 创建UI
+     * @param astState 
+     * @param state 状态 
+     */
     private createUI(astState: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         let Temptex = this.assetMgr.getAssetByName("cutbg.png") as m4m.framework.texture;
         let atlasComp = this.assetMgr.getAssetByName("comp.atlas.json") as m4m.framework.atlas;
@@ -241,6 +246,11 @@ class test_softCut implements IState{
         state.finish = true;
     }
 
+    /**
+     * 加载纹理
+     * @param lastState 
+     * @param state 状态
+     */
     private loadTexture(lastState: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         //加载图片资源
         this.assetMgr.load("res/comp/comp.json.png", m4m.framework.AssetTypeEnum.Auto, (s) => {

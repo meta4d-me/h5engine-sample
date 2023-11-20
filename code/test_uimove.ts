@@ -35,7 +35,9 @@ class test_uimove implements IState
         var x2 = Math.sin(this.timer * 0.1);
         var z2 = Math.cos(this.timer * 0.1);
     }
-
+    /**
+     * 测试
+     */
     private test()
     {
         let parentRect: Rect = new Rect();
@@ -85,7 +87,9 @@ class Rect extends m4m.framework.transform
     public points: m4m.math.vector3[] = [];
 
     public alignPos: m4m.math.vector3 = new m4m.math.vector3();
-
+    /**
+     * 对齐
+     */
     public layout(): void
     {
         if (this.parent != null && this.alignType != null)
