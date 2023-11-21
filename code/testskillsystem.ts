@@ -13,6 +13,11 @@
         counttimer: number = 0;
         private role = new m4m.framework.transform();
 
+        /**
+         * 加载着色器
+         * @param laststate 
+         * @param state 状态
+         */
         private loadShader(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
             this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (_state) => {
                 if (_state.isfinish) {
@@ -22,6 +27,11 @@
             );
         }
 
+        /**
+         * 加载文本数据
+         * @param laststate 
+         * @param state 状态
+         */
         private loadText(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
             this.app.getAssetMgr().load("res/zg256.png", m4m.framework.AssetTypeEnum.Auto, (s) => {
                 if (s.isfinish) {
@@ -33,7 +43,11 @@
             }
             );
         }
-
+        /**
+         * 添加相机
+         * @param laststate 
+         * @param state 状态
+         */
         private addcam(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
 
             //添加一个摄像机
@@ -50,7 +64,11 @@
             state.finish = true;
 
         }
-
+        /**
+         * 添加cube
+         * @param laststate 
+         * @param state 状态
+         */
         private addcube(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
             //添加一个盒子
             {
@@ -106,7 +124,11 @@
             }
             state.finish = true;
         }
-
+        /**
+         * 加载角色模型
+         * @param laststate 
+         * @param state 状态
+         */
         private loadRole(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
             this.role.name = "role";
             this.app.getAssetMgr().load("res/prefabs/0000_zs_male/0000_zs_male.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (s) => {
@@ -146,6 +168,14 @@
             });
         }
 
+        /**
+         * 播放动画和特效
+         * @param aniplayer 动画播放器组件 
+         * @param aniName 动画片段名
+         * @param effectName 特效名
+         * @param playAniDelay 播放延迟
+         * @param afterAni_PlayEffectDelay 播放特效延迟
+         */
         private playAniAndEffect(aniplayer: m4m.framework.aniplayer, aniName: string, effectName: string, playAniDelay: number, afterAni_PlayEffectDelay: number) {
             {
                 setTimeout(() => {
@@ -182,7 +212,11 @@ this.effect.gameObject.transform.dispose();
 
         effect: m4m.framework.effectSystem;
         effect2: m4m.framework.effectSystem;
-
+        /**
+         * 加载特效
+         * @param laststate 
+         * @param state 状态
+         */
         private loadEffect(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
             let name = "fx_zs_male@attack_01";
             let path = "res/particleEffect/" + name + "/" + name + ".assetbundle.json";

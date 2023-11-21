@@ -34,6 +34,11 @@ class physic2d_dome implements IState {
 
     }
 
+    /**
+     * 创建GUI
+     * @param astState 
+     * @param state 状态
+     */
     private createUI(astState: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         let atlasComp = this.assetMgr.getAssetByName("comp.atlas.json") as m4m.framework.atlas;
         let tex_0 = this.assetMgr.getAssetByName("zg03_256.png") as m4m.framework.texture;
@@ -56,6 +61,16 @@ class physic2d_dome implements IState {
         state.finish = true;
     }
 
+    /**
+     * 创建2d的物理墙
+     * @param posx 
+     * @param posy 
+     * @param width 
+     * @param height 
+     * @param texture 
+     * @param root 
+     * @returns 
+     */
     private crea2dWall(posx:number,posy:number,width:number,height:number,texture:m4m.framework.texture,root:m4m.framework.overlay2D):m4m.framework.transform2D
     {
         let bound3 = new m4m.framework.transform2D;
@@ -73,7 +88,16 @@ class physic2d_dome implements IState {
         root.addChild(bound3);
         return bound3;
     }
-
+    /**
+     * 创建 2d的 盒子
+     * @param posx 位置x
+     * @param posy 位置y
+     * @param width 宽
+     * @param height 高
+     * @param texture 纹理
+     * @param root root节点
+     * @returns 盒子节点
+     */
     private creatbox(posx:number,posy:number,width:number,height:number,texture:m4m.framework.texture,root:m4m.framework.overlay2D):m4m.framework.transform2D
     {
         let bound3 = new m4m.framework.transform2D;
@@ -95,7 +119,11 @@ class physic2d_dome implements IState {
         return bound3;
     }
 
-
+    /**
+     * 加载纹理
+     * @param lastState 
+     * @param state 状态
+     */
     private loadTexture(lastState: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         //加载图片资源
         this.assetMgr.load(`${resRootPath}atlas/comp/comp.json.png`, m4m.framework.AssetTypeEnum.Auto, (s) => {

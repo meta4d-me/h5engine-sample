@@ -4,7 +4,7 @@ class UseMeshAndMatDemo implements IState {
     scene: m4m.framework.scene;
     taskMgr: m4m.framework.taskMgr = new m4m.framework.taskMgr;
     
-    //加载一个mesh
+    /**加载一个mesh */
     private loadMesh(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         this.app.getAssetMgr().load(`res/prefabs/Cube/resources/Library_unity_default_resources_Cube.mesh.bin`, m4m.framework.AssetTypeEnum.Mesh, (s) => {
             if (s.iserror) {
@@ -16,7 +16,7 @@ class UseMeshAndMatDemo implements IState {
             }
         });
     }
-    //加载一个mesh的材质资源
+    /**加载一个mesh的材质资源 */
     private loadMaterial(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         this.app.getAssetMgr().load(`res/prefabs/Cube/resources/Default-Diffuse.mat.json`, m4m.framework.AssetTypeEnum.Material, (s) => {
             if (s.iserror) {
@@ -29,7 +29,11 @@ class UseMeshAndMatDemo implements IState {
         })
     }
     
-    //新建一个cube 绑定加载的mesh资源和材质资源
+    /**
+     * 新建一个cube 绑定加载的mesh资源和材质资源
+     * @param laststate 
+     * @param state 状态
+     */
     private useMeshAndMat(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         let cube = new m4m.framework.transform();
         cube.name = "cube";
@@ -48,7 +52,11 @@ class UseMeshAndMatDemo implements IState {
         state.finish = true;
     }
 
-    //#region 加载shader
+    /**
+     * 加载着色器
+     * @param laststate 
+     * @param state 状态
+     */
     private loadShader(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (s) => {
             if (s.iserror) {
@@ -58,8 +66,11 @@ class UseMeshAndMatDemo implements IState {
                 state.finish = true;
         });
     }
-    //#endregion
-    //#region 添加一个摄像机
+    /**
+     * 添加一个摄像机
+     * @param laststate 
+     * @param state 状态
+     */
     private addCamera(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         let objCam = new m4m.framework.transform();
         objCam.name = "camera.";

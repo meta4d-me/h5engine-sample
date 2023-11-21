@@ -30,7 +30,12 @@ class UseTextureDemo implements IState {
     }
 
 
-    //加载纹理，png .jpg纹理。用类似的操作可以加载 .pvr .pvr.bin pvr纹理资源  .dds .dds.bin dds纹理资源 和 .imgdesc.json 贴图资源，只需把AssetTypeEnum的类型 修改为 PVR,DDS和TextureDesc或者Auto即可。
+    /**
+     * 加载纹理
+     * 加载纹理，png .jpg纹理。用类似的操作可以加载 .pvr .pvr.bin pvr纹理资源  .dds .dds.bin dds纹理资源 和 .imgdesc.json 贴图资源，只需把AssetTypeEnum的类型 修改为 PVR,DDS和TextureDesc或者Auto即可。
+     * @param laststate 
+     * @param state 状态
+     */
     private loadTexture(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         this.app.getAssetMgr().load(`res/zg256.png`, m4m.framework.AssetTypeEnum.Texture, (s) => {
             if (s.isfinish) {
@@ -41,7 +46,9 @@ class UseTextureDemo implements IState {
         });
     }
 
-    //使用纹理
+    /**
+     * 使用纹理
+     */
     private useTexture(){
         let render = this.quad.gameObject.getComponent("meshRenderer") as m4m.framework.meshRenderer;
         console.log(this.texture);

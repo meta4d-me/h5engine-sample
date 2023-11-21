@@ -3,6 +3,10 @@
         app: m4m.framework.application;
         scene: m4m.framework.scene;
         tex: m4m.framework.texture;
+        /**
+         * 加载文本字符串
+         * @returns 等待Promise
+         */
         private loadText() {
             return new Promise<void>((resolve, reject) => {
                 let imgName = `zg256.png`;
@@ -19,6 +23,9 @@
             })
         }
 
+        /**
+         * 添加所有 cube
+         */
         private addCubes() {
             for (var i = -4; i < 5; i++) {
                 for (var j = -4; j < 5; j++) {
@@ -28,6 +35,12 @@
             }
         }
 
+        /**
+         * 添加cube 
+         * @param x 位置x
+         * @param y 位置y
+         * @param z 位置z
+         */
         private addCube(x: number, y: number, z: number) {
             var cube = new m4m.framework.transform();
             cube.name = "cube";
@@ -52,6 +65,9 @@
             }
         }
 
+        /**
+         * 添加相机和灯光
+         */
         private addCameraAndLight() {
             //添加一个摄像机
             var objCam = new m4m.framework.transform();

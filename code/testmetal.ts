@@ -4,6 +4,11 @@ namespace t
     {
         app: m4m.framework.application;
         scene: m4m.framework.scene;
+        /**
+         * 加载着色器
+         * @param laststate 
+         * @param state 状态
+         */
         private loadShader(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
             this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (_state) =>
@@ -16,7 +21,11 @@ namespace t
             }
             );
         }
-
+        /**
+         * 加载文本数据
+         * @param laststate 
+         * @param state 状态
+         */
         private loadText(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
             let c = 0;
@@ -99,6 +108,11 @@ namespace t
             // );
 
         }
+        /**
+         * 添加相机和光源
+         * @param laststate 
+         * @param state 状态
+         */
         private addcamandlight(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
 
@@ -147,6 +161,11 @@ namespace t
             state.finish = true;
 
         }
+        /**
+         * 加载和添加模型
+         * @param laststate 
+         * @param state 状态
+         */
         private addmetalmodel(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
             this.app.getAssetMgr().load("res/prefabs/specular/0122_huanghunshibing.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (s) =>
@@ -171,7 +190,11 @@ namespace t
             }
             );
         }
-
+        /**
+         * 加载和添加Asi模型
+         * @param laststate 
+         * @param state 状态
+         */
         private addAsiModel(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
             this.app.getAssetMgr().load("res/prefabs/asi_streamlight/asi_streamlight.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (s) =>
@@ -246,6 +269,14 @@ namespace t
             this.diffuse=input;
             this.emitpower=input1;
         }
+        /**
+         * 添加输入框
+         * @param top 上
+         * @param left 左
+         * @param text 文本
+         * @param type 类型
+         * @returns html输入组件
+         */
         private addinput(top:string,left:string,text:string,type:string="number"):HTMLInputElement
         {
             var input: HTMLInputElement = document.createElement("input");
@@ -258,6 +289,14 @@ namespace t
             input.value=text;
             return input;
         }
+
+        /**
+         * 添加按钮
+         * @param top  上
+         * @param left 左
+         * @param text 文本
+         * @returns html按钮组件
+         */
         private addbtn(top:string,left:string,text:string):HTMLButtonElement
         {
             var btn = document.createElement("button");

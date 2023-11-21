@@ -8,7 +8,9 @@ namespace t
         camera: m4m.framework.transform;
         once1: AudioBuffer = null;
         once2: AudioBuffer = null;
-
+        /**
+         * 加载声音信息
+         */
         private loadSoundInfe()
         {
             {

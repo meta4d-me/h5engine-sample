@@ -14,7 +14,11 @@
         count: number = 0;
         counttimer: number = 0;
         name: string = "rock256.png";
-
+        /**
+         * 加载着色器
+         * @param laststate 
+         * @param state 状态
+         */
         private loadShader(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
             this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (_state) =>
@@ -28,7 +32,11 @@
             }
             );
         }
-
+        /**
+         * 加载文本数据
+         * @param laststate 
+         * @param state 状态
+         */
         private loadText(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
             this.app.getAssetMgr().load("res/zg256.png", m4m.framework.AssetTypeEnum.Auto, (s) =>
@@ -44,7 +52,11 @@
             }
             );
         }
-
+        /**
+         * 加载PVR纹理
+         * @param laststate 
+         * @param state 状态
+         */
         private loadPvr(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
             this.app.getAssetMgr().load("res/resources/" + this.name, m4m.framework.AssetTypeEnum.Auto, (s) =>
@@ -55,6 +67,9 @@
                 }
             });
         }
+        /**
+         * 改变着色器
+         */
         private changeShader()
         {
             var btn = document.createElement("button");
@@ -83,7 +98,11 @@
 
         }
 
-
+        /**
+         * 添加相机
+         * @param laststate 
+         * @param state 状态
+         */
         private addcam(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
 
@@ -101,7 +120,11 @@
             state.finish = true;
 
         }
-
+        /**
+         * 添加cube
+         * @param laststate 
+         * @param state 状态
+         */
         private addcube(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
             //添加一个盒子

@@ -8,7 +8,7 @@ class UseAudioDemo implements IState {
     objCam: m4m.framework.transform;
     audiobuf: AudioBuffer;
 
-    //加载音频资源
+    /** 加载音频资源 */
     private loadAudio(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         //加载音频资源，加载音频资源不是走assetMgr.load接口，而是使用AudioEx.instance().loadAudioBuffer()  AudioEX是一个单例。
         m4m.framework.AudioEx.instance().loadAudioBuffer("res/audio/music1.mp3", (buffer: AudioBuffer, err: Error) => {
@@ -19,7 +19,7 @@ class UseAudioDemo implements IState {
         });
     }
 
-    //给摄像机添加一个音频收听者
+    /** 给摄像机添加一个音频收听者 */
     private addCamera(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         //#region 添加一个相机
         let objCam = new m4m.framework.transform();
@@ -43,7 +43,7 @@ class UseAudioDemo implements IState {
 
     }
 
-    //添加一个音频AudioPlayer，
+    /** 添加一个音频AudioPlayer， */
     private addAudioPlay(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate){
         //#region 创建一个cube作为声音源
         let objAudioPlay = new m4m.framework.transform();
@@ -67,7 +67,7 @@ class UseAudioDemo implements IState {
         state.finish = true;
     }
 
-    //#region 加载shader
+    /** 加载shader */
     private loadShader(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (s) => {
             if (s.iserror) {

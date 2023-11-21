@@ -3,6 +3,11 @@ namespace t {
     export class test_trailrenderrecorde implements IState {
         app: m4m.framework.application;
         scene: m4m.framework.scene;
+        /**
+         * 加载着色器
+         * @param laststate 
+         * @param state 状态
+         */
         private loadShader(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
             this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (_state) => {
                 if (_state.isfinish) {
@@ -11,7 +16,11 @@ namespace t {
             }
             );
         }
-
+        /**
+         * 加载文本数据
+         * @param laststate 
+         * @param state 状态
+         */
         private loadText(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
             this.app.getAssetMgr().load("res/trailtest2_00000.imgdesc.json", m4m.framework.AssetTypeEnum.Auto, (s) => {
                 if (s.isfinish) {
@@ -44,6 +53,11 @@ namespace t {
         aniplayer: m4m.framework.aniplayer;
         role: m4m.framework.transform;
         private roleLength: number;
+        /**
+         * 加载角色模型
+         * @param laststate 
+         * @param state 状态
+         */
         private loadRole(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
             this.app.getAssetMgr().load("res/prefabs/0000_zs_male/0000_zs_male.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (s) => {
                 if (s.isfinish) {
@@ -64,6 +78,11 @@ namespace t {
         }
 
         private weapon: m4m.framework.transform;
+        /**
+         * 加载武器
+         * @param laststate 
+         * @param state 状态
+         */
         private loadWeapon(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
             this.app.getAssetMgr().load("res/prefabs/0002_sword_sword/0002_sword_sword.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (s) => {
                 if (s.isfinish) {
@@ -81,7 +100,11 @@ namespace t {
         }
         sh: m4m.framework.shader;
         cube2: m4m.framework.transform;
-
+        /**
+         * 初始化场景
+         * @param laststate 
+         * @param state 状态
+         */
         private initscene(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
 
 
@@ -262,6 +285,13 @@ namespace t {
 
         }
 
+        /**
+         * 添加按钮
+         * @param top 上位置 
+         * @param left 左位置
+         * @param text 文本
+         * @returns html按钮组件
+         */
         private addbtn(top: string, left: string, text: string): HTMLButtonElement {
             var btn = document.createElement("button");
             btn.style.top = top;

@@ -4,6 +4,11 @@
     {
         app: m4m.framework.application;
         scene: m4m.framework.scene;
+        /**
+         * 加载着色器
+         * @param laststate 
+         * @param state 状态
+         */
         private loadShader(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
             this.app.getAssetMgr().load(`${resRootPath}shader/shader.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (_state) =>
@@ -15,7 +20,11 @@
             }
             );
         }
-
+        /**
+         * 加载文本数据
+         * @param laststate 
+         * @param state 状态
+         */
         private loadText(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
             this.app.getAssetMgr().load(`${resRootPath}texture/map_diffuse.png`, m4m.framework.AssetTypeEnum.Auto, (s) =>
@@ -32,6 +41,11 @@
             );
         }
 
+        /**
+         * 添加cube
+         * @param laststate 
+         * @param state 状态
+         */
         private addcube(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
             for (var i = -4; i < 5; i++)
@@ -70,6 +84,11 @@
 
             state.finish = true;
         }
+        /**
+         * 添加相机和光源
+         * @param laststate 
+         * @param state 状态
+         */
         private addcamandlight(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
 
@@ -416,6 +435,12 @@
             this.taskmgr.addTaskCall(this.addcamandlight.bind(this));
         }
 
+        /**
+         * 添加GUI按钮
+         * @param topOffset 
+         * @param textContent 
+         * @param func 
+         */
         private addbtn(topOffset:string,textContent:string,func:()=>void)
         {
             var btn = document.createElement("button");

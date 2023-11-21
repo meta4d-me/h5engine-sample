@@ -2,6 +2,10 @@ class test_loadMulBundle implements IState
 {
     app: m4m.framework.application;
     scene: m4m.framework.scene;
+    /**
+     * 刷新纹理
+     * @param tran 节点 
+     */
     refreshTexture(tran:m4m.framework.transform)
     {
         let meshrenderer = tran.gameObject.getComponentsInChildren("meshRenderer") as m4m.framework.meshRenderer[];
@@ -39,7 +43,10 @@ class test_loadMulBundle implements IState
             }
         }
     }
-    
+
+    /**
+     * 刷新动画pianduan
+     */
     refreshAniclip(tran:m4m.framework.transform)
     {
         // let anipalyer = tran.gameObject.getComponentsInChildren("aniplayer") as m4m.framework.aniplayer[];
@@ -55,6 +62,11 @@ class test_loadMulBundle implements IState
         // }
     }
 
+    /**
+     * 刷新光照贴图
+     * @param scene 场景
+     * @param rawscene  场景资源 
+     */
     refreshLightMap(scene:m4m.framework.scene, rawscene:m4m.framework.rawscene)
     {
         scene.lightmaps = [];
@@ -62,6 +74,7 @@ class test_loadMulBundle implements IState
         rawscene.useLightMap(this.app.getScene());
         rawscene.useFog(this.app.getScene());
     }
+
     start(app: m4m.framework.application)
     {
         console.log("i am here.");

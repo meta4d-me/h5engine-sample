@@ -4,6 +4,12 @@ class test_f4skin implements IState {
     scene: m4m.framework.scene;
     camera: m4m.framework.camera;
 
+    /**
+     * 骨骼配置
+     * @param bone 骨骼节点 
+     * @param yOffset y的偏移
+     * @param rotate 旋转
+     */
     boneConfig(bone: m4m.framework.transform, yOffset = 4, rotate = 10) {
         const mf = bone.gameObject.addComponent('meshFilter') as m4m.framework.meshFilter;
         mf.mesh = this.app.getAssetMgr().getDefaultMesh("cube");
@@ -14,6 +20,11 @@ class test_f4skin implements IState {
         bone.markDirty();
     }
 
+    /**
+     * 组装骨骼数据
+     * @param segment 段落数
+     * @returns 节点列表
+     */
     assembSkeleton(segment: number) {
         let bones: m4m.framework.transform[] = [];
         for (let i = 0; i < segment; i++) {
@@ -32,6 +43,11 @@ class test_f4skin implements IState {
         return bones;
     }
 
+    /**
+     * 构建mesh
+     * @param ctx webgl 上下文
+     * @returns 
+     */
     createMesh(ctx: WebGL2RenderingContext) {
         let mesh = new m4m.framework.mesh();
 
@@ -333,7 +349,12 @@ class test_f4skin implements IState {
 
     bones: m4m.framework.transform[];
     f4: m4m.framework.transform;
-
+    /**
+     * 旋转
+     * @param bone 骨骼节点
+     * @param valuey y值
+     * @param valuez z值
+     */
     rotate(bone: m4m.framework.transform, valuey: number, valuez: number) {
         m4m.math.quatFromEulerAngles(0, valuey, valuez, bone.localRotate);
     }

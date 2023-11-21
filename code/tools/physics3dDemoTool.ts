@@ -7,7 +7,10 @@ class physics3dDemoTool {
     static astMgr: m4m.framework.assetMgr;
     static iptMgr: m4m.framework.inputMgr;
     static mats: { [name: string]: m4m.framework.material } = {};
-
+    /**
+     * 初始化
+     * @param app 引擎app
+     */
     static async init(app: m4m.framework.application) {
         m4m.framework.assetMgr.openGuid = false;
         this.app = app;
@@ -29,7 +32,9 @@ class physics3dDemoTool {
     //         });
     //     });
     // }
-
+    /**
+     * 初始化所有材质
+     */
     private static initMats() {
         //地板
         this.addMat("white", new m4m.math.vector4(1, 1, 1, 1));
@@ -45,6 +50,9 @@ class physics3dDemoTool {
         this.addMat("purple", new m4m.math.vector4(0.8, 0, 0.8, 1));
     }
 
+    /**
+     * 初始化相机
+     */
     private static initCamera() {
         //相机-----------------------------------
         var objCam = new m4m.framework.transform();
@@ -74,6 +82,11 @@ class physics3dDemoTool {
         this.scene.addChild(light);
     }
 
+    /**
+     * 添加材质
+     * @param name 名
+     * @param color 颜色
+     */
     private static addMat(name: string, color: m4m.math.vector4) {
         let mat = this.mats[name] = new m4m.framework.material(name);
         mat.setShader(this.astMgr.getShader("diffuse.shader.json"));
@@ -94,6 +107,14 @@ class physics3dDemoTool {
     private static tag_pos = "__reCachePos";
     private static tag_Rot = "__reCacheRot";
     private static tag_resFun = "__reCacheResFun";
+    /**
+     * 附加到mesh上
+     * @param tran 节点
+     * @param mat 材质
+     * @param meshName mesh名
+     * @param isCompound 是复合模式？
+     * @returns mesh渲染器
+     */
     static attachMesh(tran: m4m.framework.transform, mat: m4m.framework.material, meshName: string, isCompound = false): m4m.framework.meshRenderer {
         let mf = tran.gameObject.getComponent("meshFilter") as m4m.framework.meshFilter;
         if (!mf) mf = tran.gameObject.addComponent("meshFilter") as any;
@@ -125,7 +146,10 @@ class physics3dDemoTool {
         return mr;
     }
 
-    //重置 复位
+    /**
+     * 重置 复位
+     * @param mrs 所有渲染器节点
+     */
     static resetObj(mrs: m4m.framework.meshRenderer[]) {
         mrs.forEach(mr => {
             if (mr) {
@@ -137,6 +161,10 @@ class physics3dDemoTool {
     }
 
     private static lastsleepTag = "_lastsleep_";
+    /**
+     * 检查物理体 是否睡眠
+     * @param mrs 所有渲染器
+     */
     static ckBodySleeped(mrs: m4m.framework.meshRenderer[]) {
         mrs.forEach(mr => {
             if (mr && mr.gameObject.transform.physicsImpostor) {
@@ -157,6 +185,11 @@ class physics3dDemoTool {
     }
 
     private static defMatTag = "_defMat_";
+    /**
+     * 改变默认材质
+     * @param mr 渲染器
+     * @param isSleeping 是睡眠了？ 
+     */
     private static cgDefMat(mr: m4m.framework.meshRenderer, isSleeping: boolean) {
         if (!mr) return;
         let tran = mr.gameObject.transform;

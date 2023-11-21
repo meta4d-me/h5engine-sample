@@ -8,7 +8,7 @@ class UseAniplayClipDemo implements IState {
     aniplayer: m4m.framework.aniplayer;
 
 
-    //加载一个动作
+    /** 加载一个动作 */
     private loadAniplayClip(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         this.app.getAssetMgr().load(`res/prefabs/roles/pc2/Resources/pc2_skill1.FBAni.aniclip.bin`, m4m.framework.AssetTypeEnum.Aniclip, (s) => {
             // if (s.isfinish) {
@@ -26,7 +26,7 @@ class UseAniplayClipDemo implements IState {
         });
     }
 
-    //#region  通过bundle包加载一个完整的带动作的角色。
+    /** 通过bundle包加载一个完整的带动作的角色。*/
     private loadRole(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         this.app.getAssetMgr().load(`res/prefabs/roles/pc2/pc2.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (s) => {
             if (s.isfinish) {
@@ -70,9 +70,8 @@ class UseAniplayClipDemo implements IState {
             }
         });
     }
-    //#endregion
-    
-    //#region 加载shader
+
+    /*** 加载shader */
     private loadShader(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (s) => {
             if (s.iserror) {
@@ -82,9 +81,8 @@ class UseAniplayClipDemo implements IState {
                 state.finish = true;
         });
     }
-    //#endregion
 
-    //#region  添加摄像机
+    /** 添加摄像机 */
     private addCamera(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         let objCam = new m4m.framework.transform();
         objCam.name = "camera.";
@@ -99,7 +97,7 @@ class UseAniplayClipDemo implements IState {
         objCam.markDirty();
         state.finish = true;
     }
-    //#endregion
+
 
     start(app: m4m.framework.application) {
         this.app = app;

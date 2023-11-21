@@ -21,6 +21,11 @@ namespace dome {
         private f14eff: m4m.framework.f14EffectSystem;
         private effPrefab: m4m.framework.transform;
         effbaseprefab: m4m.framework.prefab
+        /**
+         * 加载特效和prefab
+         * @param name 资源名
+         * @returns 
+         */
         private loadEffectPrefab(name: string = "fx_yh") {
             return new Promise<void>((resolve, reject) => {
                 this.app.getAssetMgr().load(`${resRootPath}effect/${name}/${name}.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (s) => {
@@ -38,11 +43,16 @@ namespace dome {
             })
         }
 
+        /**
+         * 添加GUI
+         */
         private addUI() {
             this.addButton();
             this.addButton2();
         }
-
+        /**
+         * 添加按钮
+         */
         private addButton() {
             var btn = document.createElement("button");
             btn.textContent = "Play";
@@ -53,6 +63,9 @@ namespace dome {
             btn.style.position = "absolute";
             this.app.container.appendChild(btn);
         }
+        /**
+         * 添加按钮
+         */
         private addButton2() {
             var btn = document.createElement("button");
             btn.textContent = "stop";
@@ -63,7 +76,9 @@ namespace dome {
             btn.style.position = "absolute";
             this.app.container.appendChild(btn);
         }
-
+        /**
+         * 添加相机
+         */
         private addCamera() {
             //添加一个摄像机
             var objCam = new m4m.framework.transform();

@@ -4,6 +4,11 @@
     {
         app: m4m.framework.application;
         scene: m4m.framework.scene;
+        /**
+         * 加载着色器 
+         * @param laststate 
+         * @param state 状态
+         */
         private loadShader(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
             this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (_state) =>
@@ -13,7 +18,11 @@
             }
             );
         }
-
+        /**
+         * 加载文本数据
+         * @param laststate 
+         * @param state 状态
+         */
         private loadText(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
             this.app.getAssetMgr().load("res/uvSprite.png", m4m.framework.AssetTypeEnum.Auto, (s) => 
@@ -29,7 +38,11 @@
             }
             );
         }
-
+        /**
+         * 添加cube
+         * @param laststate 
+         * @param state 状态
+         */
         private addcube(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
             //添加一个盒子
@@ -111,6 +124,11 @@
             }
             state.finish = true;
         }
+        /**
+         * 添加相机
+         * @param laststate 
+         * @param state 状态
+         */
         private addcam(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
 

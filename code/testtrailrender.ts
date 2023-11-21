@@ -7,6 +7,9 @@ namespace t
         scene: m4m.framework.scene;
         camera: m4m.framework.camera;
         texResName = "trailtest2_00000.imgdesc.json";
+        /**
+         * 初始化场景
+         */
         private initscene()
         {
             //添加一个摄像机
@@ -89,6 +92,9 @@ namespace t
                 this.org.markDirty();
             }
         }
+        /**
+         * 添加GUI
+         */
         private addUI()
         {
             var tbn = this.addbtn("80px", "0px", "start");
@@ -102,6 +108,13 @@ namespace t
                 this.play = false;
             }
         }
+        /**
+         * 添加按钮
+         * @param top 上位置
+         * @param left 左位置
+         * @param text 文本
+         * @returns html按钮组件
+         */
         private addbtn(top: string, left: string, text: string): HTMLButtonElement
         {
             var btn = document.createElement("button");

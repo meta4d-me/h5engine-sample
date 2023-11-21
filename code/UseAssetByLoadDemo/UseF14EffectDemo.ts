@@ -7,7 +7,7 @@ class UseF14EffectDemo implements IState {
     eff: m4m.framework.transform;
     effectSystems: m4m.framework.f14EffectSystem;
 
-    //使用特效
+    /** 使用特效 */
     private useF14Effect() {
         //一个特效文件本质上是挂在了特效组件的一个空的transform。所以只要把这个带有特效的transform加在需要绑定特效的transform下即可。
         this.eff = (this.app.getAssetMgr().getAssetByName(`fx_B_5.prefab.json`) as m4m.framework.prefab).getCloneTrans();
@@ -19,7 +19,7 @@ class UseF14EffectDemo implements IState {
         console.log(this.effectSystems);
     }
 
-    //加载特效
+    /** 加载特效 */
     private loadF14Effect(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         //加载特效一般都是加载打包号的特效包即可。
         this.app.getAssetMgr().load(`res/effectShow/fx_B_5/fx_B_5.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (s) => {
@@ -30,16 +30,16 @@ class UseF14EffectDemo implements IState {
         });
     }
 
-    //播放特效
+    /**播放特效 */
     playEffect(){
             //this.effectSystems.play(1.0);
     }
-    //停止特效
+    /** 停止特效 */
     stopEffect(){
             this.effectSystems.stop();
     }
 
-    //#region 加入播放特效和停止的控制按钮
+    /** 加入播放特效和停止的控制按钮 */
     addCtrl() {
         let play = document.createElement("button") as HTMLButtonElement;
         let stop = document.createElement("button") as HTMLButtonElement;
@@ -65,7 +65,7 @@ class UseF14EffectDemo implements IState {
     }
     //#endregion
 
-    //#region 添加摄像机
+    /** 添加摄像机 */
     private addCamera(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         let objCam = new m4m.framework.transform();
         objCam.name = "camera.";
@@ -83,7 +83,7 @@ class UseF14EffectDemo implements IState {
     }
     //#endregion
 
-    //#region 加载shader
+    /** 加载shader */
     private loadShader(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
         this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (s) => {
             if (s.iserror) {

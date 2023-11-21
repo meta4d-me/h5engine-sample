@@ -139,6 +139,12 @@ class decalCreater extends m4m.framework.behaviour
         return d.meshF.gameObject.transform;
     }
 
+    /**
+     * 计算世界空间法线向量
+     * @param pinfo 拾取点信息
+     * @param mf mesh组件
+     * @param result 输出世界空间法线向量
+     */
     private calecWorldNormal(pinfo: m4m.framework.pickinfo,mf:m4m.framework.meshFilter,result:m4m.math.vector3){
         let fid = pinfo.faceId;
         let md= mf.mesh.data;
@@ -163,6 +169,12 @@ class decalCreater extends m4m.framework.behaviour
         // console.log(`nor  : ${nor.toString()}`);
     }
     
+    /**
+     * 计算旋转
+     * @param dir 方向
+     * @param pinfo 拾取点信息
+     * @param result 输出旋转四元数
+     */
     private calecRoation(dir:m4m.math.vector3,pinfo: m4m.framework.pickinfo,result: m4m.math.quaternion){
         let lookpoint = decalCreater.helpv3;
         m4m.math.vec3Clone(dir,lookpoint);
@@ -176,6 +188,13 @@ class decalCreater extends m4m.framework.behaviour
         m4m.math.quatMultiply(decalCreater.helpqaut,result,result);
     }
 
+    /**
+     * 计算view 修正
+     * @param _camera 相机
+     * @param app 引擎app
+     * @param screenPos 屏幕空间位置
+     * @param result 输出位置
+     */
     private static multipleViewFix(_camera:m4m.framework.camera , app : m4m.framework.application, screenPos: m4m.math.vector2,result:m4m.math.vector2){
         let vp = _camera.viewport;
         let offset_x = app.width * vp.x;
@@ -280,6 +299,9 @@ class decalGeometry{
         this.meshF.mesh = this.mesh;
     }
 
+    /**
+     * 生成
+     */
     private generate() {
         let decalVertices : DecalVertex [] = [];
         let vertex = new m4m.math.vector3();
@@ -336,6 +358,12 @@ class decalGeometry{
 
     }
 
+    /**
+     * 存贴花mesh 顶点数据
+     * @param decalVertices 贴花顶点
+     * @param vertex 顶点位置
+     * @param normal 法线
+     */
     private pushDecalVertex( decalVertices:DecalVertex[], vertex : m4m.math.vector3, normal:m4m.math.vector3 ) {
         let pos = m4m.math.pool.clone_vector3(vertex);
         let nor;
@@ -349,6 +377,12 @@ class decalGeometry{
         decalVertices.push( new DecalVertex( pos,nor ) );
     }
 
+    /**
+     * 修剪 几何图形
+     * @param inVertices 贴花顶点列表
+     * @param plane 
+     * @returns 
+     */
     private clipGeometry( inVertices : DecalVertex[], plane : m4m.math.vector3) {
 
         let outVertices = [];
@@ -480,6 +514,14 @@ class decalGeometry{
 
     }
 
+    /**
+     * 修剪顶点
+     * @param v0 顶点0
+     * @param v1 顶点1
+     * @param p 位置
+     * @param s 
+     * @returns 
+     */
     private clip( v0:DecalVertex, v1:DecalVertex, p:m4m.math.vector3, s:number ) {
 
         let d0 = m4m.math.vec3Dot(p,v0.position) - s;

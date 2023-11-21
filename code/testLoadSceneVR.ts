@@ -62,12 +62,19 @@ class test_loadSceneVR implements IState {
         xrManager.setSession(session);
     }
 
+    /**
+     * 当退出VR模式时调用
+     */
     private onExitVR() {
         console.log(`退出 VR`);
         this.normalCam.gameObject.visible = true;
 
     }
 
+    /**
+     * 初始化相机
+     * @param app 
+     */
     private initCam(app: m4m.framework.application) {
         let objCamRoot = this.objCamRoot = new m4m.framework.transform();
         app.getScene().addChild(objCamRoot);
@@ -440,7 +447,10 @@ class xrManager {
 
 
     private static isBindXRFBO = false;
-    //尝试 将 xrlayer的fbo 绑定绘制
+    /**
+     * 尝试 将 xrlayer的fbo 绑定绘制
+     * @returns 
+     */
     private static tryXRFBOBind() {
         if (this.isBindXRFBO || !this.glBaseLayer.framebuffer) return;
         this.isBindXRFBO = true;
@@ -453,7 +463,9 @@ class xrManager {
         this.vrCameraR.postQueues.push(this._color);
     }
 
-    //解除绑定
+    /**
+     * 尝试解除绑定
+     */
     private static tryXRFBOUnBind() {
         if (!this.isBindXRFBO) return;
         this.isBindXRFBO = false;
@@ -477,6 +489,10 @@ class xrManager {
 
     }
 
+    /**
+     * 设置 foveation
+     * @param foveation 
+     */
     private static setFoveation(foveation) {
 
         // 0 = no foveation = full resolution
@@ -546,6 +562,10 @@ class xrManager {
 
     }
 
+    /**
+     * 改变主循环
+     * @param isXRLoopMode 是XR 循环？
+     */
     private static cgMainLoop(isXRLoopMode: boolean) {
         const session = this.session;
         if (!session || this.isXRLoop == isXRLoopMode) return;

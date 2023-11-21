@@ -4,6 +4,11 @@
     {
         app: m4m.framework.application;
         scene: m4m.framework.scene;
+        /**
+         * 加载着色器
+         * @param laststate 
+         * @param state 状态
+         */
         private loadShader(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
             this.app.getAssetMgr().load(`${resRootPath}shader/shader.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (_state) =>
@@ -15,7 +20,11 @@
             }
             );
         }
-
+        /**
+         * 加载文本
+         * @param laststate 
+         * @param state 状态
+         */
         private loadText(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
             let c = 0;
@@ -68,7 +77,11 @@
 
         cuber: m4m.framework.meshRenderer;
         private normalCube: m4m.framework.transform;
-
+        /**
+         * 添加普通cube
+         * @param laststate 
+         * @param state 状态
+         */
         private addnormalcube(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
 
@@ -108,7 +121,11 @@
 
             state.finish = true;
         }
-
+        /**
+         * 添加cube
+         * @param laststate 
+         * @param state 状态
+         */
         private addcube(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
             var cube = new m4m.framework.transform();
@@ -136,7 +153,11 @@
             }
             state.finish = true;
         }
-
+        /**
+         * 添加相机和光源
+         * @param laststate 
+         * @param state 状态
+         */
         private addcamandlight(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate)
         {
 
@@ -190,6 +211,7 @@
             state.finish = true;
 
         }
+        
         start(app: m4m.framework.application)
         {
             console.log("i am here.");

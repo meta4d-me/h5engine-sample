@@ -33,6 +33,10 @@ class test_texuv implements IState {
         objCam.markDirty();//标记为需要刷新
     }
 
+    /**
+     * 创建基础 cube模型
+     * @returns 
+     */
     private createBaseCube() {
         var mat = new m4m.framework.material();
         var shader = m4m.framework.sceneMgr.app.getAssetMgr().getShader("diffuse.shader.json");
@@ -52,6 +56,10 @@ class test_texuv implements IState {
         return trans;
     }
 
+    /**
+     * 创建UVcube
+     * @returns 
+     */
     private createUvCube() {
         var mat = new m4m.framework.material();
         var shader = m4m.framework.sceneMgr.app.getAssetMgr().getShader("testtexuv.shader.json");

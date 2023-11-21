@@ -83,6 +83,10 @@ class test_ShadowMap implements IState {
 
     private shadowSh = "shadowmap.shader.json";
     private mats: m4m.framework.material[] = [];
+    /**
+     * 收集材质
+     * @returns 
+     */
     private collectMat() {
         if (!this.assetmgr) return
         let resmap = this.assetmgr.mapRes;
@@ -95,6 +99,12 @@ class test_ShadowMap implements IState {
         }
     }
 
+    /**
+     * 设置材质
+     * @param key key
+     * @param value 值
+     * @returns 
+     */
     private setmat(key: string, value: any) {
         if (!this.mats) return;
         this.mats.forEach(element => {
@@ -157,6 +167,11 @@ class test_ShadowMap implements IState {
         });
     }
 
+    /**
+     * 适配场景包围
+     * @param lightCamera 相机
+     * @param aabb aabb 包围
+     */
     FitToScene(lightCamera: m4m.framework.camera, aabb: m4m.framework.aabb) {
         lightCamera.gameObject.transform.setWorldPosition(new m4m.math.vector3(aabb.center.x, aabb.center.y, aabb.center.z));
 
@@ -177,6 +192,9 @@ class test_ShadowMap implements IState {
     inputNear: HTMLInputElement;
     inputFar: HTMLInputElement;
 
+    /**
+     * 显示UI
+     */
     ShowUI() {
         document.addEventListener("keydown", (ev) => {
             if (ev.key === "c") {
@@ -302,6 +320,10 @@ class test_ShadowMap implements IState {
         this.app.container.appendChild(inputCameraRotateY);
     }
 
+    /**
+     * 显示相机信息
+     * @param camera 
+     */
     ShowCameraInfo(camera: m4m.framework.camera) {
         let near = camera.near.toString();
         let far = camera.far.toString();

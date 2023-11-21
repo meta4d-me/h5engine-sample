@@ -62,7 +62,9 @@ class guideMask extends m4m.framework.behaviour2d
     private left :m4m.framework.transform2D;
     private right :m4m.framework.transform2D;
 
-    //刷新 mask
+    /**
+     * 刷新 mask
+     */
     private refreshMask(){
         if(!this.inited) return;
         this.cells.forEach(sub=>{sub.visible = false});

@@ -4,6 +4,10 @@ class test_loadprefab implements IState
     scene: m4m.framework.scene;
     renderer: m4m.framework.meshRenderer[];
     skinRenders: m4m.framework.skinnedMeshRenderer[];
+    /**
+     * 刷新纹理
+     * @param tran 节点
+     */
     refreshTexture(tran:m4m.framework.transform)
     {
         let meshrenderer = tran.gameObject.getComponentsInChildren("meshRenderer") as m4m.framework.meshRenderer[];
@@ -43,6 +47,11 @@ class test_loadprefab implements IState
             }
         }
     }
+    /**
+     * 刷新动画片段
+     * @param tran 节点
+     * @param name 片段名
+     */
     refreshAniclip(tran:m4m.framework.transform, name:string)
     {
         // let anipalyer = tran.gameObject.getComponentsInChildren("aniplayer") as m4m.framework.aniplayer[];
@@ -221,6 +230,9 @@ class test_loadprefab implements IState
 
     }
 
+    /**
+     * 改变所有渲染节点的着色器
+     */
     private changeShader()
     {
         var btn = document.createElement("button");
@@ -246,6 +258,10 @@ class test_loadprefab implements IState
         this.app.container.appendChild(btn2);
     }
 
+    /**
+     * 改变渲染节点的着色器
+     * @param sha 着色器
+     */
     change(sha: m4m.framework.shader)
     {
         for (let j = 0; j < this.renderer.length; j++)

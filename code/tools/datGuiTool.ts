@@ -8,13 +8,19 @@ class datGui
 {
 
     private static _inited = false;
+    /**
+     * 初始化
+     */
     static async init()
     {
         await this.loadJs();
         this._inited = true;
     }
 
-    //加载 js
+    /**
+     * 加载 js
+     * @returns Promise
+     */
     private static loadJs()
     {
         let datUrl = `./lib/dat.gui.js`;

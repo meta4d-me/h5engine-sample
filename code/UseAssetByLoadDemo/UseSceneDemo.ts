@@ -5,7 +5,7 @@ class UseSceneDemo implements IState{
     scene:m4m.framework.scene;
     taskMgr:m4m.framework.taskMgr = new m4m.framework.taskMgr();
 
-    //使用通过asset加载出来的场景。
+    /**使用通过asset加载出来的场景。 */
     private useRawScene(){
         let raw = this.app.getAssetMgr().getAssetByName("MainCity_.scene.json") as m4m.framework.rawscene;
         let root = raw.getSceneRoot();
@@ -17,7 +17,7 @@ class UseSceneDemo implements IState{
         this.scene.getRoot().markDirty();
         root.markDirty();
     }
-    //加载场景
+    /**加载场景 */
     private loadScene(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate){
         this.app.getAssetMgr().load("res/scenes/MainCity_/MainCity_.assetbundle.json",m4m.framework.AssetTypeEnum.Auto,(s)=>{
             if(s.isfinish){

@@ -62,6 +62,13 @@ class testReload implements IState {
     }
 
     uileft: number = 0;
+    /**
+     * 创建 GUI 按钮
+     * @param role 角色节点
+     * @param role1 角色1节点
+     * @param o2d overlay2D对象
+     * @param part 部件名
+     */
     createChangeBtn(role: m4m.framework.transform, role1: m4m.framework.transform, o2d: m4m.framework.overlay2D, part: string) {
         //设置UI
         let t2d_9 = new m4m.framework.transform2D();
@@ -129,6 +136,11 @@ class testReload implements IState {
         }, this);
     }
 
+    /**
+     * 交换 部件
+     * @param r_a_part 部件a
+     * @param r_b_part 部件b
+     */
     excangeSub(r_a_part: m4m.framework.skinnedMeshRenderer, r_b_part: m4m.framework.skinnedMeshRenderer) {
         //交换位置
         let role_part_parent = r_a_part.gameObject.transform.parent;

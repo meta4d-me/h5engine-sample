@@ -13,6 +13,11 @@ namespace t {
             this.taskmgr.addTaskCall(this.initscene.bind(this));
             this.taskmgr.addTaskCall(this.addbtns.bind(this));
         }
+        /**
+         * 加载着色器
+         * @param laststate 
+         * @param state 
+         */
         private loadShader(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
             this.app.getAssetMgr().load("res/shader/shader.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (_state) => {
                 if (_state.isfinish) {
@@ -21,7 +26,11 @@ namespace t {
             }
             );
         }
-
+        /**
+         * 加载纹理
+         * @param laststate 
+         * @param state 
+         */
         private loadTexture(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
             var texnumber:number=2;
             this.app.getAssetMgr().load("res/rock256.png", m4m.framework.AssetTypeEnum.Auto, (s) => {
@@ -51,7 +60,11 @@ namespace t {
             }
             );
         }
-
+        /**
+         * 加载深度
+         * @param laststate 
+         * @param state 
+         */
         private loadpath(laststate:m4m.framework.taskstate,state:m4m.framework.taskstate)
         {
            var pathnumber:number=2;
@@ -80,6 +93,11 @@ namespace t {
                 }
             })
         }
+        /**
+         * 加载资源
+         * @param laststate 
+         * @param state 
+         */
         private loadasset(laststate:m4m.framework.taskstate,state:m4m.framework.taskstate)
         {
             this.app.getAssetMgr().load("res/prefabs/rotatedLongTou/rotatedLongTou.assetbundle.json", m4m.framework.AssetTypeEnum.Auto, (_state) => {
@@ -90,6 +108,11 @@ namespace t {
             );
         }
         sh: m4m.framework.shader;
+        /**
+         * 初始化场景
+         * @param laststate 
+         * @param state 
+         */
         private initscene(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
             var objCam = new m4m.framework.transform();
             objCam.name = "cam_show";
@@ -223,6 +246,9 @@ namespace t {
             this.taskmgr.move(delta);
         }
 
+        /**
+         * 添加按钮
+         */
         private addbtns()
         {
             this.addBtn("play",10,100,()=>{
@@ -253,8 +279,14 @@ namespace t {
                 }
             })
         }
-                         
 
+        /**
+         * 添加按钮
+         * @param text 文本 
+         * @param x 坐标x
+         * @param y 坐标y
+         * @param func 回调函数
+         */
         private addBtn(text: string,x:number,y:number,func: () => void)
         {
             var btn = document.createElement("button");
@@ -271,6 +303,12 @@ namespace t {
         }
     }
 
+    /**
+     * 获取一个节点
+     * @param mat 材质
+     * @param meshname mesh资源名 
+     * @returns 一个节点
+     */
     export function DBgetAtrans(mat:m4m.framework.material,meshname:string=null):m4m.framework.transform
     {
         var trans=new m4m.framework.transform();
@@ -291,6 +329,12 @@ namespace t {
         }
         return trans;
     }
+    /**
+     *  获取一个材质
+     * @param texname 纹理名
+     * @param shaderstring 着色器名
+     * @returns 材质
+     */
     export function DBgetMat(texname:string=null,shaderstring:string=null):m4m.framework.material
     {
         var mat=new m4m.framework.material();

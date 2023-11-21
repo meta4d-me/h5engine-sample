@@ -35,7 +35,11 @@ namespace dome {
 
             this.gameupdate(delta);
         }
-
+        /**
+         * 加载shader
+         * @param laststate 
+         * @param state 加载状态
+         */
         private loadShader(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
             this.app.getAssetMgr().load(`${resRootPath}shader/shader.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (_state) => {
                 if (_state.isfinish) {
@@ -46,6 +50,11 @@ namespace dome {
         }
 
         private targets: m4m.framework.transform[] = [];
+        /**
+         * 加载mesh
+         * @param laststate 
+         * @param state 
+         */
         private loadmesh(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
             var name = "box";
             name = "Map_Castle";
@@ -74,6 +83,11 @@ namespace dome {
                 }
             });
         }
+        /**
+         * 添加相机
+         * @param laststate 
+         * @param state 状态
+         */
         private addcam(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
             //添加一个摄像机
             var objCam = new m4m.framework.transform();
@@ -107,6 +121,11 @@ namespace dome {
         hitPosition: m4m.math.vector3 = new m4m.math.vector3();
         behit: boolean = false;
         middlePos: m4m.math.vector3 = new m4m.math.vector3();
+        /**
+         * 初始化游戏
+         * @param laststate 
+         * @param state 状态
+         */
         gameInit(laststate: m4m.framework.taskstate, state: m4m.framework.taskstate) {
             this.paojia = this.addcube(new m4m.math.vector3(), new m4m.math.vector3(1, 1.0, 2.0));
             this.paojia.localPosition.y += this.paoheight;
@@ -138,6 +157,9 @@ namespace dome {
             state.finish = true;
         }
         //----------------------------------game scene asset------------------------------------------------
+        /**
+         * 添加炮弹的相机
+         */
         addPaoDancam() {
             var objCam = new m4m.framework.transform();
             this.cam2 = objCam.gameObject;
@@ -176,6 +198,9 @@ namespace dome {
         //-------------------------------game logic--------------------------------------------------------------------
         private targetPos: m4m.math.vector3 = new m4m.math.vector3();
         private floor: m4m.framework.transform;
+        /**
+         * 开火
+         */
         fire(): void {
             this.pickScene((info) => {
                 console.warn("pick point:" + info.hitposition.toString(), info);
@@ -192,12 +217,19 @@ namespace dome {
          * 设置泡弹跑的总时间
          */
         private totaltime: number = 5;
+        /**
+         * 开火发射子弹
+         */
         private fireBullet() {
             this.beLaunched = true;
             this.time = 0;
         }
 
         private temp_pickInfo = m4m.math.pool.new_pickInfo();
+        /**
+         * 拾取场景
+         * @param fuc 
+         */
         private pickScene(fuc: (info: m4m.framework.pickinfo) => void) {
             let inputMgr = this.app.getInputMgr();
             let ray = this.camera.creatRayByScreen(new m4m.math.vector2(inputMgr.point.x, inputMgr.point.y), this.app);
@@ -207,6 +239,10 @@ namespace dome {
             });
         }
 
+        /**
+         * 游戏更新
+         * @param delta 间隔时间
+         */
         gameupdate(delta: number) {
             this.updateBullet(delta);
             this.updateUI();
@@ -221,7 +257,12 @@ namespace dome {
 
         private winddisturb: number = 0;
         private gravitydisturb: number = 0;
+        /** 碰撞结束 */
         private onEndCollision: (pos: m4m.math.vector3) => {};
+        /**
+         * 更新子弹
+         * @param delta 间隔时间
+         */
         private updateBullet(delta: number) {
             if (this.beLaunched) {
                 this.time += delta * 4;
@@ -265,6 +306,9 @@ namespace dome {
         }
 
         private screenpos: m4m.math.vector2 = new m4m.math.vector2();
+        /**
+         * 更新GUI
+         */
         private updateUI() {
             if (this.beUIFollow && this.paodan) {
                 let pos = this.paodan.getWorldPosition();
@@ -280,6 +324,9 @@ namespace dome {
         private paoheight: number = 2;
         private paoLen: number = 1;
         private paokouPos: m4m.math.vector3 = new m4m.math.vector3();
+        /**
+         *  旋转炮角度
+         */
         private beforeRotatePaojia() {
             this.adjustMiddlePoint(this.paojia.getWorldPosition(), this.targetPos, this.middlePos);
 
@@ -302,12 +349,22 @@ namespace dome {
             m4m.math.pool.delete_vector3(dir);
         }
 
+        /**
+         * 当开火前回调
+         */
         private onberforeFire: () => void;
 
         private beActiveRot: boolean = false;
         private rotTotalTime: number = 1;
         private rottime: number = 0;
+        /**
+         * 当旋转结束
+         */
         private onRotEnd: () => void;
+        /**
+         * 更新旋转炮角度
+         * @param delta 
+         */
         private updateRotPaojia(delta: number) {
             if (this.beActiveRot && this.rottime < this.rotTotalTime) {
                 this.rottime += delta;
@@ -333,13 +390,24 @@ namespace dome {
         }
 
         //-----------------------------game util---------------------------------------------------------------------------------
-
+        /**
+         * 缩放和偏移
+         * @param from 开始
+         * @param scale 缩放
+         * @param add 偏移
+         * @param out 输出
+         */
         private scaleAndAdd(from: m4m.math.vector3, scale: number, add: m4m.math.vector3, out: m4m.math.vector3) {
             out.x = from.x * scale + add.x;
             out.y = from.y * scale + add.y;
             out.z = from.z * scale + add.z;
         }
 
+        /**
+         * 用射线检测场景
+         * @param ray 射线
+         * @param fuc 回调函数
+         */
         rayInstersetScene(ray: m4m.framework.ray, fuc: (info: m4m.framework.pickinfo) => void) {
             let bePickMesh = false;
             let infos = this.intersetColliders(ray, this.targets);
@@ -372,6 +440,13 @@ namespace dome {
             }
         }
 
+        /**
+         * 检测mesh交叉
+         * @param ray 射线
+         * @param info 拾取信息
+         * @param tran 节点
+         * @returns 是否相交
+         */
         intersetMesh(ray: m4m.framework.ray, info: m4m.framework.pickinfo, tran: m4m.framework.transform): boolean {
             var meshFilter = tran.gameObject.getComponent("meshFilter") as m4m.framework.meshFilter;
             if (meshFilter != null) {
@@ -385,6 +460,12 @@ namespace dome {
             return false;
         }
 
+        /**
+         * 检测碰撞体交叉
+         * @param ray 射线
+         * @param trans 节点
+         * @returns 所有的拾取点
+         */
         intersetColliders(ray: m4m.framework.ray, trans: m4m.framework.transform[]): m4m.framework.pickinfo[] {
             let infos: m4m.framework.pickinfo[] = [];
 
@@ -403,6 +484,12 @@ namespace dome {
             return infos;
         }
 
+        /**
+         * 添加cube
+         * @param pos 位置
+         * @param scale 缩放
+         * @returns cube节点
+         */
         addcube(pos: m4m.math.vector3, scale: m4m.math.vector3 = null): m4m.framework.transform {
             let cube4 = new m4m.framework.transform();
             if (scale != null) {
@@ -417,6 +504,13 @@ namespace dome {
             return cube4;
         }
 
+        /**
+         * 添加GUI按钮
+         * @param text 文本 
+         * @param x 位置x
+         * @param y 位置y
+         * @param func 点击回调
+         */
         private addBtn(text: string, x: number, y: number, func: () => void) {
             var btn = document.createElement("button");
             btn.textContent = text;
@@ -429,6 +523,12 @@ namespace dome {
             this.app.container.appendChild(btn);
         }
 
+        /**
+         * 调整中间的点
+         * @param from 开始
+         * @param to 结束
+         * @param pos 输出位置
+         */
         private adjustMiddlePoint(from: m4m.math.vector3, to: m4m.math.vector3, pos: m4m.math.vector3) {
             let dis = m4m.math.vec3Distance(from, to);
             //----lerp
@@ -439,6 +539,14 @@ namespace dome {
             pos.y += dis * 0.5;
         }
 
+        /**
+         * 计算贝塞尔曲线上的点
+         * @param from 开始
+         * @param middle 中间
+         * @param to 结束
+         * @param t 进度值
+         * @param out 输出点
+         */
         private bessel(from: m4m.math.vector3, middle: m4m.math.vector3, to: m4m.math.vector3, t: number, out: m4m.math.vector3) {
             //out=from*(1-t)^2+middle*2t(1-t)+to*t^2
 
@@ -451,6 +559,14 @@ namespace dome {
             out.z = from.z * p1 + middle.z * p2 + to.z * p3;
         }
 
+        /**
+         * 获取贝塞尔的方向
+         * @param from  开始
+         * @param middle 中间
+         * @param to 结束
+         * @param t 进度值
+         * @param out 输出方向
+         */
         private getBeselDir(from: m4m.math.vector3, middle: m4m.math.vector3, to: m4m.math.vector3, t: number, out: m4m.math.vector3) {
             //out=from*2*(1-t)*(-1)+middle*2(1-2t)+to*2t
             let p1 = -1 * 2 * (1 - t);
@@ -462,6 +578,12 @@ namespace dome {
             out.z = from.z * p1 + middle.z * p2 + to.z * p3;
         }
 
+        /**
+         * 通过方向获取旋转
+         * @param dir 方向
+         * @param forward 前方
+         * @param out 输出
+         */
         private getRotationByDir(dir: m4m.math.vector3, forward: m4m.math.vector3, out: m4m.math.quaternion) {
             let tana = dir.y / Math.sqrt(dir.x * dir.x + dir.z * dir.z);
             let _rotx = Math.atan(tana) * 180 / Math.PI;
@@ -472,6 +594,12 @@ namespace dome {
             m4m.math.quatFromEulerAngles(-1 * _rotx, _roty, 0, out);
         }
 
+        /**
+         * 获取旋转角度
+         * @param dir 方向
+         * @param forward 前方
+         * @returns 输出角度
+         */
         private getRotAnlge(dir: m4m.math.vector3, forward: m4m.math.vector3): { rotx: number, roty: number } {
             let tana = dir.y / Math.sqrt(dir.x * dir.x + dir.z * dir.z);
             let _rotx = Math.atan(tana) * 180 / Math.PI;
@@ -482,6 +610,13 @@ namespace dome {
             return { rotx: _rotx, roty: _roty };
         }
 
+        /**
+         * 计算从a到b 的旋转
+         * @param from a向量
+         * @param to b向量
+         * @param right 输出
+         * @returns 旋转度
+         */
         private fromToRotation(from: m4m.math.vector3, to: m4m.math.vector3, right: m4m.math.vector3): number {
             let dir1 = m4m.math.pool.new_vector3();
             let dir2 = m4m.math.pool.new_vector3();

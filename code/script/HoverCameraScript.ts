@@ -100,14 +100,23 @@ namespace m4m.framework{
             m4m.math.pool.delete_vector3(tempv3);
         }
 
+        /**
+         * 当输入点下
+         */
         private onPointDown() {
             this._mouseDown = true;
             this._lastMouseX = this.inputMgr.point.x;
             this._lastMouseY = this.inputMgr.point.y;
         }
+        /**
+         * 当输入点下后释放
+         */
         private onPointUp() {
             this._mouseDown = false;
         }
+        /**
+         * 当输入点移动
+         */
         private onPointMove() {
             if(!this._mouseDown)    return ;
             let moveX = this.inputMgr.point.x - this._lastMouseX;
@@ -130,7 +139,9 @@ namespace m4m.framework{
             this._lastMouseX = this.inputMgr.point.x;
             this._lastMouseY = this.inputMgr.point.y;
         }
-
+        /**
+         * 当鼠标滚动
+         */
         private onWheel(){
             this.distance = Math.max(this.distance - this.inputMgr.wheel * 2, 1);
         }
@@ -141,7 +152,10 @@ namespace m4m.framework{
 
         lastTouches: { id: number; pos: pointinfo; }[] = null;
         panFingers = [new m4m.math.vector2(), new m4m.math.vector2()];
-
+        /**
+         * 当输入触摸
+         * @param ev 触摸事件
+         */
         private onTouch(ev: TouchEvent){
             if (ev.targetTouches.length == 1) {
                 const touch = this.inputMgr.touches[ev.targetTouches[0].identifier];
@@ -157,7 +171,10 @@ namespace m4m.framework{
                 this.lastTouches = touches;
             }
         }
-
+        /**
+         * 当触摸移动
+         * @param ev 
+         */
         private onTouchMove(ev: TouchEvent) {
             if (ev.targetTouches.length == 1) {
                 const touch = this.inputMgr.touches[ev.targetTouches[0].identifier];
@@ -210,7 +227,9 @@ namespace m4m.framework{
                 this.lastTouches = touches;
             }
         }
-
+        /**
+         * 移除所有输入事件监听
+         */
         public remove()
         {
             this.inputMgr.removePointListener(m4m.event.PointEventEnum.PointDown,this.onPointDown,this);

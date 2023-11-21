@@ -12,6 +12,11 @@ namespace util {
         });
     }
 
+    /**
+     * 加载着色器
+     * @param assetMgr 资源管理
+     * @returns Promise
+     */
     export function loadShader(assetMgr: m4m.framework.assetMgr) {
         return new Promise<void>((resolve, reject) => {
             assetMgr.load(`${resRootPath}shader/shader.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (_state) => {
@@ -23,6 +28,12 @@ namespace util {
         })
     }
 
+    /**
+     * 加载模型prefab
+     * @param assetMgr 资源管理
+     * @param modelName 模型资源名
+     * @returns Promise<prefab>
+     */
     export function loadModel(assetMgr: m4m.framework.assetMgr, modelName: string) {
         return new Promise<m4m.framework.prefab>((resolve, reject) => {
             assetMgr.load(`${resRootPath}prefab/${modelName}/${modelName}.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (s) => {
@@ -34,6 +45,12 @@ namespace util {
         })
     }
 
+    /**
+     * 加载场景
+     * @param assetMgr 资源管理
+     * @param resName 资源名
+     * @returns Promise<rawscene>
+     */
     export function loadScnee(assetMgr: m4m.framework.assetMgr, resName: string) {
         return new Promise<m4m.framework.rawscene>((resolve, reject) => {
             assetMgr.load(`${resRootPath}prefab/${resName}/${resName}.assetbundle.json`, m4m.framework.AssetTypeEnum.Auto, (s) => {
@@ -45,6 +62,11 @@ namespace util {
         })
     }
 
+    /**
+     * 加载相机
+     * @param scene 引擎场景
+     * @returns 
+     */
     export function addCamera(scene: m4m.framework.scene) {
         //添加一个摄像机
         var objCam = new m4m.framework.transform();
@@ -59,6 +81,12 @@ namespace util {
         return objCam;
     }
 
+    /**
+     * 加载纹理
+     * @param url 资源url
+     * @param assetMgr 资源管理
+     * @returns Promise<texture>
+     */
     export function loadTex(url: string, assetMgr: m4m.framework.assetMgr) {
         return new Promise<m4m.framework.texture>((resolve, reject) => {
             assetMgr.load(url, m4m.framework.AssetTypeEnum.Auto, (s) => {
@@ -75,6 +103,12 @@ namespace util {
         })
     }
 
+    /**
+     * 加载纹理数组
+     * @param urls url列表
+     * @param assetMgr 资源管理
+     * @returns Promise<texture[]>
+     */
     export function loadTextures(urls: string[], assetMgr: m4m.framework.assetMgr) {
         return Promise.all(urls.map(item => loadTex(item, assetMgr)))
     }

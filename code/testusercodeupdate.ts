@@ -21,6 +21,10 @@ class testUserCodeUpdate implements m4m.framework.IUserCode
         m4m.math.quatFromAxisAngle(new m4m.math.vector3(0, 1, 0), this.timer, this.trans.localRotate);
         this.trans.markDirty();
     }
+    /**
+     * 是关闭的？
+     * @returns 
+     */
     isClosed(): boolean
     {
         return false;

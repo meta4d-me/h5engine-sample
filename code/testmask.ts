@@ -96,7 +96,9 @@ namespace t
             this.addDomUI();
         }
 
-
+        /**
+         * 添加GUI
+         */
         addDomUI()
         {
             let tillingX = document.createElement("label");
@@ -189,6 +191,11 @@ namespace t
             // objCam.lookatPoint(new m4m.math.vector3(0, 0, 0));
         }
     }
+    /**
+     * 通过URL获取文件名
+     * @param url   url 
+     * @returns 文件名
+     */
     export function getFileName(url: string)
     {
         var filei = url.lastIndexOf("/");

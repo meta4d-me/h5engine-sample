@@ -10,7 +10,11 @@ class test_ChangeMaterial implements IState
     material2:m4m.framework.material=new m4m.framework.material();
 
     taskmgr:m4m.framework.taskMgr=new m4m.framework.taskMgr();
-
+    /**
+     * 加载着色器
+     * @param laststate 
+     * @param state 状态
+     */
     private loadShader(laststate:m4m.framework.taskstate,state:m4m.framework.taskstate)
     {
         this.app.getAssetMgr().load("res/shader/shader.assetbundle.json",m4m.framework.AssetTypeEnum.Auto,(s)=>
@@ -21,7 +25,11 @@ class test_ChangeMaterial implements IState
             }
         });
     }
-
+    /**
+     * 加载纹理
+     * @param laststate 
+     * @param state 状态
+     */
     private loadTexture(laststate:m4m.framework.taskstate,state:m4m.framework.taskstate)
     {
         let c=0;
@@ -58,7 +66,11 @@ class test_ChangeMaterial implements IState
         );
     }
 
-
+    /**
+     * 添加相机
+     * @param laststate 
+     * @param state 状态
+     */
     private addCam(laststate:m4m.framework.taskstate, state:m4m.framework.taskstate)
     {
         //添加一个相机
@@ -74,7 +86,11 @@ class test_ChangeMaterial implements IState
         console.log("add camera");
         state.finish=true;
     }
-
+    /**
+     * 添加cube
+     * @param laststate 
+     * @param state 状态
+     */
     private addCube(laststate:m4m.framework.taskstate,state:m4m.framework.taskstate)
     {
          //添加一个Cube
@@ -92,7 +108,9 @@ class test_ChangeMaterial implements IState
     }
 
     isMaterial1:boolean=false;
-
+    /**
+     * 添加GUI按钮
+     */
     private addBtn()
     {
         //创建一个button，控制material的切换
@@ -123,7 +141,11 @@ class test_ChangeMaterial implements IState
         this.app.container.appendChild(btn1);       
     }
 
-
+    /**
+     * 设置材质
+     * @param laststate 
+     * @param state 状态
+     */
     private setMaterial(laststate:m4m.framework.taskstate,state:m4m.framework.taskstate)
     {
         let shader1=this.app.getAssetMgr().getShader("diffuse.shader.json");

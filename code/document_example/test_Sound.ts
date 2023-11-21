@@ -7,7 +7,11 @@ class test_Sound implements IState
     camera:m4m.framework.camera;
     cube:m4m.framework.transform;
     time:number=0;
-
+    /**
+     * 加载着色器
+     * @param laststate 
+     * @param state 状态
+     */
     private loadShader(laststate:m4m.framework.taskstate,state:m4m.framework.taskstate)
     {
         this.app.getAssetMgr().load("res/shader/shader.assetbundle.json",m4m.framework.AssetTypeEnum.Auto,(_state)=>
@@ -23,7 +27,11 @@ class test_Sound implements IState
         }
         );
     }
-    
+    /**
+     * 加载纹理
+     * @param laststate 
+     * @param state 状态
+     */
     private loadTexture(laststate:m4m.framework.taskstate,state:m4m.framework.taskstate)
     {   
         this.app.getAssetMgr().load("res/zg256.png",m4m.framework.AssetTypeEnum.Auto,(_state)=>
@@ -39,7 +47,11 @@ class test_Sound implements IState
         }
         );
     }
-
+    /**
+     * 添加相机
+     * @param laststate 
+     * @param state 状态
+     */
     private addCam(laststate:m4m.framework.taskstate,state:m4m.framework.taskstate)
     {
         var objCam=new m4m.framework.transform();
@@ -54,7 +66,11 @@ class test_Sound implements IState
 
         state.finish=true;
     }
-
+    /**
+     * 添加cube
+     * @param laststate 
+     * @param state 状态
+     */
     private addCube(laststate:m4m.framework.taskstate,state:m4m.framework.taskstate)
     {
         var objCube=new m4m.framework.transform();
@@ -81,7 +97,11 @@ class test_Sound implements IState
         this.cube.markDirty();   
         state.finish=true;
     }
-
+    /**
+     * 添加按钮加载声音
+     * @param laststate 
+     * @param state 状态
+     */
     private addBtnLoadSound(laststate:m4m.framework.taskstate,state:m4m.framework.taskstate)
     {
 
