@@ -1,4 +1,4 @@
 [submodule "exampleResource"]
 	path = exampleResource
-	url = http://pwd.cafegame.cn:7990/scm/engine/exampleresource.git
+	url = https://github.com/meta4d-me/h5engine-sample-resource.git
 	branch = master
